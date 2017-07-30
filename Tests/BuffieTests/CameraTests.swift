@@ -1,24 +1,8 @@
 import XCTest
+import CoreMedia
 @testable import Buffie
 
 class CameraTests: XCTestCase {
-    
-    class MockControlDelegate: CameraControlDelegate {
-        
-        var expectation: XCTestExpectation?
-        
-        func cameraStarted() {
-            self.expectation?.fulfill()
-        }
-        
-        func cameraStopped() {
-            self.expectation?.fulfill()
-        }
-        
-        func cameraInteruppted() {
-            
-        }
-    }
     
     func test_basic_object_behavior() {
         
@@ -39,7 +23,22 @@ class CameraTests: XCTestCase {
         self.wait(for: [delegate.expectation!], timeout: 2)
     }
     
+    func test_obtaining_samples() {
+
+        let mockReader = MockReader()
+        let subject    = try? Camera(.front, reader: mockReader)
+        XCTAssertNotNil(subject)
+        
+        mockReader.videoExpectation = self.expectation(description: "We should get at least one video sample")
+        mockReader.audioExpectation = self.expectation(description: "We should get at least one audio sample")
+        subject?.start()
+        self.wait(for: [mockReader.videoExpectation!, mockReader.audioExpectation!], timeout: 12)
+        subject?.stop()
+
+    }
+    
     static var allTests = [
-        ("testExample", test_basic_object_behavior),
+        ("Test Basic Behavior", test_basic_object_behavior),
+        ("Test obtaining samples", test_obtaining_samples)
     ]
 }

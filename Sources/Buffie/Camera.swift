@@ -32,76 +32,47 @@ public protocol CameraControlDelegate {
 
 public class Camera {
     
+    /// Which camera to use front/back
     public var position: CameraPosition
+    
+    /// Used to handle control events with the camera.  Like when it starts, stops, or is interuppted
     public var controlDelegate: CameraControlDelegate?
     
-    @objc private var session: AVCaptureSession
-    var sessionObserver: NSKeyValueObservation?
+    /// Used to obtain and classified samples streamed from the camera (audio or video samples)
+    internal var cameraReader: CameraReaderProtocol
 
-    private var device: AVCaptureDevice
-    private var input: AVCaptureDeviceInput
+    /// The actual camera session object.  Used for stubbing
+    internal var cameraSession: CameraSessionProtocol?
     
-    private var videoOutput: AVCaptureVideoDataOutput
-    private let videoQueue = DispatchQueue(label: "videoQ")
-
-    private var audioOutput: AVCaptureAudioDataOutput
-    private let audioQueue = DispatchQueue(label: "audioQ")
-    
-    init(_ position: CameraPosition = .back, controlDelegate: CameraControlDelegate? = nil) throws {
+    init(_ position: CameraPosition = .back, reader: CameraReaderProtocol = CameraReader(), controlDelegate: CameraControlDelegate? = nil) throws {
         self.position        = position
         self.controlDelegate = controlDelegate
-        
-        self.session         = AVCaptureSession()
-        self.device          = try AVCaptureDevice.firstDevice(for: AVMediaType.video, in: position.osPosition)
-        self.input           = try AVCaptureDeviceInput(device: self.device)
-        
-        self.videoOutput     = AVCaptureVideoDataOutput()
-        self.audioOutput     = AVCaptureAudioDataOutput()
-        
-        self.session.addInput(self.input)
-        self.session.addOutput(self.videoOutput)
-        self.session.addOutput(self.audioOutput)
-
-        self.setupObservers()
-    }
-    
-    private func setupObservers() {
-        self.sessionObserver = self.session.observe(\.isRunning) { session, _ in
-            if session.isRunning {
-                self.controlDelegate?.cameraStarted()
-            } else {
-                self.controlDelegate?.cameraStopped()
-            }
-        }
+        self.cameraReader    = reader
+        self.cameraSession = try CameraSession(position.osPosition, controlDelegate: self, cameraReader: self.cameraReader)
     }
     
     /// Start the camera
     func start() {
-        self.session.startRunning()
+        self.cameraSession?.start()
     }
     
     /// Stop the camera
     func stop() {
-        self.session.stopRunning()
-    }
-    
-    
-    deinit {
-        self.sessionObserver?.invalidate()
+        self.cameraSession?.stop()
     }
     
 }
 
-
-extension AVCaptureDevice {
-    
-    static func firstDevice(for mediaType: AVMediaType, in position: AVCaptureDevice.Position) throws -> AVCaptureDevice {
-        let devices = AVCaptureDevice.devices(for: AVMediaType.video).filter { $0.position != position }
-        if let device = devices.first {
-            return device
-        } else {
-            throw CameraError.noCameraFound
-        }
+extension Camera: CameraControlDelegate {
+    public func cameraStarted() {
+        self.controlDelegate?.cameraStarted()
     }
     
+    public func cameraStopped() {
+        self.controlDelegate?.cameraStopped()
+    }
+    
+    public func cameraInteruppted() {
+        self.controlDelegate?.cameraInteruppted()
+    }
 }
