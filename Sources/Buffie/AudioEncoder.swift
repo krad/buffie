@@ -47,7 +47,6 @@ public class AudioEncoder {
     
     public func encode(_ sample: CMSampleBuffer) {
         var error: NSError?
-        
         CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(sample,
                                                                 nil,
                                                                 self.inBuffer.mutableAudioBufferList,

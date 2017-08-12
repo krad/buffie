@@ -29,7 +29,6 @@ class MockAudioEncoderDelegate: AudioEncoderDelegate {
     var expectation: XCTestExpectation?
     
     func encoded(audioSample: AudioBufferList) {
-        print(audioSample)
         self.expectation?.fulfill()
     }
     
