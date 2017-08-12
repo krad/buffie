@@ -7,27 +7,30 @@ class EncoderDelegate: VideoEncoderDelegate {
     var expectation: XCTestExpectation?
     var encodedSample: CMSampleBuffer?
     
-    func encoded(_ sample: CMSampleBuffer) {
-        self.encodedSample = sample
+    func encoded(videoSample: CMSampleBuffer) {
+        self.encodedSample = videoSample
         self.expectation?.fulfill()
     }
 }
 
-class DecoderDelegate: VideoDecoderDelegateProtocol {
+class DecoderDelegate: VideoDecoderDelegate {
     
     var expectation: XCTestExpectation?
     var decodedSample: CVPixelBuffer?
     
-    func decoded(pixelBuffer: CVPixelBuffer, with pts: CMTime) {
-        self.decodedSample = pixelBuffer
+    override func decoded(_ data: (CVPixelBuffer, CMTime)) {
+        self.decodedSample = data.0
         self.expectation?.fulfill()
     }
 }
 
-class AudioEncoderDelegate: AudioEncoderDelegateProtocol {
+class MockAudioEncoderDelegate: AudioEncoderDelegate {
     
-    func encoded(_ sample: CMSampleBuffer) {
-        
+    var expectation: XCTestExpectation?
+    
+    func encoded(audioSample: AudioBufferList) {
+        print(audioSample)
+        self.expectation?.fulfill()
     }
     
 }

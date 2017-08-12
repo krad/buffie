@@ -48,3 +48,4 @@ func testPatternImage() -> CIImage? {
 }
 
 let fixturesPath = "\(kProjectDir)/Tests/BuffieTests/Fixtures"
+let outputsPath = "\(kProjectDir)/Tests/BuffieTests/Outputs"

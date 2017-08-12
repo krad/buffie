@@ -5,16 +5,11 @@ public enum VideoEncoderError: Error {
     case initError
 }
 
-public protocol VideoEncoderProtocol {
-    var settings: VideoEncoderSettings { get set }
-    var delegate: VideoEncoderDelegate { get set }
-}
-
 public protocol VideoEncoderDelegate {
-    func encoded(_ data: CMSampleBuffer)
+    func encoded(videoSample: CMSampleBuffer)
 }
 
-public class VideoEncoder: VideoEncoderProtocol {
+public class VideoEncoder {
     
     public var settings: VideoEncoderSettings
     public var delegate: VideoEncoderDelegate
@@ -108,7 +103,7 @@ let videoSampleCompressedCallback: VTCompressionOutputCallback = {outputRef, sou
     let encoder: VideoEncoder = unsafeBitCast(outputRef, to: VideoEncoder.self)
     if status == noErr {
         if let sb = sampleBuffer {
-            encoder.delegate.encoded(sb)
+            encoder.delegate.encoded(videoSample: sb)
         }
     }
 }

@@ -2,6 +2,10 @@ import Foundation
 import CoreMedia
 import CoreImage
 
+internal typealias Filter        = (CIImage) -> CIImage
+internal typealias CorePixelizer = (CIImage) -> CVPixelBuffer
+internal typealias Samplizer     = (CVPixelBuffer) -> CMSampleBuffer
+
 internal func scale(_ size: CGSize) -> Filter {
     return { img in
         let sx = CGFloat(size.width) / CGFloat(img.extent.size.width)

@@ -5,7 +5,7 @@ import CoreMedia
 @available(macOS 10.11, iOS 5, *)
 class MP4WriterTests: XCTestCase {
     
-    let videoURL = URL(fileURLWithPath: "\(fixturesPath)/testVideo.mp4")
+    let videoURL = URL(fileURLWithPath: "\(outputsPath)/testVideo.mp4")
 
     override func setUp() {
         super.setUp()

@@ -13,9 +13,16 @@ internal protocol SampleReader {
 public enum SampleType {
     case video
     case audio
+    
+    var byteSignature: UInt8 {
+        switch self {
+        case .video: return 0x76  // v
+        case .audio: return 0x61  // a
+        }
+    }
 }
 
-open class CameraReader: CameraReaderProtocol, SampleReader {
+public class CameraReader: CameraReaderProtocol, SampleReader {
     
     public var videoReader: AVCaptureVideoDataOutputSampleBufferDelegate
     public var audioReader: AVCaptureAudioDataOutputSampleBufferDelegate
