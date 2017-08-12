@@ -1,10 +1,3 @@
-//
-//  AudioEncoderSettings.swift
-//  BuffieTests
-//
-//  Created by Mel Gray on 7/31/17.
-//
-
 import Foundation
 import CoreMedia
 
