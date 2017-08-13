@@ -76,5 +76,30 @@ class MockReader: CameraReader {
             }
         }
     }
+}
+
+class MockMuxerDelegate: AVMuxerDelegate {
+    
+    var audioExpectation: XCTestExpectation?
+    var videoExpectation: XCTestExpectation?
+    
+    var audioCount = 0
+    var videoCount = 0
+    
+    func muxed(data: [UInt8]) {
+        if data[4] == SampleType.audio.rawValue {
+            self.audioCount += 1
+            if self.audioCount == 1 {
+                self.audioExpectation?.fulfill()
+            }
+        }
+        
+        if data[4] == SampleType.video.rawValue {
+            self.videoCount += 1
+            if self.videoCount == 1 {
+                self.videoExpectation?.fulfill()
+            }
+        }
+    }
     
 }

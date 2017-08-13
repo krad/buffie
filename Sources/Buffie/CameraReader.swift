@@ -10,16 +10,9 @@ internal protocol SampleReader {
     func got(_ sample: CMSampleBuffer, type: SampleType)
 }
 
-public enum SampleType {
-    case video
-    case audio
-    
-    var byteSignature: UInt8 {
-        switch self {
-        case .video: return 0x76  // v
-        case .audio: return 0x61  // a
-        }
-    }
+public enum SampleType: UInt8 {
+    case video = 0x75 // v
+    case audio = 0x61 // a
 }
 
 public class CameraReader: CameraReaderProtocol, SampleReader {
@@ -48,7 +41,10 @@ internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBuffer
     
     internal var delegate: SampleReader?
     
-    internal func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    internal func captureOutput(_ output: AVCaptureOutput,
+                                didOutput sampleBuffer: CMSampleBuffer,
+                                from connection: AVCaptureConnection)
+    {
         self.delegate?.got(sampleBuffer, type: .video)
     }
     
@@ -58,7 +54,10 @@ internal class AudioSampleReader: NSObject, AVCaptureAudioDataOutputSampleBuffer
     
     internal var delegate: SampleReader?
     
-    internal func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    internal func captureOutput(_ output: AVCaptureOutput,
+                                didOutput sampleBuffer: CMSampleBuffer,
+                                from connection: AVCaptureConnection)
+    {
         self.delegate?.got(sampleBuffer, type: .audio)
     }
 }

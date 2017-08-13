@@ -39,3 +39,35 @@ class AudioEncoderTests: XCTestCase {
     ]
     
 }
+
+extension AVAudioPCMBuffer {
+    
+    func toCMSampleBuffer() -> CMSampleBuffer? {
+        
+        var format: CMFormatDescription? = nil
+        
+        var status = noErr
+        status = CMAudioFormatDescriptionCreate(kCFAllocatorDefault, self.format.streamDescription, 0, nil, 0, nil, nil, &format)
+        if status != noErr {
+            return nil
+        }
+        
+        var timing = CMSampleTimingInfo(duration: CMTime(value: 1, timescale: Int32(self.format.streamDescription.pointee.mSampleRate)),
+                                        presentationTimeStamp: kCMTimeZero,
+                                        decodeTimeStamp: kCMTimeInvalid)
+        
+        var buffer: CMSampleBuffer? = nil
+        status = CMSampleBufferCreate(kCFAllocatorDefault, nil, false, nil, nil, format, Int(self.frameLength), 1, &timing, 0, nil, &buffer)
+        if status != noErr {
+            return nil
+        }
+        
+        status = CMSampleBufferSetDataBufferFromAudioBufferList(buffer!, kCFAllocatorDefault, kCFAllocatorDefault, 0, self.mutableAudioBufferList)
+        if status != noErr {
+            return nil
+        }
+        
+        return buffer
+        
+    }
+}
