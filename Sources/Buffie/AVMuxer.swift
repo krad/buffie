@@ -2,6 +2,7 @@ import Foundation
 import CoreMedia
 
 let mediaStreamDelimeter: [UInt8] = [0x0, 0x0, 0x0, 0x1]
+let paramSetMarker: UInt8         = 0x70
 
 struct AVMuxerSettings {
     
@@ -16,6 +17,7 @@ struct AVMuxerSettings {
 }
 
 public protocol AVMuxerDelegate {
+    func got(paramSet: Data)
     func muxed(data: [UInt8])
 }
 
@@ -25,6 +27,13 @@ public class AVMuxer: CameraReader {
     fileprivate var delegate: AVMuxerDelegate?
     internal var videoEncoder: VideoEncoder?
     internal var audioEncoder: AudioEncoder?
+    internal var parameterSetData: Data? {
+        didSet {
+            if let params = parameterSetData {
+                self.delegate?.got(paramSet: params)
+            }
+        }
+    }
     
     override init() {
         super.init()
@@ -49,6 +58,11 @@ public class AVMuxer: CameraReader {
 @available(OSX 10.11, iOS 5, *)
 extension AVMuxer: VideoEncoderDelegate {
     public func encoded(videoSample: CMSampleBuffer) {
+        
+        if self.parameterSetData == nil {
+            self.parameterSetData = getFormatDescriptionData(videoSample)
+        }
+        
         if let bytes = bytes(from: videoSample) {
             let packet: [UInt8] = mediaStreamDelimeter + [SampleType.video.rawValue] + bytes
             self.delegate?.muxed(data: packet)
@@ -66,6 +80,11 @@ extension AVMuxer: AudioEncoderDelegate {
     }
 }
 
+
+/// Converts a CMSampleBuffer to an array of unsigned 8 bit integers
+///
+/// - Parameter sample: CMSampleBuffer
+/// - Returns: Array of unsigned 8 bit integers
 internal func bytes(from sample: CMSampleBuffer) -> [UInt8]? {
     if let dataBuffer = CMSampleBufferGetDataBuffer(sample) {
         var bufferLength: Int = 0
@@ -80,6 +99,11 @@ internal func bytes(from sample: CMSampleBuffer) -> [UInt8]? {
     return nil
 }
 
+
+/// Converts an AudioBufferList to an array of unsigned 8 bit integers
+///
+/// - Parameter audioBufferList: AudioBufferList with buffers of audio
+/// - Returns: Array of unsigned 8 bit integers
 internal func bytes(from audioBufferList: AudioBufferList) -> [UInt8]? {
     var result: [UInt8] = []
     
@@ -97,4 +121,34 @@ internal func bytes(from audioBufferList: AudioBufferList) -> [UInt8]? {
     }
     
     return nil
+}
+
+
+/// Get's the SPS & PPS data from an h264 sample
+///
+/// - Parameter buffer: CMSampleBuffer of h264 data
+/// - Returns: Data representing SPS and PPS bytes
+internal func getFormatDescriptionData(_ buffer: CMSampleBuffer) -> Data {
+    var result = Data()
+    
+    if let description = CMSampleBufferGetFormatDescription(buffer) {
+        var numberOfParamSets: size_t = 0
+        CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, 0, nil, nil, &numberOfParamSets, nil)
+        
+        for idx in 0..<numberOfParamSets {
+            var params: UnsafePointer<UInt8>? = nil
+            var paramsLength: size_t         = 0
+            var headerLength: Int32          = 4
+            CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, idx, &params, &paramsLength, nil, &headerLength)
+            
+            let length      = UInt32(paramsLength)
+            let lengthBytes = byteArray(from: length)
+            result.append(mediaStreamDelimeter, count: 4)
+            result.append([paramSetMarker], count: 1)
+            result.append(lengthBytes, count: 4)
+            result.append(params!, count: paramsLength)
+        }
+    }
+    
+    return result
 }

@@ -11,8 +11,8 @@ internal protocol SampleReader {
 }
 
 public enum SampleType: UInt8 {
-    case video = 0x75 // v
-    case audio = 0x61 // a
+    case video    = 0x75 // v
+    case audio    = 0x61 // a
 }
 
 public class CameraReader: CameraReaderProtocol, SampleReader {

@@ -83,8 +83,14 @@ class MockMuxerDelegate: AVMuxerDelegate {
     var audioExpectation: XCTestExpectation?
     var videoExpectation: XCTestExpectation?
     
+    var paramSetExpectation: XCTestExpectation?
+    
     var audioCount = 0
     var videoCount = 0
+    
+    func got(paramSet: Data) {
+        self.paramSetExpectation?.fulfill()
+    }
     
     func muxed(data: [UInt8]) {
         if data[4] == SampleType.audio.rawValue {
