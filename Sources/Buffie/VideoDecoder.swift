@@ -5,8 +5,8 @@ public enum VideoDecoderError: Error {
     case couldNotBuildSession
 }
 
-open class VideoDecoderDelegate: AsyncDecoder {
-    open func decoded(_ data: (CVPixelBuffer, CMTime)) { }
+public protocol VideoDecoderDelegate {
+ func decoded(_ pixelBuffer: CVPixelBuffer, with pts: CMTime)
 }
 
 public class VideoDecoder {
@@ -17,7 +17,7 @@ public class VideoDecoder {
         let decoder: VideoDecoder = unsafeBitCast(outputRef, to: VideoDecoder.self)
         if status == noErr {
             if let img = imgBuffer {
-                decoder.delegate.decoded((img,pts))
+                decoder.delegate.decoded(img, with: pts)
             }
         }
     }

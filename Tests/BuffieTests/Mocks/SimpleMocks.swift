@@ -18,10 +18,11 @@ class DecoderDelegate: VideoDecoderDelegate {
     var expectation: XCTestExpectation?
     var decodedSample: CVPixelBuffer?
     
-    override func decoded(_ data: (CVPixelBuffer, CMTime)) {
-        self.decodedSample = data.0
+    func decoded(_ pixelBuffer: CVPixelBuffer, with pts: CMTime) {
+        self.decodedSample = pixelBuffer
         self.expectation?.fulfill()
     }
+    
 }
 
 class MockAudioEncoderDelegate: AudioEncoderDelegate {
@@ -106,6 +107,22 @@ class MockMuxerDelegate: AVMuxerDelegate {
                 self.videoExpectation?.fulfill()
             }
         }
+    }
+    
+}
+
+class MockMuxerDelegateRedirect: AVMuxerDelegate {
+    
+    var delegate: AVDemuxer?
+    
+    func got(paramSet: Data) {
+//        let buf = paramSet.bytes
+        
+//        self.delegate?.got(sampleFormatData: buf)
+    }
+    
+    func muxed(data: [UInt8]) {
+        self.delegate?.demux(data)
     }
     
 }
