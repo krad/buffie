@@ -1,6 +1,7 @@
 import XCTest
 import CoreMedia
 @testable import Buffie
+import BoyerMoore
 
 @available(OSX 10.11, iOS 5, *)
 class AVDemuxerTests: XCTestCase {
@@ -32,10 +33,7 @@ class AVDemuxerTests: XCTestCase {
 //        camera?.start()
 //        self.wait(for: [demuxDelegate.expectation!], timeout: 2)
 
-        let x = [0, 0, 0, 1, 112, 0, 0, 0, 34, 39, 66, 0, 40, 137, 139, 96, 240, 40, 216, 9, 224, 0, 4, 226, 0, 0, 244, 36, 28, 12, 0, 23, 112, 0, 5, 220, 23, 189, 240, 124, 34, 17, 184, 0, 0, 0, 1, 112, 0, 0, 0, 4, 40, 206, 31, 32, 0]
-
-        
-        
+//        let x: [Int] = [0, 0, 0, 1, 112, 0, 0, 0, 34, 39, 66, 0, 40, 137, 139, 96, 240, 40, 216, 9, 224, 0, 4, 226, 0, 0, 244, 36, 28, 12, 0, 23, 112, 0, 5, 220, 23, 189, 240, 124, 34, 17, 184, 0, 0, 0, 1, 112, 0, 0, 0, 4, 40, 206, 31, 32, 0]
         
     }
     

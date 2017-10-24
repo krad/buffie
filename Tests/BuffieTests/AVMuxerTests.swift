@@ -5,7 +5,7 @@ import XCTest
 class AVMuxerTests: XCTestCase {
     
     func test_muxing_audio_and_video() {
-        
+                
         let delegate = MockMuxerDelegate()
         let muxer    = try? AVMuxer(delegate: delegate)
         XCTAssertNotNil(muxer)

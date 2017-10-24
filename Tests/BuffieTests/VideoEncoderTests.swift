@@ -47,5 +47,3 @@ func testPatternImage() -> CIImage? {
     return image
 }
 
-let fixturesPath = "\(kProjectDir)/Tests/BuffieTests/Fixtures"
-let outputsPath = "\(kProjectDir)/Tests/BuffieTests/Outputs"
