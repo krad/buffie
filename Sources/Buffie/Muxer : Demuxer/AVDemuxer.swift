@@ -22,10 +22,10 @@ public class AVDemuxer {
     }
     
     func demux(_ data: [UInt8]) {
-        guard let sampleType = SampleType(rawValue: data[4]) else { return }
+        guard let sampleType = SampleType(rawValue: data[0]) else { return }
 
         if sampleType == .video {
-            self.videoDecoder?.decode(data)
+            self.videoDecoder?.decode(Array(data[1..<data.count]))
         }
     }
     

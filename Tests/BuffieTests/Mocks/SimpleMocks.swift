@@ -94,14 +94,14 @@ class MockMuxerDelegate: AVMuxerDelegate {
     }
     
     func muxed(data: [UInt8]) {
-        if data[4] == SampleType.audio.rawValue {
+        if data[0] == SampleType.audio.rawValue {
             self.audioCount += 1
             if self.audioCount == 1 {
                 self.audioExpectation?.fulfill()
             }
         }
         
-        if data[4] == SampleType.video.rawValue {
+        if data[0] == SampleType.video.rawValue {
             self.videoCount += 1
             if self.videoCount == 1 {
                 self.videoExpectation?.fulfill()

@@ -64,7 +64,7 @@ extension AVMuxer: VideoEncoderDelegate {
         }
         
         if let bytes = bytes(from: videoSample) {
-            let packet: [UInt8] = mediaStreamDelimeter + [SampleType.video.rawValue] + bytes
+            let packet: [UInt8] =  [SampleType.video.rawValue] + bytes
             self.delegate?.muxed(data: packet)
         }
     }
@@ -74,7 +74,7 @@ extension AVMuxer: VideoEncoderDelegate {
 extension AVMuxer: AudioEncoderDelegate {
     public func encoded(audioSample: AudioBufferList) {
         if let bytes = bytes(from: audioSample) {
-            let packet: [UInt8] = mediaStreamDelimeter + [SampleType.audio.rawValue] + bytes
+            let packet: [UInt8] =  [SampleType.audio.rawValue] + bytes
             self.delegate?.muxed(data: packet)
         }
     }

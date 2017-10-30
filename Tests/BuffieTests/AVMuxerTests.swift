@@ -17,7 +17,9 @@ class AVMuxerTests: XCTestCase {
         delegate.videoExpectation    = self.expectation(description: "Getting a video packet")
         delegate.paramSetExpectation = self.expectation(description: "Getting the SPS and PPS data")
         camera?.start()
-        self.wait(for: [delegate.audioExpectation!, delegate.videoExpectation!, delegate.paramSetExpectation!], timeout: 4)
+        self.wait(for: [delegate.audioExpectation!,
+                        delegate.videoExpectation!,
+                        delegate.paramSetExpectation!], timeout: 4)
                 
     }
     
