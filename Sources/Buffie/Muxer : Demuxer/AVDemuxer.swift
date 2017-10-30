@@ -1,22 +1,15 @@
 import Foundation
 import CoreMedia
 
-internal enum NALUType: Int {
-    case sps         = 7
-    case pps         = 8
-    case nonIDRslice = 1
-    case IDRslice    = 5
-    case sei         = 6
-}
-
 public protocol AVDemuxerDelegate {
-    func demuxed(sample: CMSampleBuffer, type: SampleType)
+    func demuxed(sample: CVPixelBuffer, with pts: CMTime)
 }
 
 public class AVDemuxer {
     
     private var videoDecoder: VideoDecoder?
     private var delegate: AVDemuxerDelegate
+    private var readBuffer: [UInt8] = []
     
     init(delegate: AVDemuxerDelegate) {
         self.delegate = delegate
@@ -29,30 +22,28 @@ public class AVDemuxer {
     }
     
     func demux(_ data: [UInt8]) {
-        
+        guard let sampleType = SampleType(rawValue: data[4]) else { return }
+
+        if sampleType == .video {
+            self.videoDecoder?.decode(data)
+        }
     }
+    
 }
 
 extension AVDemuxer: VideoDecoderDelegate {
 
     public func decoded(_ pixelBuffer: CVPixelBuffer, with pts: CMTime) {
-        
+        self.delegate.demuxed(sample: pixelBuffer, with: pts)
     }
 
 }
 
-/// Strips the emulation bytes / delimeter from the stream and returns array of unsigned 8 bit integers
+
+/// Creates a format description from an array of bytes (SPS & PPS)
 ///
-/// - Parameter data: Data starting with a stream delimter
-/// - Returns: Array of 8 bit integers WITHOUT the delimeter.  Contains media type at byte 0
-public func stripHeader(from data: Data) -> [UInt8] {
-    let strippedData        = data[mediaStreamDelimeter.count...data.count]
-    var buf                 = [UInt8](repeating: 0, count: strippedData.count)
-    strippedData.copyBytes(to: &buf, count: strippedData.count)
-    return buf
-}
-
-
+/// - Parameter bytes: Array of UInt8 arrays representing info from the AVC header
+/// - Returns: A CMFormatDescription
 internal func formatFrom(_ bytes: [[UInt8]]) -> CMFormatDescription? {
     var status                  = noErr
     let ptrArray                = bytes.map { UnsafePointer<UInt8>($0) }
@@ -67,4 +58,3 @@ internal func formatFrom(_ bytes: [[UInt8]]) -> CMFormatDescription? {
     if status != noErr { return nil }
     else { return format }
 }
-

@@ -17,7 +17,7 @@ struct AVMuxerSettings {
 }
 
 public protocol AVMuxerDelegate {
-    func got(paramSet: Data)
+    func got(paramSet: [[UInt8]])
     func muxed(data: [UInt8])
 }
 
@@ -27,7 +27,7 @@ public class AVMuxer: CameraReader {
     fileprivate var delegate: AVMuxerDelegate?
     internal var videoEncoder: VideoEncoder?
     internal var audioEncoder: AudioEncoder?
-    internal var parameterSetData: Data? {
+    internal var parameterSetData: [[UInt8]]? {
         didSet {
             if let params = parameterSetData {
                 self.delegate?.got(paramSet: params)
@@ -128,8 +128,8 @@ internal func bytes(from audioBufferList: AudioBufferList) -> [UInt8]? {
 ///
 /// - Parameter buffer: CMSampleBuffer of h264 data
 /// - Returns: Data representing SPS and PPS bytes
-internal func getFormatDescriptionData(_ buffer: CMSampleBuffer) -> Data {
-    var result = Data()
+internal func getFormatDescriptionData(_ buffer: CMSampleBuffer) -> [[UInt8]] {
+    var results: [[UInt8]] = []
     
     if let description = CMSampleBufferGetFormatDescription(buffer) {
         var numberOfParamSets: size_t = 0
@@ -141,14 +141,15 @@ internal func getFormatDescriptionData(_ buffer: CMSampleBuffer) -> Data {
             var headerLength: Int32          = 4
             CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, idx, &params, &paramsLength, nil, &headerLength)
             
-            let length      = UInt32(paramsLength)
-            let lengthBytes = byteArray(from: length)
-            result.append(mediaStreamDelimeter, count: 4)
-            result.append([paramSetMarker], count: 1)
-            result.append(lengthBytes, count: 4)
-            result.append(params!, count: paramsLength)
+//            let length      = UInt32(paramsLength)
+//            let lengthBytes = byteArray(from: length)            
+            let bufferPointer   = UnsafeBufferPointer(start: params, count: paramsLength)
+            let paramsUnwrapped = Array(bufferPointer)
+            
+            let result: [UInt8] =  paramsUnwrapped
+            results.append(result)
         }
     }
     
-    return result
+    return results
 }

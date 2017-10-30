@@ -89,7 +89,7 @@ class MockMuxerDelegate: AVMuxerDelegate {
     var audioCount = 0
     var videoCount = 0
     
-    func got(paramSet: Data) {
+    func got(paramSet: [[UInt8]]) {
         self.paramSetExpectation?.fulfill()
     }
     
@@ -115,10 +115,9 @@ class MockMuxerDelegateRedirect: AVMuxerDelegate {
     
     var delegate: AVDemuxer?
     
-    func got(paramSet: Data) {
-//        let buf = paramSet.bytes
+    func got(paramSet: [[UInt8]]) {
         
-//        self.delegate?.got(sampleFormatData: buf)
+        self.delegate?.got(sampleFormatData: paramSet)
     }
     
     func muxed(data: [UInt8]) {

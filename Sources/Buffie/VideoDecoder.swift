@@ -11,6 +11,7 @@ public protocol VideoDecoderDelegate {
 
 public class VideoDecoder {
     
+    public var format: CMVideoFormatDescription
     fileprivate var session: VTDecompressionSession?
     private var sessionCallbackRecord = VTDecompressionOutputCallbackRecord()
     private let sessionCallback: VTDecompressionOutputCallback = { outputRef, _, status, _, imgBuffer, pts, _ in
@@ -28,6 +29,7 @@ public class VideoDecoder {
     var delegate: VideoDecoderDelegate
     
     init(format: CMVideoFormatDescription, delegate: VideoDecoderDelegate) throws {
+        self.format   = format
         self.delegate = delegate
         
         self.sessionCallbackRecord.decompressionOutputCallback = self.sessionCallback
@@ -61,6 +63,12 @@ public class VideoDecoder {
                 print(#function, "Error decoding frame:", status)
             }
 
+        }
+    }
+    
+    func decode(_ bytes: [UInt8]) {
+        if let sample = createSample(from: bytes, format: self.format) {
+            self.decode(sample: sample)
         }
     }
     

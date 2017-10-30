@@ -8,10 +8,10 @@ class AVDemuxerTests: XCTestCase {
     
     class MockDemuxerDelegate: AVDemuxerDelegate {
         
-        var expectation: XCTestExpectation?
+        var videoExpectation: XCTestExpectation?
         
-        func demuxed(sample: CMSampleBuffer, type: SampleType) {
-            self.expectation?.fulfill()
+        func demuxed(sample: CVPixelBuffer, with pts: CMTime) {
+            self.videoExpectation?.fulfill()
         }
     }
     
@@ -29,11 +29,10 @@ class AVDemuxerTests: XCTestCase {
         
         muxDelegate.delegate = demuxer // Connect to muxer delegate directly to the demuxer
 
-//        demuxDelegate.expectation = self.expectation(description: "demuxing samples")
-//        camera?.start()
-//        self.wait(for: [demuxDelegate.expectation!], timeout: 2)
-
-//        let x: [Int] = [0, 0, 0, 1, 112, 0, 0, 0, 34, 39, 66, 0, 40, 137, 139, 96, 240, 40, 216, 9, 224, 0, 4, 226, 0, 0, 244, 36, 28, 12, 0, 23, 112, 0, 5, 220, 23, 189, 240, 124, 34, 17, 184, 0, 0, 0, 1, 112, 0, 0, 0, 4, 40, 206, 31, 32, 0]
+        demuxDelegate.videoExpectation = self.expectation(description: "demuxing samples")
+        demuxDelegate.videoExpectation?.assertForOverFulfill = false
+        camera?.start()
+        self.wait(for: [demuxDelegate.videoExpectation!], timeout: 2)
         
     }
     
