@@ -1,7 +1,6 @@
 import XCTest
 import CoreMedia
 @testable import Buffie
-import BoyerMoore
 
 @available(OSX 10.11, iOS 5, *)
 class AVDemuxerTests: XCTestCase {
