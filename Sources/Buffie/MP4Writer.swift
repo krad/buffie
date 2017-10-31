@@ -45,7 +45,7 @@ public class MP4Writer {
     }
     
     public func stop(_ onComplete: (() -> (Void))?) {
-        self.stop(at: CMTimeMake(self.videoFramesWrote - 1, 24), onComplete)
+        self.stop(at: CMTimeMake(self.videoFramesWrote - 1, self.videoInput.mediaTimeScale), onComplete)
     }
     
     public func stop(at time: CMTime) {
