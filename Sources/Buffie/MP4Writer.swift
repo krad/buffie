@@ -38,7 +38,7 @@ public class MP4Writer {
         
         //////// Configure the audio input
         self.audioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: nil)
-        self.writer.add(self.audioInput)
+//        self.writer.add(self.audioInput)
         
     }
     
