@@ -1,23 +1,17 @@
 import Buffie
 
+class CameraOutputReader: CameraReader {
 
-class MuxerDelegate: AVMuxerDelegate {
-    
-    func got(paramSet: [[UInt8]]) {
-        print(#function, paramSet)
-    }
-    
-    func muxed(data: [UInt8]) {
-        print(#function)
+    final func got(_ sample: CMSampleBuffer, type: SampleType) {
+        print(sample, type)
     }
 }
 
 @available(macOS 10.11, iOS 5, *)
 func setupCamera() {
     do {
-        let muxerDelegate = MuxerDelegate()
-        let muxer         = try AVMuxer(delegate: muxerDelegate)
-        let camera        = try Camera(.back, reader: muxer, controlDelegate: nil)
+        let cameraReader = CameraOutputReader()
+        let camera       = try Camera(.back, reader: cameraReader, controlDelegate: nil)
         camera.start()
     } catch {
         print("Couldn't access camera")
@@ -27,6 +21,7 @@ func setupCamera() {
 
 if #available(macOS 10.11, iOS 5, *) {
     setupCamera()
+    while 1 == 1 { }
 } else {
     print("Could not setup camera")
 }

@@ -15,10 +15,10 @@ public enum SampleType: UInt8 {
     case audio    = 0x61 // a
 }
 
-public class CameraReader: CameraReaderProtocol, SampleReader {
+open class CameraReader: CameraReaderProtocol, SampleReader {
     
-    public var videoReader: AVCaptureVideoDataOutputSampleBufferDelegate
-    public var audioReader: AVCaptureAudioDataOutputSampleBufferDelegate
+    final public var videoReader: AVCaptureVideoDataOutputSampleBufferDelegate
+    final public var audioReader: AVCaptureAudioDataOutputSampleBufferDelegate
     
     public init() {
         let videoReader = VideoSampleReader()
