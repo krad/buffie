@@ -8,6 +8,8 @@ public class MP4Writer {
     private var pixelAdaptor: AVAssetWriterInputPixelBufferAdaptor
     private var videoFramesWrote: Int64 = 0
     
+    private var isWriting = false
+    
     public init(_ fileURL: URL, formatDescription: CMFormatDescription) throws {
         
         self.writer = try AVAssetWriter(outputURL: fileURL, fileType: .mp4)
@@ -38,6 +40,7 @@ public class MP4Writer {
     public func start(at time: CMTime) {
         if self.writer.startWriting() {
             writer.startSession(atSourceTime: time)
+            self.isWriting = true
         }
     }
     
@@ -56,14 +59,18 @@ public class MP4Writer {
     }
     
     public func stop(at time: CMTime, _ onComplete: (() -> (Void))?) {
+        self.isWriting = false
         self.videoInput.markAsFinished()
         self.writer.endSession(atSourceTime: time)
+        
         self.writer.finishWriting {
             onComplete?()
         }
     }
     
     public func write(_ pixelBuffer: CVPixelBuffer, with pts: CMTime) {
+        guard self.isWriting else { return }
+        
         if self.writer.status != .unknown {
             if self.videoInput.isReadyForMoreMediaData {
                 self.pixelAdaptor.append(pixelBuffer, withPresentationTime: pts)
