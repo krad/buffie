@@ -17,7 +17,7 @@ class CameraOutputReader: CameraReader {
         super.init()
         sigintSrc.setEventHandler {
             guard let time = self.lastTime else { return }
-            self.mp4Writer?.stop(at: time) {
+            self.mp4Writer?.stop() {
                 done = true
                 exit(0);
             }
@@ -29,7 +29,7 @@ class CameraOutputReader: CameraReader {
         guard let time = self.lastTime else { return }
         do {
             self.mp4Writer = try MP4Writer(URL(fileURLWithPath: "hi.mp4"), formatDescription: format)
-            self.mp4Writer?.start(at: time)
+            self.mp4Writer?.start()
         }
         catch {
             
