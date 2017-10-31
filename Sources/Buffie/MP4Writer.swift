@@ -8,12 +8,15 @@ public class MP4Writer {
     private var pixelAdaptor: AVAssetWriterInputPixelBufferAdaptor
     private var videoFramesWrote: Int64 = 0
     
+    private var audioInput: AVAssetWriterInput
+    
     private var isWriting = false
     
     public init(_ fileURL: URL, formatDescription: CMFormatDescription) throws {
         
         self.writer = try AVAssetWriter(outputURL: fileURL, fileType: .mp4)
         
+        //////// Configure the video input
         let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecH264,
                                             AVVideoWidthKey: NSNumber(value: 640),
                                             AVVideoHeightKey: NSNumber(value: 480)]
@@ -23,14 +26,20 @@ public class MP4Writer {
                                              sourceFormatHint: formatDescription)
         
         self.videoInput.expectsMediaDataInRealTime           = true
-        self.videoInput.performsMultiPassEncodingIfSupported = true
-        self.videoInput.mediaTimeScale                       = 600
+        self.videoInput.performsMultiPassEncodingIfSupported = false
+        self.videoInput.mediaTimeScale                       = 600 * 100000
         
         let pixelAttrs    = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)]
         self.pixelAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: self.videoInput,
                                                                  sourcePixelBufferAttributes: pixelAttrs)
         
         self.writer.add(self.videoInput)
+        
+        
+        //////// Configure the audio input
+        self.audioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: nil)
+        self.writer.add(self.audioInput)
+        
     }
     
     public func start() {
