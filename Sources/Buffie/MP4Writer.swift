@@ -23,9 +23,6 @@ public class MP4Writer {
         self.videoInput.expectsMediaDataInRealTime           = true
         self.videoInput.performsMultiPassEncodingIfSupported = true
         
-        let frameDuration              = CMTimeCodeFormatDescriptionGetFrameDuration(formatDescription)
-        self.videoInput.mediaTimeScale = frameDuration.timescale
-        
         let pixelAttrs    = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)]
         self.pixelAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: self.videoInput,
                                                                  sourcePixelBufferAttributes: pixelAttrs)
@@ -70,7 +67,12 @@ public class MP4Writer {
     
     public func write(_ sample: CMSampleBuffer) {
         if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
-            let pts = CMSampleBufferGetPresentationTimeStamp(sample)
+            
+            let fpsOutput: Int64 = 30; //Some possible values: 30, 10, 15 24, 25, 30/1.001 or 29.97;
+            let cmTimeSecondsDenominatorTimescale: Int32 = 600 * 100000; //To more precisely handle 29.97.
+            let cmTimeNumeratorValue: Int64 = Int64(cmTimeSecondsDenominatorTimescale) / fpsOutput;
+            let pts = CMTimeMake( videoFramesWrote * cmTimeNumeratorValue, cmTimeSecondsDenominatorTimescale);
+
             self.write(pixelBuffer, with: pts)
         }
     }
