@@ -41,7 +41,13 @@ public class MP4Writer {
     }
     
     public func stop(_ onComplete: (() -> (Void))?) {
-        self.stop(at: CMTimeMake(self.videoFramesWrote - 1, self.videoInput.mediaTimeScale), onComplete)
+        
+        let fpsOutput: Int64 = 30; //Some possible values: 30, 10, 15 24, 25, 30/1.001 or 29.97;
+        let cmTimeSecondsDenominatorTimescale: Int32 = 600 * 100000; //To more precisely handle 29.97.
+        let cmTimeNumeratorValue: Int64 = Int64(cmTimeSecondsDenominatorTimescale) / fpsOutput;
+        let pts = CMTimeMake( videoFramesWrote * cmTimeNumeratorValue, cmTimeSecondsDenominatorTimescale);
+
+        self.stop(at: pts, onComplete)
     }
     
     public func stop(at time: CMTime) {
