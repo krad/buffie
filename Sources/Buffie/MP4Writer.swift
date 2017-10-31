@@ -8,7 +8,7 @@ public class MP4Writer {
     private var pixelAdaptor: AVAssetWriterInputPixelBufferAdaptor
     private var videoFramesWrote: Int64 = 0
     
-    private var audioInput: AVAssetWriterInput
+//    private var audioInput: AVAssetWriterInput
     
     private var isWriting = false
     
@@ -37,7 +37,7 @@ public class MP4Writer {
         
         
         //////// Configure the audio input
-        self.audioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: nil)
+//        self.audioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: nil)
 //        self.writer.add(self.audioInput)
         
     }
