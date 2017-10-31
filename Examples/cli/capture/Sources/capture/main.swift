@@ -1,13 +1,14 @@
 import Buffie
+import AVFoundation
 
 class CameraOutputReader: CameraReader {
 
-    final func got(_ sample: CMSampleBuffer, type: SampleType) {
-        print(sample, type)
+    final override func got(_ sample: CMSampleBuffer, type: SampleType) {
+        super.got(sample, type: type)
+        print(self.videoFormat, self.audioFormat)
     }
 }
 
-@available(macOS 10.11, iOS 5, *)
 func setupCamera() {
     do {
         let cameraReader = CameraOutputReader()
@@ -19,9 +20,5 @@ func setupCamera() {
 }
 
 
-if #available(macOS 10.11, iOS 5, *) {
-    setupCamera()
-    while 1 == 1 { }
-} else {
-    print("Could not setup camera")
-}
+setupCamera()
+while 1 == 1 { }

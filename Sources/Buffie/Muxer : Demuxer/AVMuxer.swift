@@ -60,7 +60,7 @@ extension AVMuxer: VideoEncoderDelegate {
     public func encoded(videoSample: CMSampleBuffer) {
         
         if self.parameterSetData == nil {
-            self.parameterSetData = getFormatDescriptionData(videoSample)
+            self.parameterSetData = getVideoFormatDescriptionData(videoSample)
         }
         
         if let bytes = bytes(from: videoSample) {
@@ -127,10 +127,10 @@ internal func bytes(from audioBufferList: AudioBufferList) -> [UInt8]? {
 ///
 /// - Parameter buffer: CMSampleBuffer of h264 data
 /// - Returns: Data representing SPS and PPS bytes
-internal func getFormatDescriptionData(_ buffer: CMSampleBuffer) -> [[UInt8]] {
+public func getVideoFormatDescriptionData(_ buffer: CMSampleBuffer) -> [[UInt8]] {
     var results: [[UInt8]] = []
     
-    if let description = CMSampleBufferGetFormatDescription(buffer) {
+    if let description = getFormatDescription(buffer) {
         var numberOfParamSets: size_t = 0
         CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, 0, nil, nil, &numberOfParamSets, nil)
         
@@ -151,4 +151,18 @@ internal func getFormatDescriptionData(_ buffer: CMSampleBuffer) -> [[UInt8]] {
     }
     
     return results
+}
+
+
+/// Get the format description from a sample buffer
+///
+/// - Parameter buffer: CMSampleBuffer we're interested in
+/// - Returns: CMFormatDescription describing the contents of the sample buffer
+public func getFormatDescription(_ buffer: CMSampleBuffer) -> CMFormatDescription? {
+    
+    if let description = CMSampleBufferGetFormatDescription(buffer) {
+        return description
+    }
+    
+    return nil
 }
