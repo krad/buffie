@@ -5,19 +5,20 @@ public enum VideoDecoderError: Error {
     case couldNotBuildSession
 }
 
-open class VideoDecoderDelegate: AsyncDecoder {
-    open func decoded(_ data: (CVPixelBuffer, CMTime)) { }
+public protocol VideoDecoderDelegate {
+ func decoded(_ pixelBuffer: CVPixelBuffer, with pts: CMTime)
 }
 
 public class VideoDecoder {
     
+    public var format: CMVideoFormatDescription
     fileprivate var session: VTDecompressionSession?
     private var sessionCallbackRecord = VTDecompressionOutputCallbackRecord()
     private let sessionCallback: VTDecompressionOutputCallback = { outputRef, _, status, _, imgBuffer, pts, _ in
         let decoder: VideoDecoder = unsafeBitCast(outputRef, to: VideoDecoder.self)
         if status == noErr {
             if let img = imgBuffer {
-                decoder.delegate.decoded((img,pts))
+                decoder.delegate.decoded(img, with: pts)
             }
         }
     }
@@ -28,6 +29,7 @@ public class VideoDecoder {
     var delegate: VideoDecoderDelegate
     
     init(format: CMVideoFormatDescription, delegate: VideoDecoderDelegate) throws {
+        self.format   = format
         self.delegate = delegate
         
         self.sessionCallbackRecord.decompressionOutputCallback = self.sessionCallback
@@ -61,6 +63,12 @@ public class VideoDecoder {
                 print(#function, "Error decoding frame:", status)
             }
 
+        }
+    }
+    
+    func decode(_ bytes: [UInt8]) {
+        if let sample = createSample(from: bytes, format: self.format) {
+            self.decode(sample: sample)
         }
     }
     

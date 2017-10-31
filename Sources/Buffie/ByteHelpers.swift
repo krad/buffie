@@ -54,3 +54,13 @@ public func byteArray(from int64: Int64) -> [UInt8] {
     }
     return Array(bytePtr)
 }
+
+extension Data {
+    
+    var bytes: [UInt8] {
+        var bytes = [UInt8](repeating: 0, count: self.count)
+        self.copyBytes(to: &bytes, count: self.count)
+        return bytes
+    }
+    
+}

@@ -7,17 +7,17 @@ let paramSetMarker: UInt8         = 0x70
 struct AVMuxerSettings {
     
     var videoSettings: VideoEncoderSettings
-    var audioSettings: AudioEncoderSettings
+    var audioSettings: AudioEncoderDecoderSettings
     
     init() {
         self.videoSettings = VideoEncoderSettings()
-        self.audioSettings = AudioEncoderSettings()
+        self.audioSettings = AudioEncoderDecoderSettings(.encoding)
     }
     
 }
 
 public protocol AVMuxerDelegate {
-    func got(paramSet: Data)
+    func got(paramSet: [[UInt8]])
     func muxed(data: [UInt8])
 }
 
@@ -27,7 +27,7 @@ public class AVMuxer: CameraReader {
     fileprivate var delegate: AVMuxerDelegate?
     internal var videoEncoder: VideoEncoder?
     internal var audioEncoder: AudioEncoder?
-    internal var parameterSetData: Data? {
+    internal var parameterSetData: [[UInt8]]? {
         didSet {
             if let params = parameterSetData {
                 self.delegate?.got(paramSet: params)
@@ -64,22 +64,21 @@ extension AVMuxer: VideoEncoderDelegate {
         }
         
         if let bytes = bytes(from: videoSample) {
-            let packet: [UInt8] = mediaStreamDelimeter + [SampleType.video.rawValue] + bytes
+            let packet: [UInt8] =  [SampleType.video.rawValue] + bytes
             self.delegate?.muxed(data: packet)
         }
     }
 }
 
 @available(OSX 10.11, iOS 5, *)
-extension AVMuxer: AudioEncoderDelegate {
-    public func encoded(audioSample: AudioBufferList) {
-        if let bytes = bytes(from: audioSample) {
-            let packet: [UInt8] = mediaStreamDelimeter + [SampleType.audio.rawValue] + bytes
+extension AVMuxer: AudioEncoderDecoderDelegate {
+    public func processed(_ audioBuffer: AudioBufferList) {
+        if let bytes = bytes(from: audioBuffer) {
+            let packet: [UInt8] =  [SampleType.audio.rawValue] + bytes
             self.delegate?.muxed(data: packet)
         }
     }
 }
-
 
 /// Converts a CMSampleBuffer to an array of unsigned 8 bit integers
 ///
@@ -128,8 +127,8 @@ internal func bytes(from audioBufferList: AudioBufferList) -> [UInt8]? {
 ///
 /// - Parameter buffer: CMSampleBuffer of h264 data
 /// - Returns: Data representing SPS and PPS bytes
-internal func getFormatDescriptionData(_ buffer: CMSampleBuffer) -> Data {
-    var result = Data()
+internal func getFormatDescriptionData(_ buffer: CMSampleBuffer) -> [[UInt8]] {
+    var results: [[UInt8]] = []
     
     if let description = CMSampleBufferGetFormatDescription(buffer) {
         var numberOfParamSets: size_t = 0
@@ -141,14 +140,15 @@ internal func getFormatDescriptionData(_ buffer: CMSampleBuffer) -> Data {
             var headerLength: Int32          = 4
             CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, idx, &params, &paramsLength, nil, &headerLength)
             
-            let length      = UInt32(paramsLength)
-            let lengthBytes = byteArray(from: length)
-            result.append(mediaStreamDelimeter, count: 4)
-            result.append([paramSetMarker], count: 1)
-            result.append(lengthBytes, count: 4)
-            result.append(params!, count: paramsLength)
+//            let length      = UInt32(paramsLength)
+//            let lengthBytes = byteArray(from: length)            
+            let bufferPointer   = UnsafeBufferPointer(start: params, count: paramsLength)
+            let paramsUnwrapped = Array(bufferPointer)
+            
+            let result: [UInt8] =  paramsUnwrapped
+            results.append(result)
         }
     }
     
-    return result
+    return results
 }

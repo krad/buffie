@@ -11,7 +11,7 @@ class MP4WriterTests: XCTestCase {
         super.setUp()
         try? FileManager.default.removeItem(at: videoURL)
     }
-    
+
     
     func test_writing_to_a_file() {
         
@@ -39,7 +39,7 @@ class MP4WriterTests: XCTestCase {
         encoder?.completeFrame()
         self.wait(for: [encoderDelegate.expectation!], timeout: 5)
         XCTAssertNotNil(encoderDelegate.encodedSample)
-        
+
         let format          = CMSampleBufferGetFormatDescription(encoderDelegate.encodedSample!)
         XCTAssertNotNil(format)
         
@@ -66,9 +66,10 @@ class MP4WriterTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: videoURL.path))
 
     }
- 
+
     static var allTests = [
         ("Test writing to a file", test_writing_to_a_file),
     ]
     
 }
+

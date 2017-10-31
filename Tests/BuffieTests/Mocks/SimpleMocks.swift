@@ -18,17 +18,30 @@ class DecoderDelegate: VideoDecoderDelegate {
     var expectation: XCTestExpectation?
     var decodedSample: CVPixelBuffer?
     
-    override func decoded(_ data: (CVPixelBuffer, CMTime)) {
-        self.decodedSample = data.0
+    func decoded(_ pixelBuffer: CVPixelBuffer, with pts: CMTime) {
+        self.decodedSample = pixelBuffer
         self.expectation?.fulfill()
     }
+    
 }
 
-class MockAudioEncoderDelegate: AudioEncoderDelegate {
+class MockAudioEncoderDelegate: AudioEncoderDecoderDelegate {
+    
+    var expectation: XCTestExpectation?
+    var lastBuffer: AudioBufferList?
+
+    func processed(_ audioBuffer: AudioBufferList) {
+        self.lastBuffer = audioBuffer
+        self.expectation?.fulfill()
+    }
+    
+}
+
+class MockAudioDecoderDelegate: AudioEncoderDecoderDelegate {
     
     var expectation: XCTestExpectation?
     
-    func encoded(audioSample: AudioBufferList) {
+    func processed(_ audioBuffer: AudioBufferList) {
         self.expectation?.fulfill()
     }
     
@@ -88,24 +101,39 @@ class MockMuxerDelegate: AVMuxerDelegate {
     var audioCount = 0
     var videoCount = 0
     
-    func got(paramSet: Data) {
+    func got(paramSet: [[UInt8]]) {
         self.paramSetExpectation?.fulfill()
     }
     
     func muxed(data: [UInt8]) {
-        if data[4] == SampleType.audio.rawValue {
+        if data[0] == SampleType.audio.rawValue {
             self.audioCount += 1
             if self.audioCount == 1 {
                 self.audioExpectation?.fulfill()
             }
         }
         
-        if data[4] == SampleType.video.rawValue {
+        if data[0] == SampleType.video.rawValue {
             self.videoCount += 1
             if self.videoCount == 1 {
                 self.videoExpectation?.fulfill()
             }
         }
+    }
+    
+}
+
+@available(OSX 10.11, iOS 5, *)
+class MockMuxerDelegateRedirect: AVMuxerDelegate {
+    
+    var delegate: AVDemuxer?
+    
+    func got(paramSet: [[UInt8]]) {
+        self.delegate?.got(sampleFormatData: paramSet)
+    }
+    
+    func muxed(data: [UInt8]) {
+        self.delegate?.demux(data)
     }
     
 }
