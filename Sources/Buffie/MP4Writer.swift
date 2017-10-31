@@ -38,10 +38,14 @@ public class MP4Writer {
     }
     
     public func stop(at time: CMTime) {
+        self.stop(at: time, nil)
+    }
+    
+    public func stop(at time: CMTime, _ onComplete: (() -> (Void))?) {
         self.videoInput.markAsFinished()
         self.writer.endSession(atSourceTime: time)
         self.writer.finishWriting {
-            print(#function, "Finished Writing")
+            onComplete?()
         }
     }
     

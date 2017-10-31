@@ -61,7 +61,7 @@ class MP4WriterTests: XCTestCase {
         for cnt in 0...48 {
             subject?.write(decoderDelegate.decodedSample!, with: CMTimeMakeWithSeconds(Double(cnt+1), 24))
         }
-        subject?.stop(at: CMTimeMakeWithSeconds(49, 24))
+        subject?.stop(at: CMTimeMakeWithSeconds(49, 24)) { }
 
         XCTAssertTrue(FileManager.default.fileExists(atPath: videoURL.path))
 
