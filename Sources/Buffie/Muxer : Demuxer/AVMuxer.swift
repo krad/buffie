@@ -4,12 +4,12 @@ import CoreMedia
 let mediaStreamDelimeter: [UInt8] = [0x0, 0x0, 0x0, 0x1]
 let paramSetMarker: UInt8         = 0x70
 
-struct AVMuxerSettings {
+public struct AVMuxerSettings {
     
     var videoSettings: VideoEncoderSettings
     var audioSettings: AudioEncoderDecoderSettings
     
-    init() {
+    public init() {
         self.videoSettings = VideoEncoderSettings()
         self.audioSettings = AudioEncoderDecoderSettings(.encoding)
     }
@@ -35,11 +35,11 @@ public class AVMuxer: CameraReader {
         }
     }
     
-    override init() {
+    private override init() {
         super.init()
     }
     
-    convenience init(settings: AVMuxerSettings = AVMuxerSettings(), delegate: AVMuxerDelegate) throws {
+    public convenience init(settings: AVMuxerSettings = AVMuxerSettings(), delegate: AVMuxerDelegate) throws {
         self.init()
         self.delegate     = delegate
         self.videoEncoder = try VideoEncoder(settings.videoSettings, delegate: self)
