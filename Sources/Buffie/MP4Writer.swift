@@ -16,7 +16,9 @@ public class MP4Writer {
                                             AVVideoWidthKey: NSNumber(value: 640),
                                             AVVideoHeightKey: NSNumber(value: 480)]
         
-        self.videoInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings, sourceFormatHint: formatDescription)
+        self.videoInput = AVAssetWriterInput(mediaType: .video,
+                                             outputSettings: videoSettings,
+                                             sourceFormatHint: formatDescription)
         
         self.videoInput.expectsMediaDataInRealTime           = true
         self.videoInput.performsMultiPassEncodingIfSupported = true
@@ -27,7 +29,6 @@ public class MP4Writer {
                                                                  sourcePixelBufferAttributes: pixelAttrs)
         
         self.writer.add(self.videoInput)
-        
     }
     
     public func start(at time: CMTime) {
@@ -48,6 +49,14 @@ public class MP4Writer {
         if self.writer.status != .unknown {
             if self.videoInput.isReadyForMoreMediaData {
                 self.pixelAdaptor.append(pixelBuffer, withPresentationTime: pts)
+            }
+        }
+    }
+    
+    public func write(_ sample: CMSampleBuffer) {
+        if self.writer.status != .unknown {
+            if self.videoInput.isReadyForMoreMediaData {
+                self.videoInput.append(sample)
             }
         }
     }
