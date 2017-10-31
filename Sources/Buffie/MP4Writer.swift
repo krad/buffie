@@ -6,7 +6,7 @@ public class MP4Writer {
     private var writer: AVAssetWriter
     private var videoInput: AVAssetWriterInput
     private var pixelAdaptor: AVAssetWriterInputPixelBufferAdaptor
-    internal var timescale: CMTimeScale = 600
+    private var videoFramesWrote: Int64 = 0
     
     public init(_ fileURL: URL, formatDescription: CMFormatDescription) throws {
         
@@ -22,7 +22,6 @@ public class MP4Writer {
         
         self.videoInput.expectsMediaDataInRealTime           = true
         self.videoInput.performsMultiPassEncodingIfSupported = true
-        self.videoInput.mediaTimeScale                       = timescale
         
         let pixelAttrs    = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)]
         self.pixelAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: self.videoInput,
@@ -31,10 +30,18 @@ public class MP4Writer {
         self.writer.add(self.videoInput)
     }
     
+    public func start() {
+        self.start(at: kCMTimeZero)
+    }
+    
     public func start(at time: CMTime) {
         if self.writer.startWriting() {
             writer.startSession(atSourceTime: time)
         }
+    }
+    
+    public func stop(_ onComplete: (() -> (Void))?) {
+        self.stop(at: CMTimeMake(self.videoFramesWrote - 1, 24), onComplete)
     }
     
     public func stop(at time: CMTime) {
@@ -53,6 +60,7 @@ public class MP4Writer {
         if self.writer.status != .unknown {
             if self.videoInput.isReadyForMoreMediaData {
                 self.pixelAdaptor.append(pixelBuffer, withPresentationTime: pts)
+                self.videoFramesWrote += 1
             }
         }
     }
@@ -61,6 +69,7 @@ public class MP4Writer {
         if self.writer.status != .unknown {
             if self.videoInput.isReadyForMoreMediaData {
                 self.videoInput.append(sample)
+                self.videoFramesWrote += 1
             }
         }
     }
