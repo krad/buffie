@@ -22,9 +22,11 @@ class CameraOutputReader: CameraReader {
         sigintSrc.resume()
     }
 
-    func setupWriter(with format: CMFormatDescription) {
+    func setupWriter(with videoFormat: CMFormatDescription, and audioFormat: CMFormatDescription) {
         do {
-            self.mp4Writer = try MP4Writer(URL(fileURLWithPath: "hi.mp4"), formatDescription: format)
+            self.mp4Writer = try MP4Writer(URL(fileURLWithPath: "hi.mp4"),
+                                           videoFormat: videoFormat,
+                                           audioFormat: audioFormat)
             self.mp4Writer?.start()
         }
         catch {
@@ -34,14 +36,14 @@ class CameraOutputReader: CameraReader {
     
     final override func got(_ sample: CMSampleBuffer, type: SampleType) {
         super.got(sample, type: type)
-        guard let videoFormat = self.videoFormat else { return }
-        guard let fileWriter  = self.mp4Writer else {
-            if type == .video { self.setupWriter(with: videoFormat) }
-            return
-        }
+        guard let videoFormat = self.videoFormat,
+              let audioFormat = self.audioFormat
+        else { return }
         
-        if type == .video {
-            fileWriter.write(sample)
+        if let fileWriter = self.mp4Writer {
+            fileWriter.write(sample, type: type)
+        } else {
+            self.setupWriter(with: videoFormat, and: audioFormat)
         }
     }
 }

@@ -39,7 +39,9 @@ public class MP4Writer {
         
         //////// Configure the audio input
         if let audioFmt = audioFormat {
+            print(audioFmt)
             if let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(audioFmt)?.pointee {
+                print(asbd)
                 let audioSettings: [String: Any] = [AVFormatIDKey: kAudioFormatMPEG4AAC_HE,
                                                     AVSampleRateKey: asbd.mSampleRate,
                                                     AVNumberOfChannelsKey: 1]
@@ -47,6 +49,8 @@ public class MP4Writer {
                 let aInput = AVAssetWriterInput(mediaType: .audio,
                                                      outputSettings: audioSettings,
                                                      sourceFormatHint: audioFormat)
+                
+                print(aInput)
                 self.audioInput = aInput
                 self.writer.add(self.audioInput!)
             }
@@ -122,9 +126,12 @@ public class MP4Writer {
     }
     
     private func writeAudio(sample: CMSampleBuffer) {
+        print(#function)
         guard let audioInput = self.audioInput, self.isWriting else { return }
+        print("Reqs are there")
         if self.writer.status != .unknown {
             if audioInput.isReadyForMoreMediaData {
+                print("Append")
                 audioInput.append(sample)
             }
         }
