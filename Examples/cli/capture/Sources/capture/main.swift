@@ -11,12 +11,9 @@ class CameraOutputReader: CameraReader {
     var mp4Writer: MP4Writer?
     let sigintSrc = DispatchSource.makeSignalSource(signal: SIGINT, queue: .main)
     
-    var lastTime: CMTime?
-    
     override init() {
         super.init()
         sigintSrc.setEventHandler {
-            guard let time = self.lastTime else { return }
             self.mp4Writer?.stop() {
                 done = true
                 exit(0);
@@ -26,7 +23,6 @@ class CameraOutputReader: CameraReader {
     }
 
     func setupWriter(with format: CMFormatDescription) {
-        guard let time = self.lastTime else { return }
         do {
             self.mp4Writer = try MP4Writer(URL(fileURLWithPath: "hi.mp4"), formatDescription: format)
             self.mp4Writer?.start()
@@ -40,10 +36,7 @@ class CameraOutputReader: CameraReader {
         super.got(sample, type: type)
         guard let videoFormat = self.videoFormat else { return }
         guard let fileWriter  = self.mp4Writer else {
-            if type == .video {
-                self.lastTime = CMSampleBufferGetOutputPresentationTimeStamp(sample)
-                self.setupWriter(with: videoFormat)
-            }
+            if type == .video { self.setupWriter(with: videoFormat) }
             return
         }
         

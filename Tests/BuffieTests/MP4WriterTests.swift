@@ -53,7 +53,7 @@ class MP4WriterTests: XCTestCase {
         self.wait(for: [decoderDelegate.expectation!], timeout: 2)
         XCTAssertNotNil(decoderDelegate.decodedSample)
         
-        let subject = try? MP4Writer(videoURL, formatDescription: format!)
+        let subject = try? MP4Writer(videoURL, videoFormat: format!)
         XCTAssertNotNil(subject)
         
         subject?.start(at: kCMTimeZero)
