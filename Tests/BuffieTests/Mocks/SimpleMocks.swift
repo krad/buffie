@@ -123,12 +123,12 @@ class MockMuxerDelegate: AVMuxerDelegate {
     
 }
 
+@available(OSX 10.11, iOS 5, *)
 class MockMuxerDelegateRedirect: AVMuxerDelegate {
     
     var delegate: AVDemuxer?
     
     func got(paramSet: [[UInt8]]) {
-        
         self.delegate?.got(sampleFormatData: paramSet)
     }
     
