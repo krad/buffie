@@ -52,12 +52,12 @@ public class Camera {
     }
     
     /// Start the camera
-    func start() {
+    public func start() {
         self.cameraSession?.start()
     }
     
     /// Stop the camera
-    func stop() {
+    public func stop() {
         self.cameraSession?.stop()
     }
     
