@@ -7,11 +7,11 @@ let paramSetMarker: UInt8         = 0x70
 struct AVMuxerSettings {
     
     var videoSettings: VideoEncoderSettings
-    var audioSettings: AudioEncoderSettings
+    var audioSettings: AudioEncoderDecoderSettings
     
     init() {
         self.videoSettings = VideoEncoderSettings()
-        self.audioSettings = AudioEncoderSettings()
+        self.audioSettings = AudioEncoderDecoderSettings(.encoding)
     }
     
 }
@@ -71,15 +71,14 @@ extension AVMuxer: VideoEncoderDelegate {
 }
 
 @available(OSX 10.11, iOS 5, *)
-extension AVMuxer: AudioEncoderDelegate {
-    public func encoded(audioSample: AudioBufferList) {
-        if let bytes = bytes(from: audioSample) {
+extension AVMuxer: AudioEncoderDecoderDelegate {
+    public func processed(_ audioBuffer: AudioBufferList) {
+        if let bytes = bytes(from: audioBuffer) {
             let packet: [UInt8] =  [SampleType.audio.rawValue] + bytes
             self.delegate?.muxed(data: packet)
         }
     }
 }
-
 
 /// Converts a CMSampleBuffer to an array of unsigned 8 bit integers
 ///

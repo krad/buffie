@@ -25,11 +25,23 @@ class DecoderDelegate: VideoDecoderDelegate {
     
 }
 
-class MockAudioEncoderDelegate: AudioEncoderDelegate {
+class MockAudioEncoderDelegate: AudioEncoderDecoderDelegate {
+    
+    var expectation: XCTestExpectation?
+    var lastBuffer: AudioBufferList?
+
+    func processed(_ audioBuffer: AudioBufferList) {
+        self.lastBuffer = audioBuffer
+        self.expectation?.fulfill()
+    }
+    
+}
+
+class MockAudioDecoderDelegate: AudioEncoderDecoderDelegate {
     
     var expectation: XCTestExpectation?
     
-    func encoded(audioSample: AudioBufferList) {
+    func processed(_ audioBuffer: AudioBufferList) {
         self.expectation?.fulfill()
     }
     
