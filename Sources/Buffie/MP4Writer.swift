@@ -24,8 +24,7 @@ public class MP4Writer {
         self.videoInput.performsMultiPassEncodingIfSupported = true
         
         let frameDuration              = CMTimeCodeFormatDescriptionGetFrameDuration(formatDescription)
-        self.videoInput.mediaTimeScale = frameDuration.timescale
-        print(frameDuration)
+        self.videoInput.mediaTimeScale = frameDuration.timescale * 10
         
         let pixelAttrs    = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)]
         self.pixelAdaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: self.videoInput,
