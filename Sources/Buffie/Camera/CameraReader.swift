@@ -20,7 +20,7 @@ public class CameraReader: CameraReaderProtocol, SampleReader {
     public var videoReader: AVCaptureVideoDataOutputSampleBufferDelegate
     public var audioReader: AVCaptureAudioDataOutputSampleBufferDelegate
     
-    init() {
+    public init() {
         let videoReader = VideoSampleReader()
         let audioReader = AudioSampleReader()
         
@@ -31,9 +31,7 @@ public class CameraReader: CameraReaderProtocol, SampleReader {
         audioReader.delegate = self
     }
     
-    open func got(_ sample: CMSampleBuffer, type: SampleType) {
-        print(#function, type)
-    }
+    open func got(_ sample: CMSampleBuffer, type: SampleType) { }
     
 }
 

@@ -44,7 +44,7 @@ public class Camera {
     /// The actual camera session object.  Used for stubbing
     internal var cameraSession: CameraSessionProtocol?
     
-    init(_ position: CameraPosition = .back, reader: CameraReaderProtocol = CameraReader(), controlDelegate: CameraControlDelegate? = nil) throws {
+    public init(_ position: CameraPosition = .back, reader: CameraReaderProtocol = CameraReader(), controlDelegate: CameraControlDelegate? = nil) throws {
         self.position        = position
         self.controlDelegate = controlDelegate
         self.cameraReader    = reader
