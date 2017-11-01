@@ -26,7 +26,7 @@ class CameraOutputReader: CameraReader {
         if self.mp4Writer != nil { return }
         
         do {
-            self.mp4Writer = try MP4Writer(URL(fileURLWithPath: "hi.mp4"),
+            self.mp4Writer = try MP4Writer(URL(fileURLWithPath: "hi.m4v"),
                                            videoFormat: videoFormat,
                                            audioFormat: audioFormat)
             self.mp4Writer?.start()
