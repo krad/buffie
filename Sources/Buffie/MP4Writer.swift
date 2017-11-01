@@ -15,6 +15,10 @@ public class MP4Writer {
     
     public init(_ fileURL: URL, videoFormat: CMFormatDescription, audioFormat: CMFormatDescription? = nil) throws {
         
+        print(CMTimeCodeFormatDescriptionGetFrameQuanta(videoFormat))
+        print(CMTimeCodeFormatDescriptionGetFrameDuration(videoFormat))
+        print(CMTimeCodeFormatDescriptionGetTimeCodeFlags(videoFormat))
+        
         self.writer = try AVAssetWriter(outputURL: fileURL, fileType: .mp4)
         
         //////// Configure the video input
@@ -74,7 +78,7 @@ public class MP4Writer {
     
     public func stop(_ onComplete: (() -> (Void))?) {
         
-        let fpsOutput: Int64 = 30; //Some possible values: 30, 10, 15 24, 25, 30/1.001 or 29.97;
+        let fpsOutput: Int64 = 24; //Some possible values: 30, 10, 15 24, 25, 30/1.001 or 29.97;
         let cmTimeSecondsDenominatorTimescale: Int32 = 600 * 100000; //To more precisely handle 29.97.
         let cmTimeNumeratorValue: Int64 = Int64(cmTimeSecondsDenominatorTimescale) / fpsOutput;
         let pts = CMTimeMake( videoFramesWrote * cmTimeNumeratorValue, cmTimeSecondsDenominatorTimescale);
@@ -120,7 +124,7 @@ public class MP4Writer {
     private func writeVideo(sample: CMSampleBuffer) {
         if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
             
-            let fpsOutput: Int64 = 30; //Some possible values: 30, 10, 15 24, 25, 30/1.001 or 29.97;
+            let fpsOutput: Int64 = 24; //Some possible values: 30, 10, 15 24, 25, 30/1.001 or 29.97;
             let cmTimeSecondsDenominatorTimescale: Int32 = 600 * 100000; //To more precisely handle 29.97.
             let cmTimeNumeratorValue: Int64 = Int64(cmTimeSecondsDenominatorTimescale) / fpsOutput;
             let pts = CMTimeMake( videoFramesWrote * cmTimeNumeratorValue, cmTimeSecondsDenominatorTimescale);
