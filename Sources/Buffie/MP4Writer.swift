@@ -15,10 +15,10 @@ public class MP4Writer {
     
     public init(_ fileURL: URL, videoFormat: CMFormatDescription, audioFormat: CMFormatDescription? = nil) throws {
         
-        print(CMTimeCodeFormatDescriptionGetFrameQuanta(videoFormat))
-        print(CMTimeCodeFormatDescriptionGetFrameDuration(videoFormat))
-        print(CMTimeCodeFormatDescriptionGetTimeCodeFlags(videoFormat))
-        
+//        print(CMTimeCodeFormatDescriptionGetFrameQuanta(videoFormat))
+//        print(CMTimeCodeFormatDescriptionGetFrameDuration(videoFormat))
+//        print(CMTimeCodeFormatDescriptionGetTimeCodeFlags(videoFormat))
+//        
         self.writer = try AVAssetWriter(outputURL: fileURL, fileType: .mp4)
         
         //////// Configure the video input
