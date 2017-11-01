@@ -47,7 +47,7 @@ public class MP4Writer {
                 
                 let audioSettings: [String: Any] = [AVFormatIDKey: kAudioFormatMPEG4AAC,
                                                     AVSampleRateKey: asbd.mSampleRate,
-                                                    AVNumberOfChannelsKey: 1,
+                                                    AVNumberOfChannelsKey: 2,
                                                     AVChannelLayoutKey: NSData(bytes:&channelLayout, length:MemoryLayout<AudioChannelLayout>.size)]
                 
                 let aInput = AVAssetWriterInput(mediaType: .audio,
