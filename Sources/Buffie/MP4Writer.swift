@@ -42,9 +42,15 @@ public class MP4Writer {
             print(audioFmt)
             if let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(audioFmt)?.pointee {
                 print(asbd)
+                
+                var channelLayout = AudioChannelLayout()
+                memset(&channelLayout, 0, MemoryLayout<AudioChannelLayout>.size);
+                channelLayout.mChannelLayoutTag = kAudioChannelLayoutTag_Mono
+                
                 let audioSettings: [String: Any] = [AVFormatIDKey: kAudioFormatMPEG4AAC_HE,
                                                     AVSampleRateKey: asbd.mSampleRate,
-                                                    AVNumberOfChannelsKey: 1]
+                                                    AVNumberOfChannelsKey: 1,
+                                                    AVChannelLayoutKey: NSData(bytes:&channelLayout, length:MemoryLayout<AudioChannelLayout>.size)]
                 
                 let aInput = AVAssetWriterInput(mediaType: .audio,
                                                      outputSettings: audioSettings,
