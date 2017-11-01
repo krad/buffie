@@ -7,7 +7,7 @@ let package = Package(
     name: "capture",
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "../../../", from: "0.4.2"),
+        .package(url: "../../../", from: "0.4.3"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.

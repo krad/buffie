@@ -22,9 +22,11 @@ public class MP4Writer {
         self.writer = try AVAssetWriter(outputURL: fileURL, fileType: .mp4)
         
         //////// Configure the video input
+        let dimensions = CMVideoFormatDescriptionGetDimensions(videoFormat)
+
         let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecH264,
-                                            AVVideoWidthKey: NSNumber(value: 640),
-                                            AVVideoHeightKey: NSNumber(value: 480)]
+                                            AVVideoWidthKey: NSNumber(value: dimensions.width),
+                                            AVVideoHeightKey: NSNumber(value: dimensions.height)]
         
         self.videoInput = AVAssetWriterInput(mediaType: .video,
                                              outputSettings: videoSettings,
