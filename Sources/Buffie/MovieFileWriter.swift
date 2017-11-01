@@ -24,8 +24,7 @@ public class MovieFileWriter {
         let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecH264,
                                             AVVideoWidthKey: NSNumber(value: dimensions.width),
                                             AVVideoHeightKey: NSNumber(value: dimensions.height),
-                                            AVVideoCompressionPropertiesKey: [AVVideoMaxKeyFrameIntervalKey: NSNumber(value: 24),
-                                                                              AVVideoProfileLevelKey: AVVideoProfileLevelH264BaselineAutoLevel,
+                                            AVVideoCompressionPropertiesKey: [AVVideoProfileLevelKey: AVVideoProfileLevelH264BaselineAutoLevel,
                                                                               AVVideoAverageBitRateKey: NSNumber(value: 250000)]
         ]
         
