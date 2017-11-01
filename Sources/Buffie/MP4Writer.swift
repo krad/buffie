@@ -15,7 +15,7 @@ public class MP4Writer {
     
     public init(_ fileURL: URL, videoFormat: CMFormatDescription, audioFormat: CMFormatDescription? = nil) throws {
         
-        self.writer = try AVAssetWriter(outputURL: fileURL, fileType: .m4v)
+        self.writer = try AVAssetWriter(outputURL: fileURL, fileType: .mp4)
         
         //////// Configure the video input
         let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecH264,
