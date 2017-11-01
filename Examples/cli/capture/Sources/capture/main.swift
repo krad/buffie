@@ -6,6 +6,8 @@ import AVFoundation
 signal(SIGINT, SIG_IGN)
 var done = false
 
+print(AVOutputSettingsAssistant.availableOutputSettingsPresets())
+
 class CameraOutputReader: CameraReader {
     
     var mp4Writer: MP4Writer?
