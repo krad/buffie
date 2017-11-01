@@ -39,9 +39,7 @@ public class MP4Writer {
         
         //////// Configure the audio input
         if let audioFmt = audioFormat {
-            print(audioFmt)
             if let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(audioFmt)?.pointee {
-                print(asbd)
                 
                 var channelLayout = AudioChannelLayout()
                 memset(&channelLayout, 0, MemoryLayout<AudioChannelLayout>.size);
@@ -58,8 +56,9 @@ public class MP4Writer {
                 
                 print(aInput)
                 aInput.expectsMediaDataInRealTime = true
-                self.audioInput = aInput
-                self.writer.add(self.audioInput!)
+                aInput.mediaTimeScale             = 44100 / 24
+                self.audioInput                   = aInput
+                self.writer.add(aInput)
             }
         }
     
