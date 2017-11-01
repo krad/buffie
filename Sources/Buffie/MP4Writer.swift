@@ -44,7 +44,7 @@ public class MP4Writer {
                 memset(&channelLayout, 0, MemoryLayout<AudioChannelLayout>.size);
                 channelLayout.mChannelLayoutTag = kAudioChannelLayoutTag_Stereo
                 
-                let audioSettings: [String: Any] = [AVFormatIDKey: kAudioFormatMPEG4AAC_HE,
+                let audioSettings: [String: Any] = [AVFormatIDKey: kAudioFormatMPEG4AAC,
                                                     AVSampleRateKey: asbd.mSampleRate,
                                                     AVNumberOfChannelsKey: 2,
                                                     AVChannelLayoutKey: NSData(bytes:&channelLayout, length:MemoryLayout<AudioChannelLayout>.size)]
