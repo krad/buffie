@@ -10,8 +10,15 @@ public class MovieFileWriter {
     private var audioInput: AVAssetWriterInput?
     
     private var videoFramesWrote: Int64 = 0
+    private var fps                     = 24.0
+    private var timescale: Int32        = 600 * 100_000
     
     private var isWriting = false
+    
+    private var currentPTS: CMTime {
+        let num = Int64(Double(timescale) / fps)
+        return CMTimeMake(videoFramesWrote * num, timescale)
+    }
     
     internal init(fileType: AVFileType, fileURL: URL, videoFormat: CMFormatDescription, audioFormat: CMFormatDescription? = nil) throws {
         
@@ -25,7 +32,7 @@ public class MovieFileWriter {
                                             AVVideoWidthKey: NSNumber(value: dimensions.width),
                                             AVVideoHeightKey: NSNumber(value: dimensions.height),
                                             AVVideoCompressionPropertiesKey: [AVVideoProfileLevelKey: AVVideoProfileLevelH264BaselineAutoLevel,
-                                                                              AVVideoAverageBitRateKey: NSNumber(value: 1000000),
+                                                                              AVVideoAverageBitRateKey: NSNumber(value: 1_048_576),
                                                                               AVVideoAllowFrameReorderingKey: NSNumber(value: true)]
         ]
         
@@ -35,7 +42,7 @@ public class MovieFileWriter {
         
         self.videoInput.expectsMediaDataInRealTime           = true
         self.videoInput.performsMultiPassEncodingIfSupported = true
-        self.videoInput.mediaTimeScale                       = 600 * 100000
+        self.videoInput.mediaTimeScale                       = timescale
         
         
         let pixelAttrs    = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)]
@@ -81,13 +88,7 @@ public class MovieFileWriter {
     }
     
     public func stop(_ onComplete: (() -> (Void))?) {
-        
-        let fpsOutput: Int64 = 24; //Some possible values: 30, 10, 15 24, 25, 30/1.001 or 29.97;
-        let cmTimeSecondsDenominatorTimescale: Int32 = 600 * 100000; //To more precisely handle 29.97.
-        let cmTimeNumeratorValue: Int64 = Int64(cmTimeSecondsDenominatorTimescale) / fpsOutput;
-        let pts = CMTimeMake( videoFramesWrote * cmTimeNumeratorValue, cmTimeSecondsDenominatorTimescale);
-        
-        self.stop(at: pts, onComplete)
+        self.stop(at: self.currentPTS, onComplete)
     }
     
     public func stop(at time: CMTime) {
@@ -127,13 +128,7 @@ public class MovieFileWriter {
     
     private func writeVideo(sample: CMSampleBuffer) {
         if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
-            
-            let fpsOutput: Int64 = 24; //Some possible values: 30, 10, 15 24, 25, 30/1.001 or 29.97;
-            let cmTimeSecondsDenominatorTimescale: Int32 = 600 * 100000; //To more precisely handle 29.97.
-            let cmTimeNumeratorValue: Int64 = Int64(cmTimeSecondsDenominatorTimescale) / fpsOutput;
-            let pts = CMTimeMake( videoFramesWrote * cmTimeNumeratorValue, cmTimeSecondsDenominatorTimescale);
-            
-            self.write(pixelBuffer, with: pts)
+            self.write(pixelBuffer, with: self.currentPTS)
         }
     }
     
