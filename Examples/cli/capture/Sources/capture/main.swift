@@ -23,16 +23,16 @@ class CameraOutputReader: CameraReader {
     }
 
     func setupWriter(with videoFormat: CMFormatDescription, and audioFormat: CMFormatDescription) {
-        DispatchQueue.main.sync {
-            do {
-                self.mp4Writer = try MP4Writer(URL(fileURLWithPath: "hi.mp4"),
-                                               videoFormat: videoFormat,
-                                               audioFormat: audioFormat)
-                self.mp4Writer?.start()
-            }
-            catch {
-                
-            }
+        if self.mp4Writer != nil { return }
+        
+        do {
+            self.mp4Writer = try MP4Writer(URL(fileURLWithPath: "hi.mp4"),
+                                           videoFormat: videoFormat,
+                                           audioFormat: audioFormat)
+            self.mp4Writer?.start()
+        }
+        catch {
+            
         }
     }
     
@@ -45,7 +45,9 @@ class CameraOutputReader: CameraReader {
         if let fileWriter = self.mp4Writer {
             fileWriter.write(sample, type: type)
         } else {
-            self.setupWriter(with: videoFormat, and: audioFormat)
+            DispatchQueue.main.sync {
+                self.setupWriter(with: videoFormat, and: audioFormat)
+            }
         }
     }
 }
