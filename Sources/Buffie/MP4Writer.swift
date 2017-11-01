@@ -15,7 +15,7 @@ public class MP4Writer {
     
     public init(_ fileURL: URL, videoFormat: CMFormatDescription, audioFormat: CMFormatDescription? = nil) throws {
         
-        self.writer = try AVAssetWriter(outputURL: fileURL, fileType: .mp4)
+        self.writer = try AVAssetWriter(outputURL: fileURL, fileType: .m4v)
         
         //////// Configure the video input
         let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecH264,
@@ -40,12 +40,11 @@ public class MP4Writer {
         //////// Configure the audio input
         if let audioFmt = audioFormat {
             if let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(audioFmt)?.pointee {
-                
                 var channelLayout = AudioChannelLayout()
                 memset(&channelLayout, 0, MemoryLayout<AudioChannelLayout>.size);
                 channelLayout.mChannelLayoutTag = kAudioChannelLayoutTag_Stereo
                 
-                let audioSettings: [String: Any] = [AVFormatIDKey: kAudioFormatMPEG4AAC,
+                let audioSettings: [String: Any] = [AVFormatIDKey: kAudioFormatMPEG4AAC_HE,
                                                     AVSampleRateKey: asbd.mSampleRate,
                                                     AVNumberOfChannelsKey: 2,
                                                     AVChannelLayoutKey: NSData(bytes:&channelLayout, length:MemoryLayout<AudioChannelLayout>.size)]
@@ -54,13 +53,12 @@ public class MP4Writer {
                                                      outputSettings: audioSettings,
                                                      sourceFormatHint: audioFormat)
                 
-                print(aInput)
-                aInput.expectsMediaDataInRealTime = true
-                self.audioInput                   = aInput
+                aInput.expectsMediaDataInRealTime           = true
+                aInput.performsMultiPassEncodingIfSupported = false
+                self.audioInput                             = aInput
                 self.writer.add(aInput)
             }
         }
-    
     }
     
     public func start() {
