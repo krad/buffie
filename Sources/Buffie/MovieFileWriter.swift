@@ -26,7 +26,7 @@ public class MovieFileWriter {
                                             AVVideoHeightKey: NSNumber(value: dimensions.height),
                                             AVVideoCompressionPropertiesKey: [AVVideoMaxKeyFrameIntervalKey: NSNumber(value: 24),
                                                                               AVVideoProfileLevelKey: AVVideoProfileLevelH264BaselineAutoLevel,
-                                                                              AVVideoAverageBitRateKey: NSNumber(value: 25000)]
+                                                                              AVVideoAverageBitRateKey: NSNumber(value: 250000)]
         ]
         
         self.videoInput = AVAssetWriterInput(mediaType: .video,
