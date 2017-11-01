@@ -27,8 +27,8 @@ public class MP4Writer {
         let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecH264,
                                             AVVideoWidthKey: NSNumber(value: dimensions.width),
                                             AVVideoHeightKey: NSNumber(value: dimensions.height),
-                                            AVVideoCompressionPropertiesKey: [AVVideoMaxKeyFrameIntervalKey:NSNumber(value: 10),
-                                                                              AVVideoProfileLevelKey: AVVideoProfileLevelH264High40]
+                                            AVVideoCompressionPropertiesKey: [AVVideoMaxKeyFrameIntervalKey:NSNumber(value: 24),
+                                                                              AVVideoProfileLevelKey: AVVideoProfileLevelH264BaselineAutoLevel]
                                             ]
         
         self.videoInput = AVAssetWriterInput(mediaType: .video,
@@ -36,7 +36,7 @@ public class MP4Writer {
                                              sourceFormatHint: videoFormat)
         
         self.videoInput.expectsMediaDataInRealTime           = true
-        self.videoInput.performsMultiPassEncodingIfSupported = false
+        self.videoInput.performsMultiPassEncodingIfSupported = true
         self.videoInput.mediaTimeScale                       = 600 * 100000
         
         let pixelAttrs    = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)]
