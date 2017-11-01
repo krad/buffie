@@ -140,8 +140,6 @@ public func getVideoFormatDescriptionData(_ buffer: CMSampleBuffer) -> [[UInt8]]
             var headerLength: Int32          = 4
             CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, idx, &params, &paramsLength, nil, &headerLength)
             
-//            let length      = UInt32(paramsLength)
-//            let lengthBytes = byteArray(from: length)            
             let bufferPointer   = UnsafeBufferPointer(start: params, count: paramsLength)
             let paramsUnwrapped = Array(bufferPointer)
             
