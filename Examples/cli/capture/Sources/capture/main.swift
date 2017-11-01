@@ -23,14 +23,16 @@ class CameraOutputReader: CameraReader {
     }
 
     func setupWriter(with videoFormat: CMFormatDescription, and audioFormat: CMFormatDescription) {
-        do {
-            self.mp4Writer = try MP4Writer(URL(fileURLWithPath: "hi.mp4"),
-                                           videoFormat: videoFormat,
-                                           audioFormat: audioFormat)
-            self.mp4Writer?.start()
-        }
-        catch {
-            
+        DispatchQueue.main.sync {
+            do {
+                self.mp4Writer = try MP4Writer(URL(fileURLWithPath: "hi.mp4"),
+                                               videoFormat: videoFormat,
+                                               audioFormat: audioFormat)
+                self.mp4Writer?.start()
+            }
+            catch {
+                
+            }
         }
     }
     

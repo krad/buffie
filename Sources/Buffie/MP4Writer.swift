@@ -56,7 +56,6 @@ public class MP4Writer {
                 
                 print(aInput)
                 aInput.expectsMediaDataInRealTime = true
-                aInput.mediaTimeScale             = 44100 / 24
                 self.audioInput                   = aInput
                 self.writer.add(aInput)
             }
