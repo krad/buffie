@@ -51,6 +51,7 @@ public class MP4Writer {
                                                      sourceFormatHint: audioFormat)
                 
                 print(aInput)
+                aInput.expectsMediaDataInRealTime = true
                 self.audioInput = aInput
                 self.writer.add(self.audioInput!)
             }
@@ -86,6 +87,7 @@ public class MP4Writer {
     public func stop(at time: CMTime, _ onComplete: (() -> (Void))?) {
         self.isWriting = false
         self.videoInput.markAsFinished()
+        self.audioInput?.markAsFinished()
         self.writer.endSession(atSourceTime: time)
         
         self.writer.finishWriting {
@@ -126,14 +128,11 @@ public class MP4Writer {
     }
     
     private func writeAudio(sample: CMSampleBuffer) {
-        print(#function)
         guard let audioInput = self.audioInput else { return }
         guard self.isWriting else { return }
 
-        print("Reqs are there")
         if self.writer.status != .unknown {
             if audioInput.isReadyForMoreMediaData {
-                print("Append")
                 audioInput.append(sample)
             }
         }
