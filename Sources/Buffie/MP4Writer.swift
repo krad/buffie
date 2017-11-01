@@ -128,6 +128,8 @@ public class MP4Writer {
     private func writeAudio(sample: CMSampleBuffer) {
         print(#function)
         guard let audioInput = self.audioInput else { return }
+        guard self.isWriting else { return }
+
         print("Reqs are there")
         if self.writer.status != .unknown {
             if audioInput.isReadyForMoreMediaData {
