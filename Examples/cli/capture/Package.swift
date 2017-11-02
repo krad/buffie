@@ -6,14 +6,15 @@ import PackageDescription
 let package = Package(
     name: "capture",
     dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        .package(url: "../../../", from: "0.5.4"),
+        .package(url: "../../../", from: "0.5.5"),
     ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "capture",
+            dependencies: ["Buffie", "captureCore"]),
+        .target(
+            name: "captureCore",
             dependencies: ["Buffie"]),
+        .testTarget(name: "captureTests", dependencies: ["captureCore"]),
     ]
 )
