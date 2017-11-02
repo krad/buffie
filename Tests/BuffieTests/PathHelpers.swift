@@ -1,10 +1,3 @@
-//
-//  PathHelpers.swift
-//  BuffieTests
-//
-//  Created by Mel Gray on 10/24/17.
-//
-
 import Foundation
 
 let fixturesPath = findFixturePath()
