@@ -56,8 +56,8 @@ public class MovieFileWriter {
     private var audioInput: AVAssetWriterInput?
     
     private var videoFramesWrote: Int64 = 0
-    private var fps                     = 24.0
-    private var timescale: Int32        = 600
+    private var fps                     = 30.0
+    private var timescale: Int32        = 600 * 100_000
     
     public var isWriting = false
     
@@ -164,17 +164,9 @@ public class MovieFileWriter {
     
     private func writeVideo(sample: CMSampleBuffer) {
         guard self.isWriting else { return }
-        
-        if self.writer.status != .unknown {
-            if self.videoInput.isReadyForMoreMediaData {
-                self.videoInput.append(sample)
-                self.videoFramesWrote += 1
-            }
+        if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
+            self.write(pixelBuffer, with: self.currentPTS)
         }
-
-//        if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
-//            self.write(pixelBuffer, with: self.currentPTS)
-//        }
     }
     
     private func writeAudio(sample: CMSampleBuffer) {
