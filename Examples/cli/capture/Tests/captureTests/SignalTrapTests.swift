@@ -6,15 +6,11 @@ class SignalTrapTests: XCTestCase {
 
     func test_that_we_can_detect_a_sigint() {
         
-        let e = self.expectation(description: "Signal Callback")
-        let trap = SignalTrap(SIGINT) {
-            e.fulfill()
-        }
+        let trap = SignalTrap(SIGINT)
         
         XCTAssertFalse(trap.caughtSignal)
         raise(SIGINT)
         
-        self.wait(for: [e], timeout: 2)
         XCTAssertTrue(trap.caughtSignal)
     }
     

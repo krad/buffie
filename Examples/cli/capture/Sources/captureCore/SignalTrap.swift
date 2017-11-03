@@ -1,36 +1,28 @@
 import Foundation
 
-fileprivate let note = Notification.Name("Signal Caught")
+var signaled = false
 
-typealias Callback = () -> Void
-
-class SignalTrap {
+struct SignalTrap {
     
-    var caughtSignal: Bool = false
+    var caughtSignal: Bool {
+        return signaled
+    }
+    
     var signalID: Int32
     
-    var callback: Callback?
-    
-    init(_ signalID: Int32, callback: Callback? = nil) {
+    init(_ signalID: Int32) {
         self.signalID = signalID
-        self.callback = callback
         
-        NotificationCenter.default.addObserver(forName: note,
-                                               object: nil,
-                                               queue: nil) {_ in
-                                                self.caughtSignal = true
-                                                self.callback?()
-        }
-        
+        signal(signalID, SIG_IGN)        
         signal(signalID) { s in
-            let notification = Notification(name: note)
-            NotificationCenter.default.post(notification)
+            
+            let lock = NSLock()
+            lock.lock()
+            signaled = true
+            lock.unlock()
         }
     }
     
-    deinit {
-        
-    }
-    
+
 }
 

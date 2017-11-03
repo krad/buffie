@@ -68,7 +68,7 @@ public class CommandLineTool {
                 print("Finishing up...")
                 cameraReader.stop()
                 camera.stop()
-                done = true
+                self.done = true
             }
         }
 

@@ -10,6 +10,7 @@ public class CameraOutputReader: CameraReader {
     var quality: MovieFileQuality
     var url: URL
     var bitrate: Int?
+    var setupCalled = false
     
     public init(url: URL,
                 recordTime: Int?,
@@ -31,9 +32,13 @@ public class CameraOutputReader: CameraReader {
             else { return }
 
         if let writer = self.fileWriter {
-            writer.write(sample, type: type)
+            if writer.isWriting {
+                writer.write(sample, type: type)
+            }
         } else {
-            self.setupWriter(with: videoFormat, and: audioFormat)
+            if setupCalled == false {
+                self.setupWriter(with: videoFormat, and: audioFormat)
+            }
         }
     }
     
@@ -43,6 +48,7 @@ public class CameraOutputReader: CameraReader {
     
     private func setupWriter(with videoFormat: CMFormatDescription,
                              and audioFormat: CMFormatDescription) {
+        self.setupCalled = true
         do {
             switch self.container {
             case .mp4:
@@ -68,6 +74,7 @@ public class CameraOutputReader: CameraReader {
             self.fileWriter?.start()
             
         } catch {
+            self.setupCalled = false
             print("Couldn't create movie file writer")
             exit(-1)
         }

@@ -1,5 +1,7 @@
 import Foundation
 import captureCore
+import AVFoundation
+
 
 do {
     
