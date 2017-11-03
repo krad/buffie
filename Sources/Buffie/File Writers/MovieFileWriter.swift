@@ -87,7 +87,7 @@ public class MovieFileWriter {
         
         self.videoInput.expectsMediaDataInRealTime           = true
         self.videoInput.performsMultiPassEncodingIfSupported = false
-        self.videoInput.mediaTimeScale                       = timescale
+//        self.videoInput.mediaTimeScale                       = timescale
         
         
         let pixelAttrs    = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)]
@@ -163,9 +163,18 @@ public class MovieFileWriter {
     }
     
     private func writeVideo(sample: CMSampleBuffer) {
-        if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
-            self.write(pixelBuffer, with: self.currentPTS)
+        guard self.isWriting else { return }
+        
+        if self.writer.status != .unknown {
+            if self.videoInput.isReadyForMoreMediaData {
+                self.videoInput.append(sample)
+                self.videoFramesWrote += 1
+            }
         }
+
+//        if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
+//            self.write(pixelBuffer, with: self.currentPTS)
+//        }
     }
     
     private func writeAudio(sample: CMSampleBuffer) {
