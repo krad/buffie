@@ -57,11 +57,11 @@ public class MovieFileWriter {
     
     public var isWriting = false
 
-    private var timescale: UInt32
-    private var videoSamplesWritten: Int64 = 0
+    private var timescale: CMTimeScale
+    private var lastDuration: Int64 = 0
     
     private var currentPTS: CMTime {
-        return CMTimeMake(videoSamplesWritten, Int32(self.timescale))
+        return CMTimeMake(lastDuration, self.timescale)
     }
     
     internal init(_ config: MovieFileConfig) throws {
@@ -76,11 +76,10 @@ public class MovieFileWriter {
                                              outputSettings: videoSettings,
                                              sourceFormatHint: config.videoFormat)
         
+        self.timescale = 30_000
         self.videoInput.expectsMediaDataInRealTime           = true
         self.videoInput.performsMultiPassEncodingIfSupported = false
-        
-        print("====", CMTimeCodeFormatDescriptionGetFrameQuanta(config.videoFormat))
-        self.timescale = CMTimeCodeFormatDescriptionGetFrameQuanta(config.videoFormat)
+        self.videoInput.mediaTimeScale                       = self.timescale
         
         
         let pixelAttrs    = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)]
@@ -159,10 +158,8 @@ public class MovieFileWriter {
         
         if self.writer.status != .unknown {
             if self.videoInput.isReadyForMoreMediaData {
-                print("output duration:", CMSampleBufferGetOutputDuration(sample))
-                print("pts:", CMSampleBufferGetPresentationTimeStamp(sample))
+                self.lastDuration += CMSampleBufferGetOutputDuration(sample).value
                 self.videoInput.append(sample)
-                self.videoSamplesWritten += 1
             }
         }
     }
