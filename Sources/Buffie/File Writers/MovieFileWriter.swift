@@ -80,6 +80,8 @@ public class MovieFileWriter {
             if let bitrate = config.videoBitRate {
                 compressionDict[AVVideoAverageBitRateKey] = bitrate
             }
+            
+            videoSettings[AVVideoCompressionPropertiesKey] = compressionDict
         }
         
         self.videoInput = AVAssetWriterInput(mediaType: .video,
