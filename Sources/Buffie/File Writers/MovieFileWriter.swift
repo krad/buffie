@@ -163,8 +163,14 @@ public class MovieFileWriter {
     }
     
     private func writeVideo(sample: CMSampleBuffer) {
-        if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
-            self.write(pixelBuffer, with: self.currentPTS)
+//        if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
+//            self.write(pixelBuffer, with: self.currentPTS)
+//        }
+        if self.writer.status != .unknown {
+            if self.videoInput.isReadyForMoreMediaData {
+                self.videoInput.append(sample)
+                self.videoFramesWrote += 1
+            }
         }
     }
     
