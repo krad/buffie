@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "capture",
     dependencies: [
-        .package(url: "../../../", from: "0.8.5"),
+        .package(url: "../../../", from: "0.8.6"),
     ],
     targets: [
         .target(

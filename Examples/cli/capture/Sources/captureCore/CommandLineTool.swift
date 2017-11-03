@@ -62,7 +62,16 @@ public class CommandLineTool {
                                               container: self.container,
                                               bitrate: self.bitrate,
                                               quality: self.quality)
-        let camera       = try Camera(.back, reader: cameraReader, controlDelegate: nil)
+        var camera: Camera
+        
+        if let videoDeviceID = self.videoDeviceID, let audioDeviceID = self.audioDeviceID {
+            camera = try Camera(videoDeviceID: videoDeviceID,
+                                audioDeviceID: audioDeviceID,
+                                reader: cameraReader,
+                                controlDelegate: nil)
+        } else {
+            camera = try Camera(.back, reader: cameraReader, controlDelegate: nil)
+        }
         
         /// This is what get's called when it's time to shutdown the program.
         let stopFunction = {
