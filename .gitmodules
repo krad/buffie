@@ -1,0 +1,3 @@
+[submodule "Examples/cli/capture"]
+	path = Examples/cli/capture
+	url = https://www.github.com/krad/capture.git
