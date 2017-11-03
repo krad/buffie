@@ -5,6 +5,7 @@ public enum CommandLineToolError: Error {
     case noOptions
     case noFile
     case listInputs(options: HelpOptions)
+    case fileExists
 }
 
 public struct HelpOptions: OptionSet {
@@ -46,6 +47,14 @@ public class CommandLineTool {
         }
         
         guard let url = self.url else { throw CommandLineToolError.noFile }
+
+        if FileManager.default.fileExists(atPath: url.path) {
+            if self.forceOverwrite {
+                try FileManager.default.removeItem(atPath: url.path)
+            } else {
+                throw CommandLineToolError.fileExists
+            }
+        }
         
         // This is the meat and potatoes.
         // This is how we use Buffie.  Look at the source of CameraOutputReader

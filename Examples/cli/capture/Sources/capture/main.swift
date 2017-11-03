@@ -22,6 +22,10 @@ do {
         printAudioDevices()
     }
     
+} catch CommandLineToolError.fileExists {
+    
+    print("Output file already exists.  Use -f flag to force overwrite.")
+    
 } catch {
     
     print("Error running capture.  Run command with no options for detailed help.")
