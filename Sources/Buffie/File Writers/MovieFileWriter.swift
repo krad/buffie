@@ -59,7 +59,7 @@ public class MovieFileWriter {
     private var fps                     = 24.0
     private var timescale: Int32        = 600 * 100_000
     
-    private var isWriting = false
+    public var isWriting = false
     
     private var currentPTS: CMTime {
         let num = Int64(Double(timescale) / fps)
