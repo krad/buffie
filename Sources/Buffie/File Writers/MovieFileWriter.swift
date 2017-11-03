@@ -157,6 +157,7 @@ public class MovieFileWriter {
         
         if self.writer.status != .unknown {
             if self.videoInput.isReadyForMoreMediaData {
+                print(CMSampleBufferGetOutputDuration(sample))
                 self.videoInput.append(sample)
                 self.videoSamplesWritten += 1
             }
