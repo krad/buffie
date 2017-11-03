@@ -47,13 +47,6 @@ public class CommandLineTool {
         
         guard let url = self.url else { throw CommandLineToolError.noFile }
         
-        /// This is what get's called when it's time to shutdown the program.
-        let stopFunction = {
-            print("Finishing up...")
-            cameraReader.stop() { exit(0) }
-            camera.stop()
-        }
-        
         // This is the meat and potatoes.
         // This is how we use Buffie.  Look at the source of CameraOutputReader
         let cameraReader = CameraOutputReader(url: url,
@@ -61,6 +54,13 @@ public class CommandLineTool {
                                               bitrate: self.bitrate,
                                               quality: self.quality)
         let camera       = try Camera(.back, reader: cameraReader, controlDelegate: nil)
+        
+        /// This is what get's called when it's time to shutdown the program.
+        let stopFunction = {
+            print("Finishing up...")
+            cameraReader.stop() { exit(0) }
+            camera.stop()
+        }
         
         // Trap sigint signals and trigger cleanup when they're spotted.
         self.signalTrap = SignalTrap(SIGINT, onTrap: stopFunction)
