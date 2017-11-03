@@ -60,17 +60,6 @@ internal class CameraSession: CameraSessionProtocol {
         self.videoOutput.setSampleBufferDelegate(cameraReader.videoReader, queue: videoQueue)
         self.audioOutput.setSampleBufferDelegate(cameraReader.audioReader, queue: audioQueue)
         
-        if let videoConnection = self.videoOutput.connection(with: AVMediaType.video) {
-            if videoConnection.isVideoMaxFrameDurationSupported {
-                videoConnection.videoMaxFrameDuration = CMTimeMake(1, 24)
-            }
-            
-            if videoConnection.isVideoMinFrameDurationSupported {
-                videoConnection.videoMinFrameDuration = CMTimeMake(1, 24)
-            }
-        }
-
-        
         self.setupObservers()
     }
     
