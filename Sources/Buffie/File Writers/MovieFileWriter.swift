@@ -77,6 +77,13 @@ public class MovieFileWriter {
                                              sourceFormatHint: config.videoFormat)
         
         self.timescale = 30_000
+        if let compressionSettings = videoSettings[AVVideoCompressionPropertiesKey] as? [String: Any]{
+            if let fps = compressionSettings[AVVideoExpectedSourceFrameRateKey] as? NSNumber {
+                self.timescale = fps.int32Value * 1000
+                print(self.timescale)
+            }
+        }
+        
         self.videoInput.expectsMediaDataInRealTime           = true
         self.videoInput.performsMultiPassEncodingIfSupported = false
         self.videoInput.mediaTimeScale                       = self.timescale
