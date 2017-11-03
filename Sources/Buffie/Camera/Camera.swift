@@ -20,7 +20,8 @@ public enum CameraPosition {
 ///
 /// - noCameraFound: Thrown when we can't find a device suitable for capturing video
 public enum CameraError: Error {
-    case noCameraFound
+    case deviceNotFound(deviceID: String)
+    case noDeviceAvailable(type: AVMediaType)
 }
 
 /// Protocol used to handle changes to the camera's state
@@ -33,7 +34,7 @@ public protocol CameraControlDelegate {
 public class Camera {
     
     /// Which camera to use front/back
-    public var position: CameraPosition
+    public var position: CameraPosition?
     
     /// Used to handle control events with the camera.  Like when it starts, stops, or is interuppted
     public var controlDelegate: CameraControlDelegate?
@@ -44,11 +45,27 @@ public class Camera {
     /// The actual camera session object.  Used for stubbing
     internal var cameraSession: CameraSessionProtocol?
     
-    public init(_ position: CameraPosition = .back, reader: CameraReaderProtocol = CameraReader(), controlDelegate: CameraControlDelegate? = nil) throws {
+    public init(_ position: CameraPosition = .back,
+                reader: CameraReaderProtocol = CameraReader(),
+                controlDelegate: CameraControlDelegate? = nil) throws {
         self.position        = position
         self.controlDelegate = controlDelegate
         self.cameraReader    = reader
-        self.cameraSession = try CameraSession(position.osPosition, controlDelegate: self, cameraReader: self.cameraReader)
+        self.cameraSession = try CameraSession(position.osPosition,
+                                               controlDelegate: self,
+                                               cameraReader: self.cameraReader)
+    }
+    
+    public init(videoDeviceID: String,
+                audioDeviceID: String,
+                reader: CameraReaderProtocol = CameraReader(),
+                controlDelegate: CameraControlDelegate? = nil) throws {
+        self.controlDelegate = controlDelegate
+        self.cameraReader    = reader
+        self.cameraSession   = try CameraSession(videoDeviceID: videoDeviceID,
+                                                 audioDeviceID: audioDeviceID,
+                                                 controlDelegate: self,
+                                                 cameraReader: self.cameraReader)
     }
     
     /// Start the camera
