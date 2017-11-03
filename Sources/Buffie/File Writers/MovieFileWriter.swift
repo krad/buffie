@@ -60,10 +60,13 @@ public class MovieFileWriter {
     private var timescale: Int32        = 600 * 100_000
     
     public var isWriting = false
-    
+
+    private var lastPTS: CMTime?
     private var currentPTS: CMTime {
-        let num = Int64(Double(timescale) / fps)
-        return CMTimeMake(videoFramesWrote * num, timescale)
+        if let pts = lastPTS {
+            return pts
+        }
+        return kCMTimeZero
     }
     
     internal init(_ config: MovieFileConfig) throws {
@@ -106,7 +109,7 @@ public class MovieFileWriter {
     }
     
     public func start() {
-        self.start(at: kCMTimeZero)
+        self.start(at: self.currentPTS)
     }
     
     public func start(at time: CMTime) {
@@ -159,14 +162,11 @@ public class MovieFileWriter {
         guard self.isWriting else { return }
         if self.writer.status != .unknown {
             if self.videoInput.isReadyForMoreMediaData {
+                self.lastPTS = CMSampleBufferGetPresentationTimeStamp(sample)
                 self.videoInput.append(sample)
                 self.videoFramesWrote += 1
             }
         }
-
-//        if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
-//            self.write(pixelBuffer, with: self.currentPTS)
-//        }
     }
     
     private func writeAudio(sample: CMSampleBuffer) {
