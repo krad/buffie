@@ -156,8 +156,8 @@ public class MovieFileWriter {
     private func writeVideo(sample: CMSampleBuffer) {
         guard self.isWriting else { return }
         if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
-            self.lastDuration += CMSampleBufferGetOutputDuration(sample).value
             self.write(pixelBuffer, with: self.currentPTS)
+            self.lastDuration += CMSampleBufferGetOutputDuration(sample).value
         }
     }
     
