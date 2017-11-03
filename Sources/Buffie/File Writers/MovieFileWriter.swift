@@ -72,19 +72,15 @@ public class MovieFileWriter {
         self.writer.directoryForTemporaryFiles = URL(fileURLWithPath: NSTemporaryDirectory())
         
         //////// Configure the video input
-        var suggestedVideoSettings = config.quality.videoSettings
-        var suggestedCompressionSettings = suggestedVideoSettings[AVVideoCompressionPropertiesKey] as! [String: Any]
-        suggestedCompressionSettings[AVVideoExpectedSourceFrameRateKey] = NSNumber(value: self.fps)
-        suggestedCompressionSettings[AVVideoMaxKeyFrameIntervalKey]     = NSNumber(value: self.fps)
-        
-        if let bitrate = config.videoBitRate {
-            suggestedCompressionSettings[AVVideoAverageBitRateKey] = NSNumber(value: bitrate)
-        }
+        let dimensions = CMVideoFormatDescriptionGetDimensions(config.videoFormat)
         
         let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecH264,
-                                            AVVideoWidthKey: suggestedVideoSettings[AVVideoWidthKey]!,
-                                            AVVideoHeightKey: suggestedVideoSettings[AVVideoHeightKey]!,
-                                            AVVideoScalingModeKey: suggestedVideoSettings[AVVideoScalingModeKey]!]
+                                            AVVideoWidthKey: NSNumber(value: dimensions.width),
+                                            AVVideoHeightKey: NSNumber(value: dimensions.height),
+                                            AVVideoCompressionPropertiesKey: [AVVideoProfileLevelKey: AVVideoProfileLevelH264BaselineAutoLevel,
+                                                                              AVVideoAverageBitRateKey: NSNumber(value: 1_048_576),
+                                                                              AVVideoAllowFrameReorderingKey: NSNumber(value: true)]
+        ]
 
         
         self.videoInput = AVAssetWriterInput(mediaType: .video,
@@ -105,11 +101,16 @@ public class MovieFileWriter {
         
         //////// Configure the audio input
         if let audioFmt = config.audioFormat {
-            var audioSettings = config.quality.audioSettings
             if let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(audioFmt)?.pointee {
-                audioSettings[AVSampleRateKey] = asbd.mSampleRate
-            }
-            
+                var channelLayout = AudioChannelLayout()
+                memset(&channelLayout, 0, MemoryLayout<AudioChannelLayout>.size);
+                channelLayout.mChannelLayoutTag = kAudioChannelLayoutTag_Stereo
+                
+                let audioSettings: [String: Any] = [AVFormatIDKey: kAudioFormatMPEG4AAC,
+                                                    AVSampleRateKey: asbd.mSampleRate,
+                                                    AVNumberOfChannelsKey: 2,
+                                                    AVChannelLayoutKey: NSData(bytes:&channelLayout, length:MemoryLayout<AudioChannelLayout>.size)]
+                
                 let aInput = AVAssetWriterInput(mediaType: .audio,
                                                 outputSettings: audioSettings,
                                                 sourceFormatHint: audioFmt)
@@ -118,6 +119,7 @@ public class MovieFileWriter {
                 aInput.performsMultiPassEncodingIfSupported = false
                 self.audioInput                             = aInput
                 self.writer.add(aInput)
+            }
         }
     }
     
