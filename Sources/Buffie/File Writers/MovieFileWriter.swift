@@ -84,8 +84,7 @@ public class MovieFileWriter {
         let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecH264,
                                             AVVideoWidthKey: suggestedVideoSettings[AVVideoWidthKey]!,
                                             AVVideoHeightKey: suggestedVideoSettings[AVVideoHeightKey]!,
-                                            AVVideoScalingModeKey: suggestedVideoSettings[AVVideoScalingModeKey]!,
-                                            AVVideoCompressionPropertiesKey: suggestedCompressionSettings]
+                                            AVVideoScalingModeKey: suggestedVideoSettings[AVVideoScalingModeKey]!]
 
         
         self.videoInput = AVAssetWriterInput(mediaType: .video,
