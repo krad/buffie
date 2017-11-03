@@ -18,10 +18,8 @@ class SignalTrap {
         NotificationCenter.default.addObserver(forName: note,
                                                object: nil,
                                                queue: nil) {_ in
-                                                DispatchQueue.main.async {
-                                                    self.caughtSignal = true
-                                                    self.callback?()
-                                                }
+                                                self.caughtSignal = true
+                                                self.callback?()
         }
         
         signal(signalID) { s in

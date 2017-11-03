@@ -23,11 +23,11 @@ public class CommandLineTool {
     
     public var url: URL?
     
-    public var container: Container = .mp4
+    public var container: MovieFileContainer = .mp4
     public var time: Int?
-    public var quality: Quality = .high
+    public var quality: MovieFileQuality = .high
     public var forceOverwrite = false
-    public var bitrate: Int32 = 2_000_000
+    public var bitrate: Int?
     public var videoDeviceID: String?
     public var audioDeviceID: String?
     
@@ -65,8 +65,10 @@ public class CommandLineTool {
         
         while !done {
             if self.signalTrap!.caughtSignal {
+                print("Finishing up...")
                 cameraReader.stop()
-                exit(0)
+                camera.stop()
+                done = true
             }
         }
 
@@ -91,7 +93,7 @@ public class CommandLineTool {
                 }
                 
             case "c"?:
-                if let container = Container(rawValue: String(cString: optarg)) {
+                if let container = MovieFileContainer(rawValue: String(cString: optarg)) {
                     self.container = container
                 }
                 
@@ -108,12 +110,12 @@ public class CommandLineTool {
                 self.audioDeviceID = String(cString: optarg)
                 
             case "q"?:
-                if let quality = Quality(rawValue: String(cString: optarg)) {
+                if let quality = MovieFileQuality(rawValue: String(cString: optarg)) {
                     self.quality = quality
                 }
                 
             case "b"?:
-                self.bitrate = (String(cString: optarg) as NSString).intValue
+                self.bitrate = (String(cString: optarg) as NSString).integerValue
                 
             case "f"?:
                 self.forceOverwrite = true

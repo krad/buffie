@@ -6,17 +6,21 @@ import Buffie
 public class CameraOutputReader: CameraReader {
     
     var fileWriter: MovieFileWriter?
-    var container: Container
+    var container: MovieFileContainer
+    var quality: MovieFileQuality
     var url: URL
+    var bitrate: Int?
     
     public init(url: URL,
                 recordTime: Int?,
-                container: Container,
-                bitrate: Int32,
-                quality: Quality)
+                container: MovieFileContainer,
+                bitrate: Int?,
+                quality: MovieFileQuality)
     {
         self.url       = url
         self.container = container
+        self.bitrate   = bitrate
+        self.quality   = quality
         super.init()
     }
     
@@ -42,11 +46,23 @@ public class CameraOutputReader: CameraReader {
         do {
             switch self.container {
             case .mp4:
-                self.fileWriter = try MP4Writer(url, videoFormat: videoFormat, audioFormat: audioFormat)
+                self.fileWriter = try MP4Writer(url,
+                                                videoFormat: videoFormat,
+                                                quality: self.quality,
+                                                videoBitrate: self.bitrate,
+                                                audioFormat: audioFormat)
             case .m4v:
-                self.fileWriter = try M4VWriter(url, videoFormat: videoFormat, audioFormat: audioFormat)
+                self.fileWriter = try M4VWriter(url,
+                                                videoFormat: videoFormat,
+                                                quality: self.quality,
+                                                videoBitrate: self.bitrate,
+                                                audioFormat: audioFormat)
             case .mov:
-                self.fileWriter = try MOVWriter(url, videoFormat: videoFormat, audioFormat: audioFormat)
+                self.fileWriter = try MOVWriter(url,
+                                                videoFormat: videoFormat,
+                                                quality: self.quality,
+                                                videoBitrate: self.bitrate,
+                                                audioFormat: audioFormat)
             }
             
             self.fileWriter?.start()

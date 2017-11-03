@@ -86,7 +86,7 @@ public class MovieFileWriter {
                                              sourceFormatHint: config.videoFormat)
         
         self.videoInput.expectsMediaDataInRealTime           = true
-        self.videoInput.performsMultiPassEncodingIfSupported = true
+        self.videoInput.performsMultiPassEncodingIfSupported = false
         self.videoInput.mediaTimeScale                       = timescale
         
         
