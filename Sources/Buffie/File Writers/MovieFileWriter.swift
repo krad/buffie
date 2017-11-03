@@ -78,6 +78,8 @@ public class MovieFileWriter {
         
         self.videoInput.expectsMediaDataInRealTime           = true
         self.videoInput.performsMultiPassEncodingIfSupported = false
+        
+        print("====", CMTimeCodeFormatDescriptionGetFrameQuanta(config.videoFormat))
         self.timescale = CMTimeCodeFormatDescriptionGetFrameQuanta(config.videoFormat)
         
         
@@ -157,7 +159,8 @@ public class MovieFileWriter {
         
         if self.writer.status != .unknown {
             if self.videoInput.isReadyForMoreMediaData {
-                print(CMSampleBufferGetOutputDuration(sample))
+                print("output duration:", CMSampleBufferGetOutputDuration(sample))
+                print("pts:", CMSampleBufferGetPresentationTimeStamp(sample))
                 self.videoInput.append(sample)
                 self.videoSamplesWritten += 1
             }
