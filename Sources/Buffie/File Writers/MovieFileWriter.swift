@@ -80,10 +80,6 @@ public class MovieFileWriter {
         //////// Configure the video input
         var videoSettings = config.quality.videoSettings(sourceFormat: config.videoFormat)
 
-        self.videoInput = AVAssetWriterInput(mediaType: .video,
-                                             outputSettings: videoSettings,
-                                             sourceFormatHint: config.videoFormat)
-        
         self.timescale = 30_000
         if var compressionSettings = videoSettings[AVVideoCompressionPropertiesKey] as? [String: Any]{
             if let fps = compressionSettings[AVVideoExpectedSourceFrameRateKey] as? NSNumber {
@@ -93,9 +89,12 @@ public class MovieFileWriter {
             if let bitrate = config.videoBitRate {
                 compressionSettings[AVVideoAverageBitRateKey] = NSNumber(value: bitrate)
                 videoSettings[AVVideoCompressionPropertiesKey] = compressionSettings
-            }
-            
+            }            
         }
+        
+        self.videoInput = AVAssetWriterInput(mediaType: .video,
+                                             outputSettings: videoSettings,
+                                             sourceFormatHint: config.videoFormat)
         
         self.videoInput.expectsMediaDataInRealTime           = true
         self.videoInput.performsMultiPassEncodingIfSupported = false
@@ -144,6 +143,8 @@ public class MovieFileWriter {
     }
     
     public func stop(at time: CMTime, _ onComplete: (() -> (Void))?) {
+        guard self.isWriting else { return }
+        
         self.isWriting = false
         self.videoInput.markAsFinished()
         self.audioInput?.markAsFinished()
