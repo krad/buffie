@@ -13,7 +13,6 @@ public class CameraOutputReader: CameraReader {
     var setupCalled = false
     
     public init(url: URL,
-                recordTime: Int?,
                 container: MovieFileContainer,
                 bitrate: Int?,
                 quality: MovieFileQuality)
@@ -42,8 +41,8 @@ public class CameraOutputReader: CameraReader {
         }
     }
     
-    final public func stop() {
-        self.fileWriter?.stop() { }
+    final public func stop(_ cb: @escaping () -> Void) {
+        self.fileWriter?.stop() { cb() }
     }
     
     private func setupWriter(with videoFormat: CMFormatDescription,

@@ -27,5 +27,7 @@ playground.xcworkspace
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 *.mp4
+*.mov
+*.m4v
 Package.resolved
 

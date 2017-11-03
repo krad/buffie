@@ -23,7 +23,7 @@ public func printUsage() {
     print("     \tUses the extension of outfile if this is not present.\n")
     print("  -t:\tRecording time in seconds")
     print("     \tWill record indefinitely if not present.\n")
-    print("  -q:\tRecording quality {low, medium, high}")
+    print("  -q:\tRecording quality {low, medium, high, veryhigh, highest}")
     print("  -b:\tDesired bitrate")
     print("  -f:\tOverwrite the outfile if it exists")
     print("\nEXAMPLE:\n  capture -o movie.mp4 -f -t 60\n")

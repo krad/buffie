@@ -2,7 +2,6 @@ import Foundation
 import captureCore
 import AVFoundation
 
-
 do {
     
     let tool = try CommandLineTool()
