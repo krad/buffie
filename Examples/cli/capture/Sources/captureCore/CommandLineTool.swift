@@ -1,27 +1,38 @@
 import Foundation
+import Buffie
 
 public enum CommandLineToolError: Error {
     case noOptions
     case noFile
+    case listInputs(options: HelpOptions)
 }
 
-internal struct HelpOptions: OptionSet {
-    let rawValue: Int
+public struct HelpOptions: OptionSet {
+    public let rawValue: Int
     
-    static let printVideoInputs = HelpOptions(rawValue: 1 << 0)
-    static let printAudioInputs = HelpOptions(rawValue: 1 << 1)
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+    
+    public static let printVideoInputs = HelpOptions(rawValue: 1 << 0)
+    public static let printAudioInputs = HelpOptions(rawValue: 1 << 1)
 }
+
 
 public class CommandLineTool {
     
     public var url: URL?
-    public var container: Container?
+    
+    public var container: Container = .mp4
     public var time: Int?
-    public var quality: Quality? = .high
+    public var quality: Quality = .high
     public var forceOverwrite = false
-    public var bitrate: Int32?
+    public var bitrate: Int32 = 2_000_000
     public var videoDeviceID: String?
     public var audioDeviceID: String?
+    
+    private var signalTrap: SignalTrap?
+    private var done = false
 
     internal var helpOptions: HelpOptions = []
     
@@ -31,6 +42,34 @@ public class CommandLineTool {
     }
     
     public func run() throws {
+        guard self.helpOptions.isEmpty else {
+            throw CommandLineToolError.listInputs(options: self.helpOptions)
+        }
+        
+        guard let url = self.url else { throw CommandLineToolError.noFile }
+        
+        // This is the meat and potatoes.
+        // This is how we use Buffie.  Look at the source of CameraOutputReader
+        let cameraReader = CameraOutputReader(url: url,
+                                              recordTime: self.time,
+                                              container: self.container,
+                                              bitrate: self.bitrate,
+                                              quality: self.quality)
+        let camera       = try Camera(.back, reader: cameraReader, controlDelegate: nil)
+        
+        self.signalTrap = SignalTrap(SIGINT)
+        
+        camera.start()
+        printRunningMessage()
+        
+        
+        while !done {
+            if self.signalTrap!.caughtSignal {
+                cameraReader.stop()
+                exit(0)
+            }
+        }
+
         
     }
     
@@ -47,10 +86,14 @@ public class CommandLineTool {
             case "o"?:
                 let file        = String(cString: optarg)
                 self.url        = URL(fileURLWithPath: file)
-                self.container  = determineContainer(from: file)
+                if let container = determineContainer(from: file) {
+                    self.container = container
+                }
                 
             case "c"?:
-                self.container = Container(rawValue: String(cString: optarg))
+                if let container = Container(rawValue: String(cString: optarg)) {
+                    self.container = container
+                }
                 
             case "l"?:
                 self.helpOptions.insert(.printVideoInputs)
@@ -65,7 +108,9 @@ public class CommandLineTool {
                 self.audioDeviceID = String(cString: optarg)
                 
             case "q"?:
-                self.quality = Quality(rawValue: String(cString: optarg))
+                if let quality = Quality(rawValue: String(cString: optarg)) {
+                    self.quality = quality
+                }
                 
             case "b"?:
                 self.bitrate = (String(cString: optarg) as NSString).intValue
@@ -83,18 +128,3 @@ public class CommandLineTool {
     }
     
 }
-
-//var done = false
-//
-//do {
-//    let cameraReader = CameraOutputReader()
-//    let camera       = try Camera(.back, reader: cameraReader, controlDelegate: nil)
-//    camera.start()
-//} catch {
-//    print("Couldn't access camera")
-//}
-//
-//while !done {
-//    dispatchMain()
-//}
-

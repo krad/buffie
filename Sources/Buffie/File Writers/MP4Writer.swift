@@ -3,8 +3,16 @@ import AVFoundation
 
 public class MP4Writer: MovieFileWriter {
 
-    public init(_ fileURL: URL, videoFormat: CMFormatDescription, audioFormat: CMFormatDescription? = nil) throws {
-        try super.init(fileType: .mp4, fileURL: fileURL, videoFormat: videoFormat, audioFormat: audioFormat)
+    public init(_ fileURL: URL, videoFormat: CMFormatDescription, videoBitrate: Int? = nil, audioFormat: CMFormatDescription? = nil) throws {
+        
+        let config = MovieFileConfig(url: fileURL,
+                                     container: .mp4,
+                                     quality: .high,
+                                     videoBitRate: videoBitrate,
+                                     videoFormat: videoFormat,
+                                     audioFormat: audioFormat)
+        
+        try super.init(config)
     }
     
 }

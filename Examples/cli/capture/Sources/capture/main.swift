@@ -1,9 +1,8 @@
-import Buffie
 import Foundation
 import captureCore
 
 do {
-
+    
     let tool = try CommandLineTool()
     try tool.run()
     
@@ -11,8 +10,20 @@ do {
     
     printUsage()
     
+} catch CommandLineToolError.listInputs(let options) {
+    
+    print("")
+    if options.contains(.printVideoInputs) {
+        printVideoDevices()
+    }
+    
+    if options.contains(.printAudioInputs) {
+        printAudioDevices()
+    }
+    
 } catch {
     
+    print("Error running capture.  Run command with no options for detailed help.")
     exit(-1)
     
 }

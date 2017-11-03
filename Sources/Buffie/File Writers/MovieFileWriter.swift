@@ -1,6 +1,52 @@
 import Foundation
 import AVFoundation
 
+public struct MovieFileConfig {
+    var url: URL
+    var container: MovieFileContainer = .mp4
+    var quality: MovieFileQuality = .high
+    var videoBitRate: Int?
+    var videoFormat: CMFormatDescription
+    var audioFormat: CMFormatDescription?
+}
+
+public enum MovieFileContainer: String {
+    case mp4 = "mp4"
+    case m4v = "m4v"
+    case mov = "mov"
+    
+    internal var fileType: AVFileType {
+        switch self {
+        case .mp4: return AVFileType.mp4
+        case .m4v: return AVFileType.m4v
+        case .mov: return AVFileType.mov
+        }
+    }
+}
+
+public enum MovieFileQuality: String {
+    case low    = "low"
+    case medium = "medium"
+    case high   = "high"
+    
+    internal var settingsAssitant: AVOutputSettingsAssistant {
+        switch self {
+        case .high: return AVOutputSettingsAssistant(preset: .preset3840x2160)!
+        case .medium: return AVOutputSettingsAssistant(preset: .preset1280x720)!
+        case .low: return AVOutputSettingsAssistant(preset: .preset640x480)!
+        }
+    }
+    
+    internal var videoSettings: [String: Any] {
+        return self.settingsAssitant.videoSettings!
+    }
+    
+    internal var audioSettings: [String: Any] {
+        return self.settingsAssitant.audioSettings!
+    }
+    
+}
+
 public class MovieFileWriter {
     
     private var writer: AVAssetWriter
@@ -20,25 +66,24 @@ public class MovieFileWriter {
         return CMTimeMake(videoFramesWrote * num, timescale)
     }
     
-    internal init(fileType: AVFileType, fileURL: URL, videoFormat: CMFormatDescription, audioFormat: CMFormatDescription? = nil) throws {
+    internal init(_ config: MovieFileConfig) throws {
         
-        self.writer = try AVAssetWriter(outputURL: fileURL, fileType: fileType)
+        self.writer = try AVAssetWriter(outputURL: config.url, fileType: config.container.fileType)
         self.writer.directoryForTemporaryFiles = URL(fileURLWithPath: NSTemporaryDirectory())
         
         //////// Configure the video input
-        let dimensions = CMVideoFormatDescriptionGetDimensions(videoFormat)
-        
-        let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecH264,
-                                            AVVideoWidthKey: NSNumber(value: dimensions.width),
-                                            AVVideoHeightKey: NSNumber(value: dimensions.height),
-                                            AVVideoCompressionPropertiesKey: [AVVideoProfileLevelKey: AVVideoProfileLevelH264BaselineAutoLevel,
-                                                                              AVVideoAverageBitRateKey: NSNumber(value: 1_048_576),
-                                                                              AVVideoAllowFrameReorderingKey: NSNumber(value: true)]
-        ]
+        var videoSettings = config.quality.videoSettings
+        if let bitrate = config.videoBitRate {
+            if var compressionDict = videoSettings[AVVideoCompressionPropertiesKey] as? [String: Any] {
+                compressionDict[AVVideoAverageBitRateKey] = bitrate
+            } else {
+                
+            }
+        }
         
         self.videoInput = AVAssetWriterInput(mediaType: .video,
                                              outputSettings: videoSettings,
-                                             sourceFormatHint: videoFormat)
+                                             sourceFormatHint: config.videoFormat)
         
         self.videoInput.expectsMediaDataInRealTime           = true
         self.videoInput.performsMultiPassEncodingIfSupported = true
@@ -53,26 +98,17 @@ public class MovieFileWriter {
         
         
         //////// Configure the audio input
-        if let audioFmt = audioFormat {
-            if let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(audioFmt)?.pointee {
-                var channelLayout = AudioChannelLayout()
-                memset(&channelLayout, 0, MemoryLayout<AudioChannelLayout>.size);
-                channelLayout.mChannelLayoutTag = kAudioChannelLayoutTag_Stereo
-                
-                let audioSettings: [String: Any] = [AVFormatIDKey: kAudioFormatMPEG4AAC,
-                                                    AVSampleRateKey: asbd.mSampleRate,
-                                                    AVNumberOfChannelsKey: 2,
-                                                    AVChannelLayoutKey: NSData(bytes:&channelLayout, length:MemoryLayout<AudioChannelLayout>.size)]
-                
+        if let audioFmt = config.audioFormat {
+            let audioSettings = config.quality.audioSettings
+            
                 let aInput = AVAssetWriterInput(mediaType: .audio,
                                                 outputSettings: audioSettings,
-                                                sourceFormatHint: audioFormat)
+                                                sourceFormatHint: audioFmt)
                 
                 aInput.expectsMediaDataInRealTime           = true
                 aInput.performsMultiPassEncodingIfSupported = false
                 self.audioInput                             = aInput
                 self.writer.add(aInput)
-            }
         }
     }
     
