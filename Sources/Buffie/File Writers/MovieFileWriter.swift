@@ -72,17 +72,21 @@ public class MovieFileWriter {
         self.writer.directoryForTemporaryFiles = URL(fileURLWithPath: NSTemporaryDirectory())
         
         //////// Configure the video input
-        var videoSettings = config.quality.videoSettings
-        if var compressionDict = videoSettings[AVVideoCompressionPropertiesKey] as? [String: Any] {
-            compressionDict[AVVideoExpectedSourceFrameRateKey] = NSNumber(value: 24.0)
-            compressionDict[AVVideoMaxKeyFrameIntervalKey]     = NSNumber(value: 24.0)
-
-            if let bitrate = config.videoBitRate {
-                compressionDict[AVVideoAverageBitRateKey] = bitrate
-            }
-            
-            videoSettings[AVVideoCompressionPropertiesKey] = compressionDict
+        var suggestedVideoSettings = config.quality.videoSettings
+        var suggestedCompressionSettings = suggestedVideoSettings[AVVideoCompressionPropertiesKey] as! [String: Any]
+        suggestedCompressionSettings[AVVideoExpectedSourceFrameRateKey] = NSNumber(value: self.fps)
+        suggestedCompressionSettings[AVVideoMaxKeyFrameIntervalKey]     = NSNumber(value: self.fps)
+        
+        if let bitrate = config.videoBitRate {
+            suggestedCompressionSettings[AVVideoAverageBitRateKey] = NSNumber(value: bitrate)
         }
+        
+        let videoSettings: [String: Any] = [AVVideoCodecKey: AVVideoCodecH264,
+                                            AVVideoWidthKey: suggestedVideoSettings[AVVideoWidthKey]!,
+                                            AVVideoHeightKey: suggestedVideoSettings[AVVideoHeightKey]!,
+                                            AVVideoScalingModeKey: suggestedVideoSettings[AVVideoScalingModeKey]!,
+                                            AVVideoCompressionPropertiesKey: suggestedCompressionSettings]
+
         
         self.videoInput = AVAssetWriterInput(mediaType: .video,
                                              outputSettings: videoSettings,
