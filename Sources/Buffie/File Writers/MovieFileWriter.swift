@@ -106,7 +106,10 @@ public class MovieFileWriter {
         
         //////// Configure the audio input
         if let audioFmt = config.audioFormat {
-            let audioSettings = config.quality.audioSettings
+            var audioSettings = config.quality.audioSettings
+            if let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(audioFmt)?.pointee {
+                audioSettings[AVSampleRateKey] = asbd.mSampleRate
+            }
             
                 let aInput = AVAssetWriterInput(mediaType: .audio,
                                                 outputSettings: audioSettings,
