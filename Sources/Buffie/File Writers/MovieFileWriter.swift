@@ -87,7 +87,7 @@ public class MovieFileWriter {
         
         self.videoInput.expectsMediaDataInRealTime           = true
         self.videoInput.performsMultiPassEncodingIfSupported = false
-//        self.videoInput.mediaTimeScale                       = timescale
+        self.videoInput.mediaTimeScale                       = timescale
         
         
         let pixelAttrs    = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)]
