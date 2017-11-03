@@ -25,24 +25,32 @@ public enum MovieFileContainer: String {
 }
 
 public enum MovieFileQuality: String {
-    case low    = "low"
-    case medium = "medium"
-    case high   = "high"
+    case low      = "low"
+    case medium   = "medium"
+    case high     = "high"
+    case veryhigh = "veryhight"
+    case highest  = "highest"
     
     internal var settingsAssitant: AVOutputSettingsAssistant {
         switch self {
-        case .high: return AVOutputSettingsAssistant(preset: .preset3840x2160)!
-        case .medium: return AVOutputSettingsAssistant(preset: .preset1280x720)!
+        case .highest: return AVOutputSettingsAssistant(preset: .preset3840x2160)!
+        case .veryhigh: return AVOutputSettingsAssistant(preset: .preset1920x1080)!
+        case .high: return AVOutputSettingsAssistant(preset: .preset1280x720)!
+        case .medium: return AVOutputSettingsAssistant(preset: .preset960x540)!
         case .low: return AVOutputSettingsAssistant(preset: .preset640x480)!
         }
     }
     
-    internal var videoSettings: [String: Any] {
-        return self.settingsAssitant.videoSettings!
+    internal func videoSettings(sourceFormat: CMFormatDescription) -> [String: Any] {
+        let assistant               = self.settingsAssitant
+        assistant.sourceVideoFormat = sourceFormat
+        return assistant.videoSettings!
     }
     
-    internal var audioSettings: [String: Any] {
-        return self.settingsAssitant.audioSettings!
+    internal func audioSettings(sourceFormat: CMFormatDescription?) -> [String: Any] {
+        let assistant               = self.settingsAssitant
+        assistant.sourceAudioFormat = sourceFormat
+        return assistant.audioSettings!
     }
     
 }
@@ -70,17 +78,23 @@ public class MovieFileWriter {
         self.writer.directoryForTemporaryFiles = URL(fileURLWithPath: NSTemporaryDirectory())
         
         //////// Configure the video input
-        let videoSettings = config.quality.videoSettings
+        var videoSettings = config.quality.videoSettings(sourceFormat: config.videoFormat)
 
         self.videoInput = AVAssetWriterInput(mediaType: .video,
                                              outputSettings: videoSettings,
                                              sourceFormatHint: config.videoFormat)
         
         self.timescale = 30_000
-        if let compressionSettings = videoSettings[AVVideoCompressionPropertiesKey] as? [String: Any]{
+        if var compressionSettings = videoSettings[AVVideoCompressionPropertiesKey] as? [String: Any]{
             if let fps = compressionSettings[AVVideoExpectedSourceFrameRateKey] as? NSNumber {
                 self.timescale = fps.int32Value * 1000
             }
+            
+            if let bitrate = config.videoBitRate {
+                compressionSettings[AVVideoAverageBitRateKey] = NSNumber(value: bitrate)
+                videoSettings[AVVideoCompressionPropertiesKey] = compressionSettings
+            }
+            
         }
         
         self.videoInput.expectsMediaDataInRealTime           = true
@@ -97,7 +111,7 @@ public class MovieFileWriter {
         
         //////// Configure the audio input
         if let audioFmt = config.audioFormat {
-            let audioSettings = config.quality.audioSettings
+            let audioSettings = config.quality.audioSettings(sourceFormat: audioFmt)
             
             let aInput = AVAssetWriterInput(mediaType: .audio,
                                             outputSettings: audioSettings,
