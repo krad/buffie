@@ -56,7 +56,7 @@ public class MovieFileWriter {
     private var audioInput: AVAssetWriterInput?
     
     private var videoFramesWrote: Int64 = 0
-    private var fps                     = 30.0
+    private var fps                     = 24.0
     private var timescale: Int32        = 600 * 100_000
     
     public var isWriting = false
@@ -73,11 +73,12 @@ public class MovieFileWriter {
         
         //////// Configure the video input
         var videoSettings = config.quality.videoSettings
-        if let bitrate = config.videoBitRate {
-            if var compressionDict = videoSettings[AVVideoCompressionPropertiesKey] as? [String: Any] {
+        if var compressionDict = videoSettings[AVVideoCompressionPropertiesKey] as? [String: Any] {
+            compressionDict[AVVideoExpectedSourceFrameRateKey] = NSNumber(value: 24.0)
+            compressionDict[AVVideoMaxKeyFrameIntervalKey]     = NSNumber(value: 24.0)
+
+            if let bitrate = config.videoBitRate {
                 compressionDict[AVVideoAverageBitRateKey] = bitrate
-            } else {
-                
             }
         }
         

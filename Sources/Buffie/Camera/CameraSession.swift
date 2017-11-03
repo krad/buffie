@@ -62,11 +62,11 @@ internal class CameraSession: CameraSessionProtocol {
         
         if let videoConnection = self.videoOutput.connection(with: AVMediaType.video) {
             if videoConnection.isVideoMaxFrameDurationSupported {
-               videoConnection.videoMaxFrameDuration = CMTimeMake(1, 30)
+               videoConnection.videoMaxFrameDuration = CMTimeMake(1, 24)
             }
             
             if videoConnection.isVideoMinFrameDurationSupported {
-                videoConnection.videoMinFrameDuration = CMTimeMake(1, 30)
+                videoConnection.videoMinFrameDuration = CMTimeMake(1, 24)
             }
         }
         
