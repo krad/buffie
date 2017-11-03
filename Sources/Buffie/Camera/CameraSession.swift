@@ -2,10 +2,6 @@ import Foundation
 import AVKit
 
 internal protocol CameraSessionProtocol {
-    init(_ position: AVCaptureDevice.Position,
-         controlDelegate: CameraControlDelegate,
-         cameraReader: CameraReaderProtocol) throws
-    
     var videoOutput: AVCaptureVideoDataOutput { get }
     var audioOutput: AVCaptureAudioDataOutput { get }
 
@@ -32,24 +28,26 @@ internal class CameraSession: CameraSessionProtocol {
     internal var audioOutput: AVCaptureAudioDataOutput
     private let audioQueue = DispatchQueue(label: "audioQ")
     
-    required init(_ position: AVCaptureDevice.Position,
+    required init(videoDeviceID: String,
+                  audioDeviceID: String,
                   controlDelegate: CameraControlDelegate,
                   cameraReader: CameraReaderProtocol) throws
     {
         self.controlDelegate = controlDelegate
-        
         self.session         = AVCaptureSession()
         
         // Setup the video device & i/o
-        self.videoDevice     = try AVCaptureDevice.firstDevice(for: AVMediaType.video, in: position)
+        if let videoDevice = AVCaptureDevice(uniqueID: videoDeviceID) { self.videoDevice = videoDevice }
+        else { throw CameraError.deviceNotFound(deviceID: videoDeviceID) }
         self.videoInput      = try AVCaptureDeviceInput(device: self.videoDevice)
         self.videoOutput     = AVCaptureVideoDataOutput()
         
         // Setup the audio device & i/o
-        self.audioDevice     = try AVCaptureDevice.firstDevice(for: AVMediaType.audio, in: position)
+        if let audioDevice = AVCaptureDevice(uniqueID: audioDeviceID) { self.audioDevice = audioDevice }
+        else { throw CameraError.deviceNotFound(deviceID: audioDeviceID) }
         self.audioInput      = try AVCaptureDeviceInput(device: self.audioDevice)
         self.audioOutput     = AVCaptureAudioDataOutput()
-
+        
         // Add that i/o to the session
         self.session.addInput(self.videoInput)
         self.session.addInput(self.audioInput)
@@ -61,6 +59,19 @@ internal class CameraSession: CameraSessionProtocol {
         self.audioOutput.setSampleBufferDelegate(cameraReader.audioReader, queue: audioQueue)
         
         self.setupObservers()
+        
+    }
+
+    convenience init(_ position: AVCaptureDevice.Position,
+                  controlDelegate: CameraControlDelegate,
+                  cameraReader: CameraReaderProtocol) throws
+    {
+        let videoDevice = try AVCaptureDevice.firstDevice(for: .video, in: position)
+        let audioDevice = try AVCaptureDevice.firstDevice(for: .audio, in: position)
+        try self.init(videoDeviceID: videoDevice.uniqueID,
+                      audioDeviceID: audioDevice.uniqueID,
+                      controlDelegate: controlDelegate,
+                      cameraReader: cameraReader)
     }
     
     func start() {
@@ -83,20 +94,6 @@ internal class CameraSession: CameraSessionProtocol {
     
     deinit {
         self.sessionObserver?.invalidate()
-    }
-    
-}
-
-
-extension AVCaptureDevice {
-    
-    static func firstDevice(for mediaType: AVMediaType, in position: AVCaptureDevice.Position) throws -> AVCaptureDevice {
-        let devices = AVCaptureDevice.devices(for: mediaType).filter { $0.position != position }
-        if let device = devices.first {
-            return device
-        } else {
-            throw CameraError.noCameraFound
-        }
     }
     
 }

@@ -15,12 +15,15 @@ public enum SampleType: UInt8 {
     case audio    = 0x61 // a
 }
 
-public class CameraReader: CameraReaderProtocol, SampleReader {
+open class CameraReader: CameraReaderProtocol, SampleReader {
     
-    public var videoReader: AVCaptureVideoDataOutputSampleBufferDelegate
-    public var audioReader: AVCaptureAudioDataOutputSampleBufferDelegate
+    final public var videoReader: AVCaptureVideoDataOutputSampleBufferDelegate
+    final public var audioReader: AVCaptureAudioDataOutputSampleBufferDelegate
     
-    init() {
+    final public var videoFormat: CMFormatDescription?
+    final public var audioFormat: CMFormatDescription?
+    
+    public init() {
         let videoReader = VideoSampleReader()
         let audioReader = AudioSampleReader()
         
@@ -32,7 +35,10 @@ public class CameraReader: CameraReaderProtocol, SampleReader {
     }
     
     open func got(_ sample: CMSampleBuffer, type: SampleType) {
-        print(#function, type)
+        switch type {
+        case .video: self.videoFormat = getFormatDescription(sample)
+        case .audio: self.audioFormat = getFormatDescription(sample)
+        }
     }
     
 }

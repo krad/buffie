@@ -4,12 +4,12 @@ import CoreMedia
 let mediaStreamDelimeter: [UInt8] = [0x0, 0x0, 0x0, 0x1]
 let paramSetMarker: UInt8         = 0x70
 
-struct AVMuxerSettings {
+public struct AVMuxerSettings {
     
     var videoSettings: VideoEncoderSettings
     var audioSettings: AudioEncoderDecoderSettings
     
-    init() {
+    public init() {
         self.videoSettings = VideoEncoderSettings()
         self.audioSettings = AudioEncoderDecoderSettings(.encoding)
     }
@@ -35,11 +35,11 @@ public class AVMuxer: CameraReader {
         }
     }
     
-    override init() {
+    private override init() {
         super.init()
     }
     
-    convenience init(settings: AVMuxerSettings = AVMuxerSettings(), delegate: AVMuxerDelegate) throws {
+    public convenience init(settings: AVMuxerSettings = AVMuxerSettings(), delegate: AVMuxerDelegate) throws {
         self.init()
         self.delegate     = delegate
         self.videoEncoder = try VideoEncoder(settings.videoSettings, delegate: self)
@@ -60,7 +60,7 @@ extension AVMuxer: VideoEncoderDelegate {
     public func encoded(videoSample: CMSampleBuffer) {
         
         if self.parameterSetData == nil {
-            self.parameterSetData = getFormatDescriptionData(videoSample)
+            self.parameterSetData = getVideoFormatDescriptionData(videoSample)
         }
         
         if let bytes = bytes(from: videoSample) {
@@ -127,10 +127,10 @@ internal func bytes(from audioBufferList: AudioBufferList) -> [UInt8]? {
 ///
 /// - Parameter buffer: CMSampleBuffer of h264 data
 /// - Returns: Data representing SPS and PPS bytes
-internal func getFormatDescriptionData(_ buffer: CMSampleBuffer) -> [[UInt8]] {
+public func getVideoFormatDescriptionData(_ buffer: CMSampleBuffer) -> [[UInt8]] {
     var results: [[UInt8]] = []
     
-    if let description = CMSampleBufferGetFormatDescription(buffer) {
+    if let description = getFormatDescription(buffer) {
         var numberOfParamSets: size_t = 0
         CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, 0, nil, nil, &numberOfParamSets, nil)
         
@@ -140,8 +140,6 @@ internal func getFormatDescriptionData(_ buffer: CMSampleBuffer) -> [[UInt8]] {
             var headerLength: Int32          = 4
             CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, idx, &params, &paramsLength, nil, &headerLength)
             
-//            let length      = UInt32(paramsLength)
-//            let lengthBytes = byteArray(from: length)            
             let bufferPointer   = UnsafeBufferPointer(start: params, count: paramsLength)
             let paramsUnwrapped = Array(bufferPointer)
             
@@ -151,4 +149,18 @@ internal func getFormatDescriptionData(_ buffer: CMSampleBuffer) -> [[UInt8]] {
     }
     
     return results
+}
+
+
+/// Get the format description from a sample buffer
+///
+/// - Parameter buffer: CMSampleBuffer we're interested in
+/// - Returns: CMFormatDescription describing the contents of the sample buffer
+public func getFormatDescription(_ buffer: CMSampleBuffer) -> CMFormatDescription? {
+    
+    if let description = CMSampleBufferGetFormatDescription(buffer) {
+        return description
+    }
+    
+    return nil
 }
