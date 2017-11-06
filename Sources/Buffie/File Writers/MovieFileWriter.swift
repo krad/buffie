@@ -85,6 +85,9 @@ public class MovieFileWriter {
             if let fps = compressionSettings[AVVideoExpectedSourceFrameRateKey] as? NSNumber {
                 self.timescale = fps.int32Value * 1000
                 print("==== CHANGED", fps, fps.intValue * 1000)
+                print(CMTimeCodeFormatDescriptionGetFrameQuanta(config.videoFormat))
+                print(CMTimeCodeFormatDescriptionGetFrameDuration(config.videoFormat))
+                print(CMTimeCodeFormatDescriptionGetTimeCodeFlags(config.videoFormat))
             }
             
             if let bitrate = config.videoBitRate {
