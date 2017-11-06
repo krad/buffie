@@ -32,6 +32,11 @@ public protocol CameraControlDelegate {
     func cameraInteruppted()
 }
 
+public protocol CaptureDevice {
+    func start()
+    func stop()
+}
+
 public class Camera {
     
     /// Which camera to use front/back
@@ -80,6 +85,8 @@ public class Camera {
     }
     
 }
+
+extension Camera: CaptureDevice { }
 
 extension Camera: CameraControlDelegate {
     public func cameraStarted() {

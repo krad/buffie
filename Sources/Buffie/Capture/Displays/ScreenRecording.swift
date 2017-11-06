@@ -16,9 +16,10 @@ public class ScreenRecorder {
     /// The capture session
     private var session: CameraSessionProtocol?
     
-    init(display: Display,
-         reader: CameraReaderProtocol,
-         controlDelegate: CameraControlDelegate? = nil) throws {
+    public init(display: Display,
+                reader: CameraReaderProtocol,
+                controlDelegate: CameraControlDelegate? = nil) throws
+    {
         self.display            = display
         self.reader             = reader
         self.controlDelegate    = controlDelegate
@@ -29,14 +30,17 @@ public class ScreenRecorder {
                                          cameraReader: reader)
     }
     
-    func start() {
+    public func start() {
         self.session?.start()
     }
     
-    func stop() {
+    public func stop() {
         self.session?.stop()
     }
 }
+
+@available (macOS 10.11, *)
+extension ScreenRecorder: CaptureDevice { }
 
 @available (macOS 10.11, *)
 extension ScreenRecorder: CameraControlDelegate {
