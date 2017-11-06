@@ -12,6 +12,10 @@ public struct Display {
     
     public let displayID: CGDirectDisplayID
     
+    public init(displayID: CGDirectDisplayID) {
+        self.displayID = displayID
+    }
+    
     public var name: String {
         return displayName(for: self.displayID)
     }
