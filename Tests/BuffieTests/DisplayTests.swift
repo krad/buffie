@@ -1,34 +1,29 @@
-//
-//  DisplayTests.swift
-//  BuffieTests
-//
-//  Created by Mel Gray on 11/5/17.
-//
-
 import XCTest
+@testable import Buffie
 
+@available (macOS 10.11, *)
 class DisplayTests: XCTestCase {
     
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    func test_that_we_can_get_a_list_of_display_ids() {
+        let result = Display.getIDs(for: .active)
+        XCTAssert(result.count > 0)
+        
+        let result2 = Display.getIDs(for: .drawable)
+        XCTAssert(result2.count > 0)
+    }
+
+    
+    func test_that_we_can_get_a_list_of_displays() {
+        let result = Display.getAll()
+        XCTAssert(result.count > 0)
     }
     
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-    
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
+    static var allTests = [
+        ("test_that_we_can_get_a_list_of_display_ids",
+         test_that_we_can_get_a_list_of_display_ids),
+
+        ("test_that_we_can_get_a_list_of_displays",
+         test_that_we_can_get_a_list_of_displays)
+    ]
     
 }

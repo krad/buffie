@@ -22,6 +22,7 @@ public enum CameraPosition {
 public enum CameraError: Error {
     case deviceNotFound(deviceID: String)
     case noDeviceAvailable(type: AVMediaType)
+    case noDevicesAvailable
 }
 
 /// Protocol used to handle changes to the camera's state
