@@ -82,12 +82,12 @@ public class MovieFileWriter {
 
         self.timescale = 6_000
         if var compressionSettings = videoSettings[AVVideoCompressionPropertiesKey] as? [String: Any]{
-            if let fps = compressionSettings[AVVideoExpectedSourceFrameRateKey] as? NSNumber {
-                self.timescale = fps.int32Value * 1000
-                print("==== CHANGED", fps, fps.intValue * 1000)
-                print(CMTimeCodeFormatDescriptionGetFrameQuanta(config.videoFormat))
-                print(CMTimeCodeFormatDescriptionGetFrameDuration(config.videoFormat))
-            }
+//            if let fps = compressionSettings[AVVideoExpectedSourceFrameRateKey] as? NSNumber {
+//                self.timescale = fps.int32Value * 1000
+//                print("==== CHANGED", fps, fps.intValue * 1000)
+//                print(CMTimeCodeFormatDescriptionGetFrameQuanta(config.videoFormat))
+//                print(CMTimeCodeFormatDescriptionGetFrameDuration(config.videoFormat))
+//            }
             
             if let bitrate = config.videoBitRate {
                 compressionSettings[AVVideoAverageBitRateKey] = NSNumber(value: bitrate)
