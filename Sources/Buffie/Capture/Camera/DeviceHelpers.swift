@@ -37,3 +37,18 @@ public extension AVCaptureDevice {
     }
     
 }
+
+public extension AVCaptureDeviceInput {
+    
+    public static func input(for deviceID: String?) throws -> AVCaptureDeviceInput? {
+        if let devID = deviceID {
+            if let device = AVCaptureDevice(uniqueID: devID) {
+                return try AVCaptureDeviceInput(device: device)
+            } else {
+                throw CameraError.deviceNotFound(deviceID: devID)
+            }
+        }
+        return nil
+    }
+    
+}

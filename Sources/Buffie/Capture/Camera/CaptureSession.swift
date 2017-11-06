@@ -64,22 +64,10 @@ internal class CaptureSession: CaptureSessionProtocol {
         var audioInput: AVCaptureInput? = nil
         
         // Attempt to configure the video device
-        if let vDeviceId = videoDeviceID {
-            if let videoDevice = AVCaptureDevice(uniqueID: vDeviceId) {
-                videoInput = try AVCaptureDeviceInput(device: videoDevice)
-            } else {
-                throw CameraError.deviceNotFound(deviceID: vDeviceId)
-            }
-        }
+        videoInput = try AVCaptureDeviceInput.input(for: videoDeviceID)
         
         // Attempt to configure the video device
-        if let aDeviceId = audioDeviceID {
-            if let audioDevice = AVCaptureDevice(uniqueID: aDeviceId) {
-                audioInput = try AVCaptureDeviceInput(device: audioDevice)
-            } else {
-                throw CameraError.deviceNotFound(deviceID: aDeviceId)
-            }
-        }
+        audioInput = try AVCaptureDeviceInput.input(for: audioDeviceID)
         
         // Ensure we have at least one input
         if videoInput == nil && audioInput == nil {

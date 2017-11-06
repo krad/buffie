@@ -28,16 +28,10 @@ public class ScreenRecorder {
                          reader: AVReaderProtocol,
                          controlDelegate: CameraControlDelegate? = nil) throws
     {
-        self.display            = display
-        self.reader             = reader
-        self.controlDelegate    = controlDelegate
-
-        var audioInput: AVCaptureInput?
-        if let aDeviceID = audioDeviceID {
-            if let audioDevice = AVCaptureDevice(uniqueID: aDeviceID) {
-                audioInput = try AVCaptureDeviceInput(device: audioDevice)
-            }
-        }
+        self.display                    = display
+        self.reader                     = reader
+        self.controlDelegate            = controlDelegate
+        let audioInput: AVCaptureInput? = try AVCaptureDeviceInput.input(for: audioDeviceID)
         
         self.session = try CaptureSession(videoInput: display.input,
                                           audioInput: audioInput,
