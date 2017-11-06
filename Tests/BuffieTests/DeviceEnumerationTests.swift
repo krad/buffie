@@ -30,7 +30,6 @@ class DeviceEnumerationTests: XCTestCase {
 
         let device = AVCaptureDevice(uniqueID: deviceID!)
         XCTAssertNotNil(device)
-
     }
     
     static var allTests = [
