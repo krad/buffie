@@ -80,8 +80,8 @@ public class MovieFileWriter {
         //////// Configure the video input
         var videoSettings = config.quality.videoSettings(sourceFormat: config.videoFormat)
 
-//        self.timescale = 6_000
-        self.timescale = 1_000_000_000
+        self.timescale = 6_000
+        print(config.videoFormat)
         if var compressionSettings = videoSettings[AVVideoCompressionPropertiesKey] as? [String: Any]{
 //            if let fps = compressionSettings[AVVideoExpectedSourceFrameRateKey] as? NSNumber {
 //                self.timescale = fps.int32Value * 1000
