@@ -82,7 +82,8 @@ public class MovieFileWriter {
 
         self.timescale = 6_000
         print(config.videoFormat)
-        print(config.videoFormat as CMTimeCodeFormatDescription)
+        let x = config.videoFormat as CMTimeCodeFormatDescription
+        print(x)
         if var compressionSettings = videoSettings[AVVideoCompressionPropertiesKey] as? [String: Any]{
 //            if let fps = compressionSettings[AVVideoExpectedSourceFrameRateKey] as? NSNumber {
 //                self.timescale = fps.int32Value * 1000
