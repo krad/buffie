@@ -7,9 +7,6 @@ public class ScreenRecorder {
     /// The display we're capturing
     let display: Display
     
-    /// Should we show mouse clicks
-    var showMouseClicks: Bool
-    
     /// The sample reader
     var reader: CameraReaderProtocol
     
@@ -20,11 +17,9 @@ public class ScreenRecorder {
     private var session: CameraSessionProtocol?
     
     init(display: Display,
-         showMouseClicks: Bool = true,
          reader: CameraReaderProtocol,
          controlDelegate: CameraControlDelegate? = nil) throws {
         self.display            = display
-        self.showMouseClicks    = showMouseClicks
         self.reader             = reader
         self.controlDelegate    = controlDelegate
         
