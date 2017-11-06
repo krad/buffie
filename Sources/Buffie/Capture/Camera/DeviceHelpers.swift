@@ -10,7 +10,11 @@ internal enum DisplayType {
 @available (macOS 10.11, *)
 public struct Display {
     
-    let displayID: CGDirectDisplayID
+    public let displayID: CGDirectDisplayID
+    
+    public var name: String {
+        return displayName(for: self.displayID)
+    }
     
     internal var input: AVCaptureScreenInput {
         return AVCaptureScreenInput(displayID: displayID)
@@ -39,6 +43,47 @@ public struct Display {
     
 
 }
+
+internal func displayName(for displayID: CGDirectDisplayID) -> String {
+    
+    var result = ""
+    var object : io_object_t
+    var serialPortIterator = io_iterator_t()
+    let matching = IOServiceMatching("IODisplayConnect")
+    
+    let kernResult = IOServiceGetMatchingServices(kIOMasterPortDefault,
+                                                  matching,
+                                                  &serialPortIterator)
+    if KERN_SUCCESS == kernResult && serialPortIterator != 0 {
+        repeat {
+            object = IOIteratorNext(serialPortIterator)
+
+            let info = IODisplayCreateInfoDictionary(object, UInt32(kIODisplayOnlyPreferredName)).takeRetainedValue() as NSDictionary as! [String : AnyObject]
+            
+            let vendorID     = info[kDisplayVendorID] as? UInt32
+            let productID    = info[kDisplayProductID] as? UInt32
+            
+            if vendorID == CGDisplayVendorNumber(displayID) {
+                if productID == CGDisplayModelNumber(displayID) {
+                    if let productNameLocalizationDict = info[kDisplayProductName] as? [String: String] {
+                        let pre = Locale.autoupdatingCurrent
+                        if let language = pre.languageCode,
+                            let region = pre.regionCode {
+                            if let name = productNameLocalizationDict["\(language)_\(region)"] {
+                                result = name
+                            }
+                        }
+                    }
+                }
+            }
+            
+        } while object != 0
+    }
+    IOObjectRelease(serialPortIterator)
+    
+    return result
+}
+
 
 public extension AVCaptureDevice {
     
