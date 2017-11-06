@@ -80,10 +80,7 @@ public class MovieFileWriter {
         //////// Configure the video input
         var videoSettings = config.quality.videoSettings(sourceFormat: config.videoFormat)
 
-        self.timescale = 6_000
-        print(config.videoFormat)
-        let x = config.videoFormat as CMTimeCodeFormatDescription
-        print(x)
+        self.timescale = 30_000
         if var compressionSettings = videoSettings[AVVideoCompressionPropertiesKey] as? [String: Any]{
 //            if let fps = compressionSettings[AVVideoExpectedSourceFrameRateKey] as? NSNumber {
 //                self.timescale = fps.int32Value * 1000
@@ -173,8 +170,7 @@ public class MovieFileWriter {
     private func writeVideo(sample: CMSampleBuffer) {
         guard self.isWriting else { return }
         if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
-            print(CMSampleBufferGetPresentationTimeStamp(sample))
-            print(CMSampleBufferGetOutputDuration(sample))
+            self.timescale = CMSampleBufferGetOutputDuration(sample).timescale
             self.write(pixelBuffer, with: self.currentPTS)
             self.lastDuration += CMSampleBufferGetOutputDuration(sample).value
         }
