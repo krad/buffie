@@ -87,10 +87,6 @@ public class MovieFileWriter {
                 print("==== CHANGED", fps, fps.intValue * 1000)
                 print(CMTimeCodeFormatDescriptionGetFrameQuanta(config.videoFormat))
                 print(CMTimeCodeFormatDescriptionGetFrameDuration(config.videoFormat))
-                print(CMTimeCodeFormatDescriptionGetTimeCodeFlags(config.videoFormat) == kCMTimeCodeFlag_DropFrame)
-                print(CMTimeCodeFormatDescriptionGetTimeCodeFlags(config.videoFormat) == kCMTimeCodeFlag_24HourMax)
-                print(CMTimeCodeFormatDescriptionGetTimeCodeFlags(config.videoFormat) == kCMTimeCodeFlag_NegTimesOK)
-
             }
             
             if let bitrate = config.videoBitRate {
@@ -174,7 +170,6 @@ public class MovieFileWriter {
     private func writeVideo(sample: CMSampleBuffer) {
         guard self.isWriting else { return }
         if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
-            
             self.write(pixelBuffer, with: self.currentPTS)
             self.lastDuration += CMSampleBufferGetOutputDuration(sample).value
         }
@@ -191,7 +186,7 @@ public class MovieFileWriter {
         }
     }
     
-    internal func write(_ pixelBuffer: CVPixelBuffer, with pts: CMTime) {
+    public func write(_ pixelBuffer: CVPixelBuffer, with pts: CMTime) {
         guard self.isWriting else { return }
         
         if self.writer.status != .unknown {
