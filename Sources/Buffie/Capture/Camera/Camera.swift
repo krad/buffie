@@ -19,7 +19,7 @@ public enum CameraPosition {
 /// Enum representing things that can go wrong with the camera
 ///
 /// - noCameraFound: Thrown when we can't find a device suitable for capturing video
-public enum CameraError: Error {
+public enum CaptureDeviceError: Error {
     case deviceNotFound(deviceID: String)
     case noDeviceAvailable(type: AVMediaType)
     case noDevicesAvailable

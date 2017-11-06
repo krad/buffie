@@ -71,7 +71,7 @@ internal class CaptureSession: CaptureSessionProtocol {
         
         // Ensure we have at least one input
         if videoInput == nil && audioInput == nil {
-            throw CameraError.noDevicesAvailable
+            throw CaptureDeviceError.noDevicesAvailable
         }
         
         try self.init(videoInput: videoInput,

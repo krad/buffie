@@ -32,7 +32,7 @@ public extension AVCaptureDevice {
         if let device = devices.first {
             return device
         } else {
-            throw CameraError.noDeviceAvailable(type: mediaType)
+            throw CaptureDeviceError.noDeviceAvailable(type: mediaType)
         }
     }
     
@@ -45,7 +45,7 @@ public extension AVCaptureDeviceInput {
             if let device = AVCaptureDevice(uniqueID: devID) {
                 return try AVCaptureDeviceInput(device: device)
             } else {
-                throw CameraError.deviceNotFound(deviceID: devID)
+                throw CaptureDeviceError.deviceNotFound(deviceID: devID)
             }
         }
         return nil
