@@ -46,29 +46,29 @@ public class Camera {
     public var controlDelegate: CameraControlDelegate?
     
     /// Used to obtain and classified samples streamed from the camera (audio or video samples)
-    internal var cameraReader: CameraReaderProtocol
+    internal var cameraReader: AVReaderProtocol
 
     /// The actual camera session object.  Used for stubbing
-    internal var cameraSession: CameraSessionProtocol?
+    internal var cameraSession: CaptureSessionProtocol?
     
     public init(_ position: CameraPosition = .back,
-                reader: CameraReaderProtocol = CameraReader(),
+                reader: AVReaderProtocol = AVReader(),
                 controlDelegate: CameraControlDelegate? = nil) throws {
         self.position        = position
         self.controlDelegate = controlDelegate
         self.cameraReader    = reader
-        self.cameraSession = try CameraSession(position.osPosition,
+        self.cameraSession = try CaptureSession(position.osPosition,
                                                controlDelegate: self,
                                                cameraReader: self.cameraReader)
     }
     
     public init(videoDeviceID: String,
                 audioDeviceID: String,
-                reader: CameraReaderProtocol = CameraReader(),
+                reader: AVReaderProtocol = AVReader(),
                 controlDelegate: CameraControlDelegate? = nil) throws {
         self.controlDelegate = controlDelegate
         self.cameraReader    = reader
-        self.cameraSession   = try CameraSession(videoDeviceID: videoDeviceID,
+        self.cameraSession   = try CaptureSession(videoDeviceID: videoDeviceID,
                                                  audioDeviceID: audioDeviceID,
                                                  controlDelegate: self,
                                                  cameraReader: self.cameraReader)

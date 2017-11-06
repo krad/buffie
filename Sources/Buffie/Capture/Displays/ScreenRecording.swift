@@ -8,26 +8,41 @@ public class ScreenRecorder {
     let display: Display
     
     /// The sample reader
-    var reader: CameraReaderProtocol
+    var reader: AVReaderProtocol
     
     /// Session control delegate
     private var controlDelegate: CameraControlDelegate?
     
     /// The capture session
-    private var session: CameraSessionProtocol?
+    private var session: CaptureSessionProtocol?
     
-    public init(display: Display,
-                reader: CameraReaderProtocol,
+    convenience public init(display: Display,
+                reader: AVReaderProtocol,
                 controlDelegate: CameraControlDelegate? = nil) throws
+    {
+        try self.init(display: display, audioDeviceID: nil, reader: reader, controlDelegate: controlDelegate)
+    }
+    
+    required public init(display: Display,
+                         audioDeviceID: String?,
+                         reader: AVReaderProtocol,
+                         controlDelegate: CameraControlDelegate? = nil) throws
     {
         self.display            = display
         self.reader             = reader
         self.controlDelegate    = controlDelegate
+
+        var audioInput: AVCaptureInput?
+        if let aDeviceID = audioDeviceID {
+            if let audioDevice = AVCaptureDevice(uniqueID: aDeviceID) {
+                audioInput = try AVCaptureDeviceInput(device: audioDevice)
+            }
+        }
         
-        self.session = try CameraSession(videoInput: display.input,
-                                         audioInput: nil,
-                                         controlDelegate: self,
-                                         cameraReader: reader)
+        self.session = try CaptureSession(videoInput: display.input,
+                                          audioInput: audioInput,
+                                          controlDelegate: self,
+                                          cameraReader: reader)
     }
     
     public func start() {

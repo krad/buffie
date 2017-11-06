@@ -66,7 +66,7 @@ class MockControlDelegate: CameraControlDelegate {
 
 }
 
-class MockReader: CameraReader {
+class MockReader: AVReader {
     
     var videoExpectation: XCTestExpectation?
     var videoFulfillCount = 0
