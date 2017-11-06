@@ -170,6 +170,8 @@ public class MovieFileWriter {
     private func writeVideo(sample: CMSampleBuffer) {
         guard self.isWriting else { return }
         if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
+            print(CMSampleBufferGetPresentationTimeStamp(sample))
+            print(CMSampleBufferGetOutputDuration(sample))
             self.write(pixelBuffer, with: self.currentPTS)
             self.lastDuration += CMSampleBufferGetOutputDuration(sample).value
         }
@@ -186,7 +188,7 @@ public class MovieFileWriter {
         }
     }
     
-    public func write(_ pixelBuffer: CVPixelBuffer, with pts: CMTime) {
+    internal func write(_ pixelBuffer: CVPixelBuffer, with pts: CMTime) {
         guard self.isWriting else { return }
         
         if self.writer.status != .unknown {
