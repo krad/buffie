@@ -31,7 +31,6 @@ internal class CameraSession: CameraSessionProtocol {
     {
         self.controlDelegate = controlDelegate
         self.session         = AVCaptureSession()
-        self.session.sessionPreset = .high
         
         if let vInput = videoInput {
             self.videoInput     = vInput
