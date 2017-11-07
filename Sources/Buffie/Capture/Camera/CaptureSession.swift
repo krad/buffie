@@ -1,7 +1,7 @@
 import Foundation
 import AVKit
 
-internal protocol CameraSessionProtocol {
+internal protocol CaptureSessionProtocol {
     var videoOutput: AVCaptureVideoDataOutput? { get }
     var audioOutput: AVCaptureAudioDataOutput? { get }
 
@@ -9,7 +9,7 @@ internal protocol CameraSessionProtocol {
     func stop()
 }
 
-internal class CameraSession: CameraSessionProtocol {
+internal class CaptureSession: CaptureSessionProtocol {
     
     private var controlDelegate: CameraControlDelegate
     
@@ -27,7 +27,7 @@ internal class CameraSession: CameraSessionProtocol {
     required init(videoInput: AVCaptureInput? = nil,
                   audioInput: AVCaptureInput? = nil,
                   controlDelegate: CameraControlDelegate,
-                  cameraReader: CameraReaderProtocol) throws
+                  cameraReader: AVReaderProtocol) throws
     {
         self.controlDelegate = controlDelegate
         self.session         = AVCaptureSession()
@@ -58,33 +58,20 @@ internal class CameraSession: CameraSessionProtocol {
     convenience init(videoDeviceID: String?,
                      audioDeviceID: String?,
                      controlDelegate: CameraControlDelegate,
-                     cameraReader: CameraReaderProtocol) throws
+                     cameraReader: AVReaderProtocol) throws
     {
         var videoInput: AVCaptureInput? = nil
         var audioInput: AVCaptureInput? = nil
         
         // Attempt to configure the video device
-        if let vDeviceId = videoDeviceID {
-            if let videoDevice = AVCaptureDevice(uniqueID: vDeviceId) {
-                videoInput = try AVCaptureDeviceInput(device: videoDevice)
-            } else {
-                throw CameraError.deviceNotFound(deviceID: vDeviceId)
-                
-            }
-        }
+        videoInput = try AVCaptureDeviceInput.input(for: videoDeviceID)
         
         // Attempt to configure the video device
-        if let aDeviceId = audioDeviceID {
-            if let audioDevice = AVCaptureDevice(uniqueID: aDeviceId) {
-                audioInput = try AVCaptureDeviceInput(device: audioDevice)
-            } else {
-                throw CameraError.deviceNotFound(deviceID: aDeviceId)
-            }
-        }
+        audioInput = try AVCaptureDeviceInput.input(for: audioDeviceID)
         
         // Ensure we have at least one input
         if videoInput == nil && audioInput == nil {
-            throw CameraError.noDevicesAvailable
+            throw CaptureDeviceError.noDevicesAvailable
         }
         
         try self.init(videoInput: videoInput,
@@ -95,7 +82,7 @@ internal class CameraSession: CameraSessionProtocol {
 
     convenience init(_ position: AVCaptureDevice.Position,
                   controlDelegate: CameraControlDelegate,
-                  cameraReader: CameraReaderProtocol) throws
+                  cameraReader: AVReaderProtocol) throws
     {
         let videoDevice = try AVCaptureDevice.firstDevice(for: .video, in: position)
         let audioDevice = try AVCaptureDevice.firstDevice(for: .audio, in: position)

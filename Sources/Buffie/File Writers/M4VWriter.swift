@@ -7,7 +7,7 @@ public class M4VWriter: MovieFileWriter {
 
         let config = MovieFileConfig(url: fileURL,
                                      container: .m4v,
-                                     quality: .high,
+                                     quality: quality,
                                      videoBitRate: videoBitrate,
                                      videoFormat: videoFormat,
                                      audioFormat: audioFormat)

@@ -22,7 +22,7 @@ public protocol AVMuxerDelegate {
 }
 
 @available(OSX 10.11, iOS 5, *)
-public class AVMuxer: CameraReader {
+public class AVMuxer: AVReader {
 
     fileprivate var delegate: AVMuxerDelegate?
     internal var videoEncoder: VideoEncoder?

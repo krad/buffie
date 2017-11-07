@@ -1,7 +1,7 @@
 import Foundation
 import AVKit
 
-public protocol CameraReaderProtocol {
+public protocol AVReaderProtocol {
     var videoReader: AVCaptureVideoDataOutputSampleBufferDelegate { get }
     var audioReader: AVCaptureAudioDataOutputSampleBufferDelegate { get }
 }
@@ -15,7 +15,7 @@ public enum SampleType: UInt8 {
     case audio    = 0x61 // a
 }
 
-open class CameraReader: CameraReaderProtocol, SampleReader {
+open class AVReader: AVReaderProtocol, SampleReader {
     
     final public var videoReader: AVCaptureVideoDataOutputSampleBufferDelegate
     final public var audioReader: AVCaptureAudioDataOutputSampleBufferDelegate

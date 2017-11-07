@@ -82,9 +82,12 @@ public class MovieFileWriter {
 
         self.timescale = 30_000
         if var compressionSettings = videoSettings[AVVideoCompressionPropertiesKey] as? [String: Any]{
-            if let fps = compressionSettings[AVVideoExpectedSourceFrameRateKey] as? NSNumber {
-                self.timescale = fps.int32Value * 1000
-            }
+//            if let fps = compressionSettings[AVVideoExpectedSourceFrameRateKey] as? NSNumber {
+//                self.timescale = fps.int32Value * 1000
+//                print("==== CHANGED", fps, fps.intValue * 1000)
+//                print(CMTimeCodeFormatDescriptionGetFrameQuanta(config.videoFormat))
+//                print(CMTimeCodeFormatDescriptionGetFrameDuration(config.videoFormat))
+//            }
             
             if let bitrate = config.videoBitRate {
                 compressionSettings[AVVideoAverageBitRateKey] = NSNumber(value: bitrate)
@@ -155,16 +158,6 @@ public class MovieFileWriter {
         }
     }
     
-    public func write(_ pixelBuffer: CVPixelBuffer, with pts: CMTime) {
-        guard self.isWriting else { return }
-        
-        if self.writer.status != .unknown {
-            if self.videoInput.isReadyForMoreMediaData {
-                self.pixelAdaptor.append(pixelBuffer, withPresentationTime: pts)
-            }
-        }
-    }
-    
     public func write(_ sample: CMSampleBuffer, type: SampleType) {
         switch type {
         case .video:
@@ -177,6 +170,7 @@ public class MovieFileWriter {
     private func writeVideo(sample: CMSampleBuffer) {
         guard self.isWriting else { return }
         if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
+            self.timescale = CMSampleBufferGetOutputDuration(sample).timescale
             self.write(pixelBuffer, with: self.currentPTS)
             self.lastDuration += CMSampleBufferGetOutputDuration(sample).value
         }
@@ -192,5 +186,16 @@ public class MovieFileWriter {
             }
         }
     }
+    
+    internal func write(_ pixelBuffer: CVPixelBuffer, with pts: CMTime) {
+        guard self.isWriting else { return }
+        
+        if self.writer.status != .unknown {
+            if self.videoInput.isReadyForMoreMediaData {
+                self.pixelAdaptor.append(pixelBuffer, withPresentationTime: pts)
+            }
+        }
+    }
+
     
 }
