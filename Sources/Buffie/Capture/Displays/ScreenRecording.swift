@@ -26,12 +26,22 @@ public class ScreenRecorder {
     required public init(display: Display,
                          audioDeviceID: String?,
                          reader: AVReaderProtocol,
-                         controlDelegate: CameraControlDelegate? = nil) throws
+                         controlDelegate: CameraControlDelegate? = nil,
+                         capturesMouseClicks: Bool = true,
+                         capturesCursor: Bool = true,
+                         cropRect: CGRect? = nil) throws
     {
         self.display                    = display
         self.reader                     = reader
         self.controlDelegate            = controlDelegate
         let audioInput: AVCaptureInput? = try AVCaptureDeviceInput.input(for: audioDeviceID)
+        
+        let displayInput                 = display.input
+        displayInput.capturesMouseClicks = capturesMouseClicks
+        displayInput.capturesCursor      = capturesCursor
+        if let crop = cropRect {
+            displayInput.cropRect = crop
+        }
         
         self.session = try CaptureSession(videoInput: display.input,
                                           audioInput: audioInput,
