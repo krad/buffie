@@ -11,7 +11,6 @@ class FragmentedMP4Writer {
     }
     
     func got(_ sample: CMSampleBuffer) {
-        print(#function)
         self.videoEncoder?.encode(sample)
     }
     
@@ -21,10 +20,10 @@ extension FragmentedMP4Writer: VideoEncoderDelegate {
     
     func encoded(videoSample: CMSampleBuffer) {
         if let videoBytes = bytes(from: videoSample) {
-            let naluSize = UInt32(bytes: Array(videoBytes[0..<4]))
-            let naluType = videoBytes[4] & 0x1f
-            print(naluSize, naluType)
-            print(videoBytes)
+            let iterator = NALUStreamIterator(streamBytes: videoBytes, currentIdx: 0)
+            for nalu in iterator {
+                print(nalu)
+            }
         }
     }
     
@@ -38,7 +37,6 @@ public struct NALUStreamIterator: Sequence, IteratorProtocol {
     mutating public func next() -> NALU? {
         
         guard self.currentIdx < streamBytes.count else { return nil }
-
         if let naluSize = UInt32(bytes: Array(streamBytes[currentIdx..<currentIdx+4])) {
             let nextIdx = currentIdx + Int(naluSize) + 4
             let nalu = NALU(data: Array(streamBytes[currentIdx..<nextIdx]))

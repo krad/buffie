@@ -20,7 +20,7 @@ class FragmentedMP4WriterTests: XCTestCase {
         
     }
     
-    func xtest_experiment() {
+    func test_experiment() {
         
         let writer = try? FragmentedMP4Writer()
         XCTAssertNotNil(writer)
@@ -50,8 +50,14 @@ class FragmentedMP4WriterTests: XCTestCase {
             results.append(nalu)
         }
         
-        XCTAssert(results.count > 0)
+        XCTAssertEqual(1, results.count)
         
+        // Data contains the entire NALU.
+        XCTAssertEqual(Int(results.first!.data.count), compressedFrame.count)
+        
+        // Size is the first 4 bytes of the NALU the describes how large the payload is
+        XCTAssertEqual(Int(results.first!.size), compressedFrame.count-4)
+
         print(results)
         
     }
