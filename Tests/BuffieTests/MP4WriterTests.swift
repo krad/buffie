@@ -11,7 +11,6 @@ class MP4WriterTests: XCTestCase {
         super.setUp()
         try? FileManager.default.removeItem(at: videoURL)
     }
-
     
     func test_writing_to_a_file() {
         

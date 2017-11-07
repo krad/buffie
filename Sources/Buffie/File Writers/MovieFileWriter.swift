@@ -10,51 +10,6 @@ public struct MovieFileConfig {
     var audioFormat: CMFormatDescription?
 }
 
-public enum MovieFileContainer: String {
-    case mp4 = "mp4"
-    case m4v = "m4v"
-    case mov = "mov"
-    
-    internal var fileType: AVFileType {
-        switch self {
-        case .mp4: return AVFileType.mp4
-        case .m4v: return AVFileType.m4v
-        case .mov: return AVFileType.mov
-        }
-    }
-}
-
-public enum MovieFileQuality: String {
-    case low      = "low"
-    case medium   = "medium"
-    case high     = "high"
-    case veryhigh = "veryhight"
-    case highest  = "highest"
-    
-    internal var settingsAssitant: AVOutputSettingsAssistant {
-        switch self {
-        case .highest: return AVOutputSettingsAssistant(preset: .preset3840x2160)!
-        case .veryhigh: return AVOutputSettingsAssistant(preset: .preset1920x1080)!
-        case .high: return AVOutputSettingsAssistant(preset: .preset1280x720)!
-        case .medium: return AVOutputSettingsAssistant(preset: .preset960x540)!
-        case .low: return AVOutputSettingsAssistant(preset: .preset640x480)!
-        }
-    }
-    
-    internal func videoSettings(sourceFormat: CMFormatDescription) -> [String: Any] {
-        let assistant               = self.settingsAssitant
-        assistant.sourceVideoFormat = sourceFormat
-        return assistant.videoSettings!
-    }
-    
-    internal func audioSettings(sourceFormat: CMFormatDescription?) -> [String: Any] {
-        let assistant               = self.settingsAssitant
-        assistant.sourceAudioFormat = sourceFormat
-        return assistant.audioSettings!
-    }
-    
-}
-
 public class MovieFileWriter {
     
     private var writer: AVAssetWriter
@@ -82,13 +37,6 @@ public class MovieFileWriter {
 
         self.timescale = 30_000
         if var compressionSettings = videoSettings[AVVideoCompressionPropertiesKey] as? [String: Any]{
-//            if let fps = compressionSettings[AVVideoExpectedSourceFrameRateKey] as? NSNumber {
-//                self.timescale = fps.int32Value * 1000
-//                print("==== CHANGED", fps, fps.intValue * 1000)
-//                print(CMTimeCodeFormatDescriptionGetFrameQuanta(config.videoFormat))
-//                print(CMTimeCodeFormatDescriptionGetFrameDuration(config.videoFormat))
-//            }
-            
             if let bitrate = config.videoBitRate {
                 compressionSettings[AVVideoAverageBitRateKey] = NSNumber(value: bitrate)
                 videoSettings[AVVideoCompressionPropertiesKey] = compressionSettings

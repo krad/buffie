@@ -58,9 +58,10 @@ public class Camera {
         self.controlDelegate = controlDelegate
         self.cameraReader    = reader
         self.cameraSession = try CaptureSession(position.osPosition,
-                                               controlDelegate: self,
-                                               cameraReader: self.cameraReader)
+                                                controlDelegate: self,
+                                                cameraReader: self.cameraReader)
     }
+    
     
     public init(videoDeviceID: String,
                 audioDeviceID: String,
