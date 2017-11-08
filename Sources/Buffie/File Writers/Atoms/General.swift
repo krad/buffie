@@ -5,6 +5,7 @@ enum Atom: String, BinaryEncodable {
     case mvhd = "mvhd"
     case tkhd = "tkhd"
     case mdhd = "mdhd"
+    case hdlr = "hdlr"
 //    case moov = "moov"
 //    case moof = "moof"
 //    case trak = "trak"
@@ -39,3 +40,11 @@ enum Brand: String, BinaryEncodable {
     case isom = "isom"
     case hlsf = "hlsf"
 }
+
+enum AtomDataType: String, BinaryEncodable {
+    case video      = "vide"
+    case sound      = "soun"
+    case subtitles  = "subt"
+    case alias      = "alis"
+}
+
