@@ -25,14 +25,14 @@ public struct NALU: CustomStringConvertible {
 
 public enum NALUType: UInt8, CustomStringConvertible {
     case Undefined           = 0
-    case CodedSlice          = 1
+    case CodedSlice          = 1 // P/B Frame
     case DataPartitionA      = 2
     case DataPartitionB      = 3
     case DataPartitionC      = 4
-    case IDR                 = 5
+    case IDR                 = 5 // I Frame
     case SEI                 = 6
-    case SPS                 = 7
-    case PPS                 = 8
+    case SPS                 = 7 // Sequence Parameter Set
+    case PPS                 = 8 // Picture Parameter Set
     case AccessUnitDelimiter = 9
     case EndOfSequence       = 10
     case EndOfStream         = 11

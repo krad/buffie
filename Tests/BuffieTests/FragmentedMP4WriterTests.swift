@@ -20,7 +20,7 @@ class FragmentedMP4WriterTests: XCTestCase {
         
     }
     
-    func test_experiment() {
+    func xtest_experiment() {
         
         let writer = try? FragmentedMP4Writer()
         XCTAssertNotNil(writer)
