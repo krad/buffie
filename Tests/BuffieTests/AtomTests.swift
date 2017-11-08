@@ -3,28 +3,28 @@ import XCTest
 
 class AtomTests: XCTestCase {
     
-    func test_that_we_can_encode_an_ftyp_atom() {
+    var testCases: [(BinaryEncodable, String)] = [
+        (FTYP(), "00000020667479706d703432000000016d7034316d70343269736f6d686c7366"),
         
-        let ftyp    = FTYP()
-        let bytes   = try? BinaryEncoder.encode(ftyp)
-        XCTAssertNotNil(bytes)
+        (MVHD(), "0000006c6d76686400000000d627cae4d627cae40000ac44000000000001000001000000000000000000000000010000000000000000000000000000000100000000000000000000000000004000000000000000000000000000000000000000000000000000000000000003"),
         
-        let data = Data(bytes: bytes!)
-        let hexData = data.hexEncodedString()
-        XCTAssertEqual(hexData,
-                       "00000020667479706d703432000000016d7034316d70343269736f6d686c7366")
-    }
+        (TKHD(), "0000005c746b686400000001d627cae4d627cae4000000010000000000000000000000000000000000000000010000000001000000000000000000000000000000010000000000000000000000000000400000000500000002d00000")
+        
+    ]
     
-    func test_that_we_can_encode_an_mvhd_atom() {
+    func test_that_we_can_encode_atoms_to_their_proper_binary_representations() {
         
-        let mvhd = MVHD()
-        let bytes = try? BinaryEncoder.encode(mvhd)
-        XCTAssertNotNil(bytes)
+        for testCase in testCases {
+            
+            let bytes = try? BinaryEncoder.encode(testCase.0)
+            XCTAssertNotNil(bytes)
+            
+            let data    = Data(bytes: bytes!)
+            let hexData = data.hexEncodedString()
+            XCTAssertEqual(hexData, testCase.1)
+            
+        }
         
-        let data = Data(bytes: bytes!)
-        let hexData = data.hexEncodedString()
-
-        XCTAssertEqual(hexData, "0000006c6d76686400000000d627cae4d627cae40000ac44000000000001000001000000000000000000000000010000000000000000000000000000000100000000000000000000000000004000000000000000000000000000000000000000000000000000000000000003")
     }
     
 }
