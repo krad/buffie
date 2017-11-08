@@ -4,6 +4,7 @@
 
 import CoreFoundation
 
+
 /// A protocol for types which can be encoded to binary.
 public protocol BinaryEncodable: Encodable {
     func binaryEncode(to encoder: BinaryEncoder) throws
@@ -20,7 +21,7 @@ public extension BinaryEncodable {
 
 /// The actual binary encoder class.
 public class BinaryEncoder {
-    fileprivate var data: [UInt8] = []
+    internal var data: [UInt8] = []
     
     public init() {}
 }
@@ -76,7 +77,7 @@ public extension BinaryEncoder {
         case let v as Double:
             encode(v)
         case let v as Bool:
-            try encode(v)
+            try encode(v)            
         case let binary as BinaryEncodable:
             try binary.binaryEncode(to: self)
         default:
