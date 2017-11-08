@@ -2,6 +2,7 @@ import Foundation
 
 enum Atom: String, BinaryEncodable {
     case ftyp = "ftyp"
+    case mvhd = "mvhd"
     case moov = "moov"
     case moof = "moof"
     case trak = "trak"

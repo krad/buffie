@@ -71,18 +71,14 @@ public extension BinaryEncoder {
             try encode(Int64(v))
         case let v as UInt:
             try encode(UInt64(v))
-            
         case let v as Float:
             encode(v)
         case let v as Double:
             encode(v)
-            
         case let v as Bool:
             try encode(v)
-            
         case let binary as BinaryEncodable:
             try binary.binaryEncode(to: self)
-            
         default:
             throw Error.typeNotConformingToBinaryEncodable(type(of: encodable))
         }
