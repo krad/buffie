@@ -4,6 +4,7 @@ enum Atom: String, BinaryEncodable {
     case ftyp = "ftyp"
     case mvhd = "mvhd"
     case tkhd = "tkhd"
+    case mdhd = "mdhd"
 //    case moov = "moov"
 //    case moof = "moof"
 //    case trak = "trak"
