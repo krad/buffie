@@ -33,23 +33,3 @@ struct AVC1: BinarySizedEncodable {
     var colr: [COLR] = [COLR()]
     var pasp: [PASP] = [PASP()]
 }
-
-
-//<item offset="433" name="Reserved">0</item>
-//<item offset="439" name="Data reference index">1</item>
-//<item offset="441" name="Version">0</item>
-//<item offset="443" name="Revision level">0</item>
-//<item offset="445" name="Vendor"></item>
-//<item offset="449" name="Temporal quality">0</item>
-//<item offset="453" name="Spatial quality">0</item>
-//<item offset="457" name="Width">1280</item>
-//<item offset="459" name="Height">720</item>
-//<item offset="461" name="Horizontal resolution">4718592</item>
-//<item offset="465" name="Vertical resolution">4718592</item>
-//<item offset="469" name="Data size">0</item>
-//<item offset="473" name="Frame count">1</item>
-//<item offset="475" name="Compressor name size">0</item>
-//<item offset="476" name="Padding">(31 bytes)</item>
-//<item offset="507" name="Depth">24</item>
-//<item offset="509" name="Color table ID">65535</item>
-

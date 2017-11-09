@@ -25,6 +25,8 @@ enum Atom: String, BinaryEncodable {
     case moov = "moov"
     case trex = "trex"
     case mvex = "mvex"
+    case mfhd = "mfhd"
+    case tfhd = "tfhd"
 }
 
 enum Brand: String, BinaryEncodable {
