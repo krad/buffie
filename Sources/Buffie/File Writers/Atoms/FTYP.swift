@@ -1,5 +1,3 @@
-import Foundation
-
 struct FTYP: BinaryEncodable {
     
     let type: Atom = .ftyp

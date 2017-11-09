@@ -1,5 +1,3 @@
-import Foundation
-
 struct DREF: BinarySizedEncodable {
     
     let type: Atom = .dref
