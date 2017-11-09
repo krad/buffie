@@ -2,6 +2,7 @@
 // This allows the media data itself to be unframed. The total number of samples in the media
 // is always indicated in the sample count. If the default size is indicated, then no table follows.
 // https://developer.apple.com/library/content/documentation/QuickTime/QTFF/art/qt_l_108.gif
+
 struct STSZ: BinaryEncodable {
     
     let type: Atom = .stsz

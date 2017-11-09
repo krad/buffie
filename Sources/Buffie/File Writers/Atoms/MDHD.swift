@@ -1,6 +1,7 @@
 // The media header atom specifies the characteristics of a media, including time scale
 // and duration. The media header atom has an atom type of 'mdhd'.
 // https://developer.apple.com/library/content/documentation/QuickTime/QTFF/art/qt_l_097.gif
+
 struct MDHD: BinaryEncodable {
     
     let type: Atom = .mdhd
