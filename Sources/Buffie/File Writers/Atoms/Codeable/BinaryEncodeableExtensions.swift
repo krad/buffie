@@ -5,18 +5,24 @@
 /// Implementations of BinaryCodable for built-in types.
 import Foundation
 
-/// This is used when an atom has children that need to be prefixed by their size
-protocol BinarySizedEncodable: BinaryEncodable {
-}
-
 extension Array: BinaryEncodable {
     public func binaryEncode(to encoder: BinaryEncoder) throws {
         guard Element.self is Encodable.Type else {
             throw BinaryEncoder.Error.typeNotConformingToEncodable(Element.self)
         }
-    
-        for element in self {
-            try (element as! Encodable).encode(to: encoder)
+        
+        if Element.self is BinarySizedEncodable.Type {
+            for element in self {
+                let newEncoder = BinaryEncoder()
+                try (element as! Encodable).encode(to: newEncoder)
+                try encoder.encode(UInt32(newEncoder.data.count + 4))
+                try newEncoder.data.encode(to: encoder)
+            }
+
+        } else {
+            for element in self {
+                try (element as! Encodable).encode(to: encoder)
+            }
         }
     }
 }

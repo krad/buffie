@@ -8,6 +8,7 @@ enum Atom: String, BinaryEncodable {
     case hdlr = "hdlr"
     case vmhd = "vmhd"
     case dref = "dref"
+    case dinf = "dinf"
 }
 
 enum Brand: String, BinaryEncodable {
