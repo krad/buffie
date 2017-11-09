@@ -14,6 +14,8 @@ enum Atom: String, BinaryEncodable {
     case stsc = "stsc"
     case stts = "stts"
     case pasp = "pasp"
+    case colr = "colr"
+    case avcC = "avcC"
 }
 
 enum Brand: String, BinaryEncodable {

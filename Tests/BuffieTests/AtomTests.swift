@@ -22,6 +22,9 @@ class AtomTests: XCTestCase {
         (STSC(), "00000010737473630000000000000000"),
         (STTS(), "00000010737474730000000000000000"),
         (PASP(), "00000010706173700000000100000001"),
+        (COLR(), "00000013636f6c726e636c7800010001000100"),
+        
+        (AVCC(), "0000003261766343014d001fffe1001b274d001f898b602802dd80b5010101ec0c0017700005dc17bdf05001000428ee1f20")
     ]
     
     func test_that_we_can_encode_atoms_to_their_proper_binary_representations() {
@@ -33,7 +36,9 @@ class AtomTests: XCTestCase {
             
             let data    = Data(bytes: bytes!)
             let hexData = data.hexEncodedString()
-            XCTAssertEqual(hexData, testCase.1)
+            
+            let errorMessage = "\nExpected: \(testCase.1)\nGot:      \(hexData)"
+            XCTAssertEqual(hexData, testCase.1, errorMessage)
             
         }
         
