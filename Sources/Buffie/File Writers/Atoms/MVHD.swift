@@ -1,7 +1,7 @@
 // The data contained in this atom defines characteristics of the entire QuickTime movie, such as time scale and duration. It has an atom type value of 'mvhd'.
 // https://developer.apple.com/library/content/documentation/QuickTime/QTFF/art/qt_l_095.gif
 
-struct MVHD: BinaryEncodable {
+struct MVHD: BinarySizedEncodable {
     
     let type: Atom      = .mvhd
     var version: UInt8  = 0

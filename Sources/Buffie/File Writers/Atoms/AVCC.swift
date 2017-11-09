@@ -1,5 +1,5 @@
 // AVC Decoder Configuration
-struct AVCC: BinaryEncodable {
+struct AVCC: BinarySizedEncodable {
     
     let type: Atom = .avcC
     

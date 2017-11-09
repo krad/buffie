@@ -1,8 +1,8 @@
-struct MINF: BinaryEncodable {
+struct MINF: BinarySizedEncodable {
     
     let type: Atom = .minf
-    var videoMediaInformationAtom = VMHD()
-    var dataInformationAtom       = DINF()
-    var sampleTableAtom           = STBL()
+    var videoMediaInformationAtom: [VMHD] = [VMHD()]
+    var dataInformationAtom: [DINF] = [DINF()]
+    var sampleTableAtom: [STBL] = [STBL()]
     
 }

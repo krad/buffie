@@ -1,7 +1,7 @@
 // The handler reference atom specifies the media handler component that is to be used to interpret the media’s data.
 // https://developer.apple.com/library/content/documentation/QuickTime/QTFF/art/qt_l_031.gif
 
-struct HDLR: BinaryEncodable {
+struct HDLR: BinarySizedEncodable {
     
     var type: Atom = .hdlr
     

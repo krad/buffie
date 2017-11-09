@@ -20,23 +20,41 @@ class FragmentedMP4WriterTests: XCTestCase {
         
     }
     
-    func xtest_experiment() {
+    func test_that_we_only_accept_directories() {
         
-        let writer = try? FragmentedMP4Writer()
+        let file = URL(fileURLWithPath: "/tmp/file.mp4")
+        XCTAssertThrowsError(try FragmentedMP4Writer(file))
+        
+        let dir = URL(fileURLWithPath: "/tmp")
+        XCTAssertNoThrow(try FragmentedMP4Writer(dir))
+        
+        let badDir = URL(fileURLWithPath: "/blahblahblahallbalha")
+        XCTAssertThrowsError(try FragmentedMP4Writer(badDir))
+        
+    }
+    
+    func test_segment_naming_conventions() {
+        let dir    = URL(fileURLWithPath: "/tmp")
+        let writer = try? FragmentedMP4Writer(dir)
+        XCTAssertNotNil(writer)
+        XCTAssertEqual(writer?.currentSegmentName, "fileSeq0.mp4")
+    }
+    
+    func test_that_we_can_write_a_initialization_segment() {
+
+        let dir    = URL(fileURLWithPath: "/tmp")
+        let writer = try? FragmentedMP4Writer(dir)
         XCTAssertNotNil(writer)
         
-        let reader = SimpleReader() { sample in
-            writer?.got(sample)
-        }
-        
-        let camera = try? Camera(.back, reader: reader, controlDelegate: nil)
-        XCTAssertNotNil(camera)
-        
-        camera?.start()
-        
-        let e = self.expectation(description: "Blah")
-        
-        self.wait(for: [e], timeout: 10)
+        var format: CMFormatDescription?
+        CMFormatDescriptionCreate(kCFAllocatorDefault,
+                                  kCMMediaType_Video,
+                                  fourCharCode(from: "avc1"),
+                                  nil,
+                                  &format)
+        XCTAssertNotNil(format)
+        let initSegment = try? FragementedMP4InitalizationSegment(writer!.currentSegmentURL, format: format!)
+        XCTAssertNotNil(initSegment)
         
     }
     
@@ -63,3 +81,25 @@ class FragmentedMP4WriterTests: XCTestCase {
     }
     
 }
+
+
+//func xtest_experiment() {
+//
+//    let writer = try? FragmentedMP4Writer()
+//    XCTAssertNotNil(writer)
+//
+//    let reader = SimpleReader() { sample in
+//        writer?.got(sample)
+//    }
+//
+//    let camera = try? Camera(.back, reader: reader, controlDelegate: nil)
+//    XCTAssertNotNil(camera)
+//
+//    camera?.start()
+//
+//    let e = self.expectation(description: "Blah")
+//
+//    self.wait(for: [e], timeout: 10)
+//
+//}
+

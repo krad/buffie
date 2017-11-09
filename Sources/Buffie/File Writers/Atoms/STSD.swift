@@ -1,5 +1,5 @@
 // FIXME
-struct STSD: BinaryEncodable {
+struct STSD: BinarySizedEncodable {
     
     let type: Atom = .stsd
     var version: UInt8 = 0

@@ -2,7 +2,7 @@
 // and duration. The media header atom has an atom type of 'mdhd'.
 // https://developer.apple.com/library/content/documentation/QuickTime/QTFF/art/qt_l_097.gif
 
-struct MDHD: BinaryEncodable {
+struct MDHD: BinarySizedEncodable {
     
     let type: Atom = .mdhd
     var version: UInt8 = 0

@@ -1,8 +1,8 @@
-struct TRAK: BinaryEncodable {
+struct TRAK: BinarySizedEncodable {
     
     let type: Atom = .trak
     
-    var trackHeader = TKHD()
-    var mediaAtom   = MDIA()
+    var trackHeader: [TKHD] = [TKHD()]
+    var mediaAtom: [MDIA]   = [MDIA()]
     
 }
