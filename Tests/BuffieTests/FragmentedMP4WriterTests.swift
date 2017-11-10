@@ -40,7 +40,7 @@ class FragmentedMP4WriterTests: XCTestCase {
         XCTAssertEqual(writer?.currentSegmentName, "fileSeq0.mp4")
     }
     
-    func test_that_we_can_write_a_initialization_segment() {
+    func test_that_we_can_write_a_segments() {
 
         let dir    = URL(fileURLWithPath: "/tmp")
         let writer = try? FragmentedMP4Writer(dir)
@@ -52,9 +52,17 @@ class FragmentedMP4WriterTests: XCTestCase {
                                   fourCharCode(from: "avc1"),
                                   nil,
                                   &format)
+        
+        /// Test that we can write the init segment
         XCTAssertNotNil(format)
         let initSegment = try? FragementedMP4InitalizationSegment(writer!.currentSegmentURL, format: format!)
         XCTAssertNotNil(initSegment)
+
+        /// Test that we can write a moof segment
+        let firstSegment = try? FragmentedMP4Segment(writer!.currentSegmentURL,
+                                                     samples: writer!.samples,
+                                                     segmentNumber: 1)
+        XCTAssertNotNil(firstSegment)
         
     }
     
@@ -80,26 +88,25 @@ class FragmentedMP4WriterTests: XCTestCase {
         
     }
     
+    func test_experiment() {
+        let dir    = URL(fileURLWithPath: "/tmp")
+        let writer = try? FragmentedMP4Writer(dir)
+        XCTAssertNotNil(writer)
+        
+        let reader = SimpleReader() { sample in
+            writer?.got(sample)
+        }
+        
+        let camera = try? Camera(.back, reader: reader, controlDelegate: nil)
+        XCTAssertNotNil(camera)
+        
+        camera?.start()
+        
+        let e = self.expectation(description: "Blah")
+        
+        self.wait(for: [e], timeout: 10)
+    }
+    
+
+    
 }
-
-
-//func xtest_experiment() {
-//
-//    let writer = try? FragmentedMP4Writer()
-//    XCTAssertNotNil(writer)
-//
-//    let reader = SimpleReader() { sample in
-//        writer?.got(sample)
-//    }
-//
-//    let camera = try? Camera(.back, reader: reader, controlDelegate: nil)
-//    XCTAssertNotNil(camera)
-//
-//    camera?.start()
-//
-//    let e = self.expectation(description: "Blah")
-//
-//    self.wait(for: [e], timeout: 10)
-//
-//}
-

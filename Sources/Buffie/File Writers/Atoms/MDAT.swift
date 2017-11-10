@@ -2,7 +2,14 @@
 struct MDAT: BinaryEncodable {
     
     let type: Atom = .mdat
+    private var data: [UInt8] = []
     
-    var sampleData: [UInt8]
+    init(samples: [Sample]) {
+        for sample in samples {
+            for nalu in sample.nalus {
+                data.append(contentsOf: nalu.data)
+            }
+        }
+    }
     
 }

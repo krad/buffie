@@ -5,6 +5,10 @@ struct MFHD: BinarySizedEncodable {
     var version: UInt8 = 0
     var flags: [UInt8] = [0, 0, 0]
     
-    var sequenceNumber: UInt32 = 1
+    var sequenceNumber: UInt32
+    
+    init(sequenceNumber: UInt32 = 1) {
+        self.sequenceNumber = sequenceNumber
+    }
     
 }
