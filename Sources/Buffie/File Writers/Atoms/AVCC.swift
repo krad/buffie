@@ -8,7 +8,7 @@ struct AVCC: BinarySizedEncodable {
     var profileCompatibility: UInt8 = 0
     var levelIndication: UInt8 = 31
     
-    var naluSize: UInt8   = 0xff // NALUnitLength field in the parameter set minus 1
+    var naluSize: UInt8   = 3 // NALUnitLength field in the parameter set minus 1
     var spsCount: UInt8   = 0xe1
     var spsLength: UInt16 = 27
     

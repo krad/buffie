@@ -10,7 +10,7 @@ struct TKHD: BinarySizedEncodable {
     var creationTime: UInt32     = 3592932068
     var modificationTime: UInt32 = 3592932068
 
-    var trackID: UInt32     = 1
+    var trackID: UInt32     = 2
     var reservedA: UInt32   = 0
     var duration: UInt32    = 0
     var reservedB: UInt64   = 0

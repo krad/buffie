@@ -36,7 +36,8 @@ class FragmentedMP4Writer {
         self.outputDir = outputDir
         
         /// Setup a video encoder
-        let settings      = VideoEncoderSettings()
+        var settings                  = VideoEncoderSettings()
+        settings.allowFrameReordering = false
         self.videoEncoder = try VideoEncoder(settings, delegate: self)
         
     }
@@ -64,16 +65,16 @@ class FragmentedMP4Writer {
     
     func append(_ sample: Sample) {
         self.duration += sample.duration.value
-//        print(self.duration, sample.duration.timescale)
         
         if self.currentSegment == 0 {
             self.setupInitial(with: sample)
+            self.samples = [sample]
         } else {
+            
             if let writer = self.currentSegmentWriter {
-                
-                if samples.count >= 15 {
-                    try? writer.write(samples)
-                    self.samples = []
+                if sample.isSync {
+                    if samples.count > 0 { try? writer.write(samples) }
+                    self.samples = [sample]
                 } else {
                     self.samples.append(sample)
                 }
@@ -82,6 +83,7 @@ class FragmentedMP4Writer {
                 self.samples.append(sample)
                 setupSegment()
             }
+            
         }
     }
     
@@ -135,10 +137,13 @@ struct MOOVConfig {
 
 class FragmentedMP4Segment {
     
+    // Current segment we're on.  Not even sure why this class knows about this
     var segmentNumber: Int = 0
-    var currentSequence: Int = 1
     var file: URL
     var fileHandle: FileHandle
+
+    /// Current moof we're one
+    var currentSequence: Int = 1
     
     init(_ file: URL, segmentNumber: Int) throws {
         self.file          = file
@@ -152,15 +157,24 @@ class FragmentedMP4Segment {
     }
     
     func write(_ samples: [Sample]) throws {
-        let moof = try BinaryEncoder.encode(MOOF(samples: samples,
-                                                 currentSequence: UInt32(self.currentSequence)))
         
-        let mdat = try BinaryEncoder.encode(MDAT(samples: samples))
+        let moof = MOOF(samples: samples,
+                        currentSequence: UInt32(self.currentSequence))
+        
+        let mdat = MDAT(samples: samples)
+        
+        let moofBytes = try BinaryEncoder.encode(moof)
+        let mdatBytes = try BinaryEncoder.encode(mdat)
 
-        let data = Data(bytes: moof + mdat)
+        let data = Data(bytes: moofBytes + mdatBytes)
         self.fileHandle.write(data)
         
         self.currentSequence += 1
+    }
+    
+    deinit {
+        print("GOOTM E!")
+        self.fileHandle.closeFile()
     }
     
 }
@@ -192,8 +206,8 @@ public struct Sample {
         
         if let sampleAttachements = CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, false) as? [Any] {
             if let attachments = sampleAttachements.first as? [CFString: Any] {
+                if let notSync         = attachments[kCMSampleAttachmentKey_NotSync] as? Bool                    { self.isSync = !notSync } else { self.isSync = true }
                 if let dependsOnOthers = attachments[kCMSampleAttachmentKey_DependsOnOthers] as? Bool            { self.dependsOnOthers = dependsOnOthers }
-                if let notSync         = attachments[kCMSampleAttachmentKey_NotSync] as? Bool                    { self.isSync = !notSync }
                 if let earlierPTS      = attachments[kCMSampleAttachmentKey_EarlierDisplayTimesAllowed] as? Bool { self.earlierDisplayTimesAllowed = earlierPTS }
             }
         }

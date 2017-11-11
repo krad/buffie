@@ -103,7 +103,7 @@ class FragmentedMP4WriterTests: XCTestCase {
         
         let e = self.expectation(description: "Blah")
         
-        self.wait(for: [e], timeout: 10)
+        self.wait(for: [e], timeout: 20)
     }
     
 

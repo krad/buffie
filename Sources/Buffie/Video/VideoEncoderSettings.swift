@@ -18,8 +18,8 @@ public struct VideoEncoderSettings {
     var useHardwareEncoding: Bool
     
     init() {
-        self.width                    = 480
-        self.height                   = 640
+        self.width                    = 640
+        self.height                   = 480
         self.codec                    = kCMVideoCodecType_H264
         self.frameRate                = 24
         self.videoFormat              = .x420YpCbCr8BiPlanarVideoRange

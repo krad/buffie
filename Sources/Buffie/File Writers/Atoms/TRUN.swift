@@ -1,14 +1,13 @@
 struct TRUN: BinarySizedEncodable {
     
     let type: Atom          = .trun
-    let trFlags: TRUNFlags  = [//.dataOffsetPresent,
+    let trFlags: TRUNFlags  = [.dataOffsetPresent,
                                .sampleDurationPresent,
                                .sampleSizePresent,
-                               .sampleFlagsPresent,
-                               .sampleCompositionTimeOffsetsPresent]
+                               .sampleFlagsPresent]
     
     var sampleCount: UInt32 = 0
-//    var dataOffset: Int32   = 0
+    var dataOffset: Int32   = 0
     
     var samples: [TRUNSample] = []
     
@@ -35,12 +34,12 @@ struct TRUNSample: BinaryEncodable {
     var duration: UInt32              = 0
     var size: UInt32                  = 0
     var flags: SampleFlags
-    var compositionTimeOffset: UInt32 = 0
+//    var compositionTimeOffset: UInt32 = 0
     
     init(_ sample: Sample) {
         self.duration              =  UInt32(sample.duration.value)
         self.size                  =  sample.size
-        self.compositionTimeOffset = UInt32((sample.pts.value / Int64(sample.duration.timescale)) / 90)
+//        self.compositionTimeOffset = UInt32((sample.pts.value / Int64(sample.duration.timescale)) / 90)
         
         if sample.dependsOnOthers { self.flags = [.sampleDependsOn] }
         else { self.flags = [.sampleIsDependedOn] }
