@@ -59,6 +59,7 @@ enum VideoFormat {
 enum VideoProfileLevel {
     case h264BaselineAutoLevel
     case h264Baseline_4_0
+    case h264High_4_0
     
     var raw: CFString {
         get {
@@ -67,6 +68,8 @@ enum VideoProfileLevel {
                 return kVTProfileLevel_H264_Baseline_AutoLevel
             case .h264Baseline_4_0:
                 return kVTProfileLevel_H264_Baseline_4_0
+            case .h264High_4_0:
+                return kVTProfileLevel_H264_High_4_0
             }
         }
     }

@@ -38,6 +38,7 @@ class FragmentedMP4Writer {
         /// Setup a video encoder
         var settings                  = VideoEncoderSettings()
         settings.allowFrameReordering = false
+        settings.profileLevel         = .h264High_4_0
         self.videoEncoder = try VideoEncoder(settings, delegate: self)
         
     }
@@ -147,8 +148,8 @@ class FragmentedMP4Segment {
     var file: URL
     var fileHandle: FileHandle
 
-    /// Current moof we're one
-    var currentSequence: Int = 1
+    /// Current moof we're on
+    var currentSequence: Int = 0
     
     init(_ file: URL, segmentNumber: Int) throws {
         self.file          = file
