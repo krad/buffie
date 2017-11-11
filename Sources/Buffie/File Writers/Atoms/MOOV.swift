@@ -10,6 +10,7 @@ struct MOOV: BinaryEncodable {
     var mediaFragmentInfo: [MVEX] = [MVEX()]
     
     init(_ config: MOOVConfig) {
+        self.movieHeaderAtom = [MVHD.from(config)]
         self.tracks = [TRAK.from(config)]
         
     }

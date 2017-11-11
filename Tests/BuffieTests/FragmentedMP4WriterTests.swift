@@ -42,26 +42,26 @@ class FragmentedMP4WriterTests: XCTestCase {
     
     func xtest_that_we_can_write_a_segments() {
 
-        let dir    = URL(fileURLWithPath: "/tmp")
-        let writer = try? FragmentedMP4Writer(dir)
-        XCTAssertNotNil(writer)
-        
-        var format: CMFormatDescription?
-        CMFormatDescriptionCreate(kCFAllocatorDefault,
-                                  kCMMediaType_Video,
-                                  fourCharCode(from: "avc1"),
-                                  nil,
-                                  &format)
-        
-        /// Test that we can write the init segment
-        XCTAssertNotNil(format)
-        let initSegment = try? FragementedMP4InitalizationSegment(writer!.currentSegmentURL, format: format!)
-        XCTAssertNotNil(initSegment)
-
-        /// Test that we can write a moof segment
-        let firstSegment = try? FragmentedMP4Segment(writer!.currentSegmentURL,
-                                                     segmentNumber: 1)
-        XCTAssertNotNil(firstSegment)
+//        let dir    = URL(fileURLWithPath: "/tmp")
+//        let writer = try? FragmentedMP4Writer(dir)
+//        XCTAssertNotNil(writer)
+//
+//        var format: CMFormatDescription?
+//        CMFormatDescriptionCreate(kCFAllocatorDefault,
+//                                  kCMMediaType_Video,
+//                                  fourCharCode(from: "avc1"),
+//                                  nil,
+//                                  &format)
+//
+//        /// Test that we can write the init segment
+//        XCTAssertNotNil(format)
+//        let initSegment = try? FragementedMP4InitalizationSegment(writer!.currentSegmentURL, format: format!)
+//        XCTAssertNotNil(initSegment)
+//
+//        /// Test that we can write a moof segment
+//        let firstSegment = try? FragmentedMP4Segment(writer!.currentSegmentURL,
+//                                                     segmentNumber: 1)
+//        XCTAssertNotNil(firstSegment)
         
     }
     
@@ -103,7 +103,7 @@ class FragmentedMP4WriterTests: XCTestCase {
         
         let e = self.expectation(description: "Blah")
         
-        self.wait(for: [e], timeout: 20)
+        self.wait(for: [e], timeout: 40)
     }
     
 

@@ -45,7 +45,8 @@ class FragmentedMP4Writer {
     func setupInitial(with sample: Sample) {
         do {
             _ = try FragementedMP4InitalizationSegment(self.currentSegmentURL,
-                                                       format: sample.format)
+                                                       format: sample.format,
+                                                       sample: sample)
             self.currentSegment += 1
         }
         catch { print("=== Couldn't write init segment") }
@@ -105,9 +106,11 @@ extension FragmentedMP4Writer: VideoEncoderDelegate {
 
 class FragementedMP4InitalizationSegment {
     
-    init(_ file: URL, format: CMFormatDescription) throws {
+    init(_ file: URL, format: CMFormatDescription, sample: Sample) throws {
         
-        let config    = MOOVConfig(format)
+        var config       = MOOVConfig(format)
+        config.timescale = UInt32(sample.duration.timescale)
+        
         let ftypBytes = try BinaryEncoder.encode(FTYP())
         let moovBytes = try BinaryEncoder.encode(MOOV(config))
         
@@ -117,10 +120,12 @@ class FragementedMP4InitalizationSegment {
 }
 
 struct MOOVConfig {
+    
     var sps: [UInt8]
     var pps: [UInt8]
     var width: UInt32
     var height: UInt32
+    var timescale: UInt32 = 30000
     
     init(_ format: CMFormatDescription) {
         let paramSet = getVideoFormatDescriptionData(format)
@@ -170,11 +175,6 @@ class FragmentedMP4Segment {
         self.fileHandle.write(data)
         
         self.currentSequence += 1
-    }
-    
-    deinit {
-        print("GOOTM E!")
-        self.fileHandle.closeFile()
     }
     
 }

@@ -33,7 +33,7 @@ struct TRUNFlags: BinaryEncodable, OptionSet {
 struct TRUNSample: BinaryEncodable {
     var duration: UInt32              = 0
     var size: UInt32                  = 0
-    var flags: SampleFlags
+    var flags: SampleFlags            = []
 //    var compositionTimeOffset: UInt32 = 0
     
     init(_ sample: Sample) {
@@ -41,8 +41,8 @@ struct TRUNSample: BinaryEncodable {
         self.size                  =  sample.size
 //        self.compositionTimeOffset = UInt32((sample.pts.value / Int64(sample.duration.timescale)) / 90)
         
-        if sample.dependsOnOthers { self.flags = [.sampleDependsOn] }
-        else { self.flags = [.sampleIsDependedOn] }
+        if sample.isSync          { self.flags.insert(.sampleIsDependedOn) }
+        if sample.dependsOnOthers { self.flags.insert(.sampleDependsOn) }
         
     }
 }

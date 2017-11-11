@@ -12,9 +12,15 @@ struct MDHD: BinarySizedEncodable {
     var modificationTime: UInt32 = 3592932068
     
     var timeScale: UInt32 = 30000
-    var duration: UInt32 = 3003
+    var duration: UInt32 = 0
     
     var language: UInt16 = 0x55c4
     var quality: UInt16 = 0
+    
+    static func from(_ config: MOOVConfig) -> MDHD {
+        var mdhd = MDHD()
+        mdhd.timeScale = config.timescale
+        return mdhd
+    }
     
 }

@@ -10,7 +10,7 @@ struct MVHD: BinarySizedEncodable {
     var creationTime: UInt32     = 3592932068
     var modificationTime: UInt32 = 3592932068
     
-    var timeScale: UInt32 = 44100
+    var timeScale: UInt32 = 30
     var duration: UInt32  = 0
     
     var preferredRate: UInt32   = 0x00010000
@@ -31,5 +31,11 @@ struct MVHD: BinarySizedEncodable {
     var selectionDuration: UInt32 = 0
     var currentTime: UInt32 = 0
     var nextTrackID: UInt32 = 2
+    
+    static func from(_ config: MOOVConfig) -> MVHD {
+        var mvhd = MVHD()
+        mvhd.timeScale = config.timescale
+        return mvhd
+    }
     
 }

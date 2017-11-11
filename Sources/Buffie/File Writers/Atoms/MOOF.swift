@@ -14,14 +14,12 @@ struct MOOF: BinaryEncodable {
     }
     
     func binaryEncode(to encoder: BinaryEncoder) throws {
-        
         // Pre encode so we can get size and calculate offset :-/
         let newEncoder = BinaryEncoder()
         try newEncoder.encode(self.type)
         try newEncoder.encode(self.movieFragmentHeaderAtom)
         try newEncoder.encode(self.trackFragments)
         
-
         try encoder.encode(self.type)
         try encoder.encode(self.movieFragmentHeaderAtom)
         
@@ -33,8 +31,6 @@ struct MOOF: BinaryEncodable {
             }
             try encoder.encode([traf])
         }
-        
-        print("=====", newEncoder.data.count)
     }
     
     
