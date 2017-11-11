@@ -149,7 +149,7 @@ class FragmentedMP4Segment {
     var fileHandle: FileHandle
 
     /// Current moof we're on
-    var currentSequence: Int = 0
+    var currentSequence: Int = 1
     
     init(_ file: URL, segmentNumber: Int) throws {
         self.file          = file

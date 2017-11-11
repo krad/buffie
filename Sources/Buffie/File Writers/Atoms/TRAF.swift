@@ -3,7 +3,7 @@ struct TRAF: BinarySizedEncodable {
     let type: Atom = .traf
     
     var trackFragmentHeader: [TFHD] = [TFHD()]
-    var trackDecodeTimeAtom: [TFDT] = [TFDT()]
+//    var trackDecodeTimeAtom: [TFDT] = [TFDT()]
     var trackRun: [TRUN] = [TRUN()]
     
     static func from(_ samples: [Sample]) -> [TRAF] {
@@ -11,7 +11,7 @@ struct TRAF: BinarySizedEncodable {
         
         var traf = TRAF()
         traf.trackFragmentHeader = [TFHD.from(sample: samples.first!)]
-        traf.trackDecodeTimeAtom = [TFDT.from(sample: samples.first!)]
+//        traf.trackDecodeTimeAtom = [TFDT.from(sample: samples.first!)]
         
         var runs: [TRUN] = []
         for chunk in samples.chunks(15) {
@@ -21,7 +21,7 @@ struct TRAF: BinarySizedEncodable {
         traf.trackRun = runs
         result.append(traf)
         
-        return result        
+        return result
     }
     
 }
