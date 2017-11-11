@@ -5,4 +5,10 @@ struct MINF: BinarySizedEncodable {
     var dataInformationAtom: [DINF] = [DINF()]
     var sampleTableAtom: [STBL] = [STBL()]
     
+    static func from(_ config: MOOVConfig) -> MINF {
+        var minf = MINF()
+        minf.sampleTableAtom = [STBL.from(config: config)]
+        return minf
+    }
+    
 }

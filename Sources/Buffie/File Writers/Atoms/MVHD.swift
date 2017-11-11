@@ -30,6 +30,6 @@ struct MVHD: BinarySizedEncodable {
     var selectionTime: UInt32 = 0
     var selectionDuration: UInt32 = 0
     var currentTime: UInt32 = 0
-    var nextTrackID: UInt32 = 3
+    var nextTrackID: UInt32 = 2
     
 }

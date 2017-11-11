@@ -3,16 +3,15 @@ struct TFHD: BinarySizedEncodable {
     
     let type: Atom = .tfhd
 //    var version: UInt8 = 0
-    var tfFlags: TrackFragmentFlags = [.defaultSampleDurationPresent,
+    var tfFlags: TrackFragmentFlags = [.defaultBaseIsMOOF,
+                                       .defaultSampleDurationPresent,
                                        .defaultSampleSizePresent,
                                        .defaultSampleFlagsPresent]
     
     var trackID: UInt32                = 1
-//    var baseDataOffset: UInt64         = 0
-//    var sampleDescriptionIndex: UInt32 = 0
     var defaultSampleDuration: UInt32  = 0
     var defaultSampleSize: UInt32      = 0
-    var defaultSampleFlags: UInt32     = 0
+    var defaultSampleFlags: TrackFragmentFlags = TrackFragmentFlags(rawValue: 0x2000000)
     
     static func from(sample: Sample) -> TFHD {
         var tfhd                   = TFHD()
@@ -26,6 +25,7 @@ struct TFHD: BinarySizedEncodable {
 
 struct TrackFragmentFlags: BinaryEncodable, OptionSet {
     var rawValue: UInt32
+    static let defaultBaseIsMOOF                = TrackFragmentFlags(rawValue: 0x20000)
     static let baseDataOffsetPresent            = TrackFragmentFlags(rawValue: 0x000001)
     static let sampleDescriptionIndexPresent    = TrackFragmentFlags(rawValue: 0x000002)
     static let defaultSampleDurationPresent     = TrackFragmentFlags(rawValue: 0x000008)

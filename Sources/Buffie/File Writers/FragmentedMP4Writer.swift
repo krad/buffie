@@ -11,15 +11,12 @@ class FragmentedMP4Writer {
     var outputDir: URL
     var videoEncoder: VideoEncoder?
     var currentSegment = 0
-
-    var samples: [Sample] = [] {
-        didSet {
-            guard samples.count > 0 else { return }
-            if samples.count % 10 == 0 {
-                self.writeSamples()
-            }
-        }
-    }
+    
+    var currentSegmentWriter: FragmentedMP4Segment?
+    
+    var duration: Int64 = 0
+    
+    internal var samples: [Sample] = []
 
     var currentSegmentName: String {
         return "fileSeq\(self.currentSegment).mp4"
@@ -44,37 +41,48 @@ class FragmentedMP4Writer {
         
     }
     
-    func writeSamples() {
-        if self.currentSegment == 0 {
-            self.setupInitial()
-        } else {
-            let segmentSamples = Array(self.samples[0..<10])
-            self.setupSegment(segmentSamples)
-        }
-        self.currentSegment += 1
-    }
-    
-    func setupInitial() {
-        if let sample = samples.first {
-            do {
-                _ = try FragementedMP4InitalizationSegment(self.currentSegmentURL,
-                                                           format: sample.format)
-            }
-            catch { print("=== Couldn't write init segment") }
-        }
-    }
-    
-    func setupSegment(_ samples: [Sample]) {
+    func setupInitial(with sample: Sample) {
         do {
-            _ = try FragmentedMP4Segment(self.currentSegmentURL,
-                                         samples: samples,
-                                         segmentNumber: self.currentSegment)
+            _ = try FragementedMP4InitalizationSegment(self.currentSegmentURL,
+                                                       format: sample.format)
+            self.currentSegment += 1
+        }
+        catch { print("=== Couldn't write init segment") }
+    }
+    
+    func setupSegment() {
+        do {
+            self.currentSegmentWriter = try FragmentedMP4Segment(self.currentSegmentURL,
+                                                                 segmentNumber: self.currentSegment)
         }
         catch { }
     }
     
     func got(_ sample: CMSampleBuffer) {
         self.videoEncoder?.encode(sample)
+    }
+    
+    func append(_ sample: Sample) {
+        self.duration += sample.duration.value
+//        print(self.duration, sample.duration.timescale)
+        
+        if self.currentSegment == 0 {
+            self.setupInitial(with: sample)
+        } else {
+            if let writer = self.currentSegmentWriter {
+                
+                if samples.count >= 15 {
+                    try? writer.write(samples)
+                    self.samples = []
+                } else {
+                    self.samples.append(sample)
+                }
+                
+            } else {
+                self.samples.append(sample)
+                setupSegment()
+            }
+        }
     }
     
 }
@@ -87,7 +95,7 @@ extension FragmentedMP4Writer: VideoEncoderDelegate {
             for nalu in NALUStreamIterator(streamBytes: videoBytes, currentIdx: 0) {
                 sample.nalus.append(nalu)
             }
-            self.samples.append(sample)
+            self.append(sample)
         }
     }
     
@@ -96,29 +104,63 @@ extension FragmentedMP4Writer: VideoEncoderDelegate {
 class FragementedMP4InitalizationSegment {
     
     init(_ file: URL, format: CMFormatDescription) throws {
+        
+        let config    = MOOVConfig(format)
         let ftypBytes = try BinaryEncoder.encode(FTYP())
-        let moovBytes = try BinaryEncoder.encode(MOOV())
+        let moovBytes = try BinaryEncoder.encode(MOOV(config))
         
         let data = Data(bytes: ftypBytes + moovBytes)
         try data.write(to: file)
     }
 }
 
+struct MOOVConfig {
+    var sps: [UInt8]
+    var pps: [UInt8]
+    var width: UInt32
+    var height: UInt32
+    
+    init(_ format: CMFormatDescription) {
+        let paramSet = getVideoFormatDescriptionData(format)
+        self.sps = paramSet.first!
+        self.pps = paramSet.last!
+        
+        let dimensions = CMVideoFormatDescriptionGetDimensions(format)
+        self.width     = UInt32(dimensions.width)
+        self.height    = UInt32(dimensions.height)
+    }
+    
+}
+
+
 class FragmentedMP4Segment {
     
     var segmentNumber: Int = 0
     var currentSequence: Int = 1
+    var file: URL
+    var fileHandle: FileHandle
     
-    init(_ file: URL, samples: [Sample], segmentNumber: Int) throws {
-        self.segmentNumber = segmentNumber
+    init(_ file: URL, segmentNumber: Int) throws {
+        self.file          = file
         
+        if !FileManager.default.fileExists(atPath: file.path) {
+            FileManager.default.createFile(atPath: file.path, contents: nil, attributes: nil)
+        }
+        
+        self.fileHandle    = try FileHandle(forWritingTo: file)
+        self.segmentNumber = segmentNumber
+    }
+    
+    func write(_ samples: [Sample]) throws {
         let moof = try BinaryEncoder.encode(MOOF(samples: samples,
                                                  currentSequence: UInt32(self.currentSequence)))
         
         let mdat = try BinaryEncoder.encode(MDAT(samples: samples))
-        
+
         let data = Data(bytes: moof + mdat)
-        try data.write(to: file)
+        self.fileHandle.write(data)
+        
+        self.currentSequence += 1
     }
     
 }
@@ -134,7 +176,7 @@ public struct Sample {
     var decode: CMTime
     
     var size: UInt32 {
-        return self.nalus.reduce(0, { last, nalu in last + nalu.size })
+        return self.nalus.reduce(0, { last, nalu in last + nalu.totalSize })
     }
     
     var dependsOnOthers: Bool = false
@@ -169,7 +211,10 @@ public struct NALUStreamIterator: Sequence, IteratorProtocol {
         
         if let naluSize = UInt32(bytes: Array(streamBytes[currentIdx..<currentIdx+4])) {
             let nextIdx = currentIdx + Int(naluSize) + 4
-            let nalu = NALU(data: Array(streamBytes[currentIdx..<nextIdx]))
+            
+            let naluData = Array(streamBytes[currentIdx..<nextIdx])
+            let nalu     = NALU(data: naluData)
+
             self.currentIdx += nextIdx
             return nalu
         }

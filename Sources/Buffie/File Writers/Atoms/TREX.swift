@@ -10,6 +10,10 @@ struct TREX: BinarySizedEncodable {
     var sampleDuration: UInt32 = 0
     var sampleSize: UInt32 = 0
     
-    var sampleFlags: UInt32 = 0x1010000 // I don't know what this is.
+    // I used to not know what this is.
+    // These are the default values for movie fragments
+    // Look at the SampleFlags struct/OptionSet for a definition
+    // TODO: Change this to a SampleFlags struct
+    var sampleFlags: UInt32 = 0x1010000
 
 }

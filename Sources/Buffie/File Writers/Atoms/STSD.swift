@@ -8,4 +8,10 @@ struct STSD: BinarySizedEncodable {
     var numberOfEntries: UInt32 = 1
     var avc1: [AVC1] = [AVC1()]
     
+    static func from(_ config: MOOVConfig) -> STSD {
+        var stsd = STSD()
+        stsd.avc1 = [AVC1.from(config)]
+        return stsd
+    }
+    
 }

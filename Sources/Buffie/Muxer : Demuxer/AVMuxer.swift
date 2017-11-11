@@ -131,21 +131,29 @@ public func getVideoFormatDescriptionData(_ buffer: CMSampleBuffer) -> [[UInt8]]
     var results: [[UInt8]] = []
     
     if let description = getFormatDescription(buffer) {
-        var numberOfParamSets: size_t = 0
-        CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, 0, nil, nil, &numberOfParamSets, nil)
+        results = getVideoFormatDescriptionData(description)
+    }
+    
+    return results
+}
+
+public func getVideoFormatDescriptionData(_ format: CMFormatDescription) -> [[UInt8]] {
+    var results: [[UInt8]] = []
+
+    var numberOfParamSets: size_t = 0
+    CMVideoFormatDescriptionGetH264ParameterSetAtIndex(format, 0, nil, nil, &numberOfParamSets, nil)
+    
+    for idx in 0..<numberOfParamSets {
+        var params: UnsafePointer<UInt8>? = nil
+        var paramsLength: size_t         = 0
+        var headerLength: Int32          = 4
+        CMVideoFormatDescriptionGetH264ParameterSetAtIndex(format, idx, &params, &paramsLength, nil, &headerLength)
         
-        for idx in 0..<numberOfParamSets {
-            var params: UnsafePointer<UInt8>? = nil
-            var paramsLength: size_t         = 0
-            var headerLength: Int32          = 4
-            CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, idx, &params, &paramsLength, nil, &headerLength)
-            
-            let bufferPointer   = UnsafeBufferPointer(start: params, count: paramsLength)
-            let paramsUnwrapped = Array(bufferPointer)
-            
-            let result: [UInt8] =  paramsUnwrapped
-            results.append(result)
-        }
+        let bufferPointer   = UnsafeBufferPointer(start: params, count: paramsLength)
+        let paramsUnwrapped = Array(bufferPointer)
+        
+        let result: [UInt8] =  paramsUnwrapped
+        results.append(result)
     }
     
     return results

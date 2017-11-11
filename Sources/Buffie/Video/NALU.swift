@@ -8,8 +8,12 @@ public struct NALU: CustomStringConvertible {
         return NALUType(rawValue: self.data[4] & 0x1f)!
     }
     
-    var size: UInt32 {
+    var payloadSize: UInt32 {
         return UInt32(bytes: Array(self.data[0..<4]))!
+    }
+    
+    var totalSize: UInt32 {
+        return UInt32(self.data.count)
     }
 
     
@@ -18,7 +22,7 @@ public struct NALU: CustomStringConvertible {
     }
     
     public var description: String {
-        return "NALU(type: \(self.type), size: \(self.size))"
+        return "NALU(type: \(self.type), size: \(self.totalSize))"
     }
     
 }

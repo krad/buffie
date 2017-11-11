@@ -10,6 +10,5 @@ struct MOOF: BinaryEncodable {
         self.trackFragments          = [TRAF(samples: samples)]
     }
     
-    
 }
 
