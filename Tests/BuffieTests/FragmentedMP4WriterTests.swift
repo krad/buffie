@@ -4,22 +4,6 @@ import AVFoundation
 
 class FragmentedMP4WriterTests: XCTestCase {
     
-    class SimpleReader: AVReader {
-        
-        var callback: (CMSampleBuffer) -> Void
-        init(callback: @escaping (CMSampleBuffer) -> Void) {
-            self.callback = callback
-        }
-        
-        override func got(_ sample: CMSampleBuffer, type: SampleType) {
-            super.got(sample, type: type)
-            if type == .video {
-                self.callback(sample)
-            }
-        }
-        
-    }
-    
     func test_that_we_only_accept_directories() {
         
         let file = URL(fileURLWithPath: "/tmp/file.mp4")
