@@ -1,12 +1,12 @@
 import Foundation
 import AVFoundation
 
-enum FragmentedMP4WriterError: Error {
+public enum FragmentedMP4WriterError: Error {
     case fileNotDirectory
     case directoryDoesNotExist
 }
 
-class FragmentedMP4Writer {
+public class FragmentedMP4Writer {
     
     var outputDir: URL
     var videoEncoder: VideoEncoder?
@@ -26,7 +26,7 @@ class FragmentedMP4Writer {
         return self.outputDir.appendingPathComponent(self.currentSegmentName)
     }
     
-    init(_ outputDir: URL) throws {
+    public init(_ outputDir: URL) throws {
         
         /// Verify we have a directory to write to
         var isDir: ObjCBool = false
@@ -61,11 +61,11 @@ class FragmentedMP4Writer {
         catch { }
     }
     
-    func got(_ sample: CMSampleBuffer) {
+    public func got(_ sample: CMSampleBuffer) {
         self.videoEncoder?.encode(sample)
     }
     
-    func append(_ sample: Sample) {
+    public func append(_ sample: Sample) {
         self.duration += sample.duration.value
         
         if self.currentSegment == 0 {
@@ -93,7 +93,7 @@ class FragmentedMP4Writer {
 
 extension FragmentedMP4Writer: VideoEncoderDelegate {
     
-    func encoded(videoSample: CMSampleBuffer) {
+    public func encoded(videoSample: CMSampleBuffer) {
         if let videoBytes = bytes(from: videoSample) {
             var sample   = Sample(sampleBuffer: videoSample)
             for nalu in NALUStreamIterator(streamBytes: videoBytes, currentIdx: 0) {

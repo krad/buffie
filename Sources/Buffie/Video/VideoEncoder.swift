@@ -84,12 +84,7 @@ func configureProperties(for session: VTCompressionSession,
     VTSessionSetProperty(session,
                          kVTCompressionPropertyKey_ProfileLevel,
                          settings.profileLevel.raw)
-    
-    // HLS needs a key frame every 2 seconds
-    VTSessionSetProperty(session,
-                         kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration,
-                         2 as CFTypeRef)
-    
+        
     if let bitRate = settings.bitRate {
         VTSessionSetProperty(session,
                              kVTCompressionPropertyKey_AverageBitRate,
