@@ -7,10 +7,10 @@ struct MOOF: BinaryEncodable {
     var movieFragmentHeaderAtom: [MFHD] = [MFHD()]
     var trackFragments: [TRAF] = [TRAF()]
     
-    init(samples: [Sample], currentSequence: UInt32, prevDecodeTime: UInt64)
+    init(samples: [Sample], currentSequence: UInt32, previousDuration: UInt64)
     {
         self.movieFragmentHeaderAtom = [MFHD(sequenceNumber: currentSequence)]
-        self.trackFragments          = TRAF.from(samples, previousDecodeTime: prevDecodeTime)
+        self.trackFragments          = TRAF.from(samples, previousDuration: previousDuration)
     }
     
     func binaryEncode(to encoder: BinaryEncoder) throws {

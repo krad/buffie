@@ -8,6 +8,7 @@ public struct VideoEncoderSettings {
     var codec: CMVideoCodecType
     var videoFormat: VideoFormat
     var frameRate: Int
+    var maxKeyFrameIntervalDuration: Int?
     
     var realTime: Bool
     var dataRateLimit: Int?

@@ -65,7 +65,11 @@ func configureProperties(for session: VTCompressionSession,
                          with settings: VideoEncoderSettings)
 {
     
-    VTSessionSetProperty(session, kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration, 2 as CFTypeRef)
+    if let maxKeyFrameIntervalDuration = settings.maxKeyFrameIntervalDuration {
+        VTSessionSetProperty(session,
+                             kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration,
+                             maxKeyFrameIntervalDuration as CFTypeRef)
+    }
     
     VTSessionSetProperty(session,
                          kVTCompressionPropertyKey_RealTime,

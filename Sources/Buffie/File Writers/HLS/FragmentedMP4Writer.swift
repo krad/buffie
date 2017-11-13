@@ -38,11 +38,11 @@ public class FragmentedMP4Writer {
         self.playlistWriter = try HLSPlaylistWriter(playlistURL)
         
         /// Setup a video encoder
-        var settings                  = VideoEncoderSettings()
-        settings.allowFrameReordering = false
-        settings.frameRate            = 60
-        settings.profileLevel         = .h264High_4_0
-        self.videoEncoder             = try VideoEncoder(settings, delegate: self)
+        var settings                         = VideoEncoderSettings()
+        settings.allowFrameReordering        = false
+        settings.profileLevel                = .h264High_4_0
+        settings.maxKeyFrameIntervalDuration = 2
+        self.videoEncoder                    = try VideoEncoder(settings, delegate: self)
     }
     
     func setupInitial(with sample: Sample) {
@@ -89,9 +89,10 @@ public class FragmentedMP4Writer {
     }
     
     func splitSegmentSamples(in writer: FragmentedMP4Segment, with sample: Sample) {
-        if Int(writer.duration) >= Int(self.targetSegmentDuration) {
+        if Int(CMTimeGetSeconds(writer.duration)) >= Int(self.targetSegmentDuration) {
             try? writer.write()
-            self.playlistWriter.write(segment: self.currentSegmentWriter!)
+            self.playlistWriter.write(segment: writer)
+            
             self.currentSegment += 1
             self.setupSegment(with: sample)
         } else {
@@ -163,12 +164,10 @@ class FragmentedMP4Segment {
     /// Current moof we're on
     var currentSequence: Int
     
-    var duration: Float64 = 0
-    var cnt = 0
+    var duration: CMTime = kCMTimeZero
+    var prevDecodeTime: CMTime = kCMTimeZero
     
     var samples: [Sample] = []
-    
-    var prevDecodeTime: UInt64 = 0
     
     init(_ file: URL,
          segmentNumber: Int,
@@ -186,7 +185,8 @@ class FragmentedMP4Segment {
     }
     
     func append(_ sample: Sample) {
-        self.duration += CMTimeGetSeconds(sample.duration)
+        self.duration = CMTimeAdd(duration, sample.duration)
+        
         if sample.isSync && self.samples.count > 0 {
             try? self.write()
             self.samples.append(sample)
@@ -198,7 +198,7 @@ class FragmentedMP4Segment {
     func write() throws {
         let moof = MOOF(samples: samples,
                         currentSequence: UInt32(self.currentSequence),
-                        prevDecodeTime: self.prevDecodeTime)
+                        previousDuration: UInt64(self.prevDecodeTime.value))
         
         let mdat = MDAT(samples: samples)
         
@@ -207,47 +207,10 @@ class FragmentedMP4Segment {
         
         let data = Data(bytes: moofBytes + mdatBytes)
         self.fileHandle.write(data)
-    
-        self.prevDecodeTime = UInt64(samples.reduce(kCMTimeZero) { (cnt, sample) in CMTimeAdd(cnt, sample.duration) }.value)
+        
+        self.prevDecodeTime = samples.reduce(kCMTimeZero) { (cnt, sample) in CMTimeAdd(cnt, sample.duration) }
         self.currentSequence += 1
         self.samples = []
-    }
-    
-}
-
-public struct Sample {
-    
-    var type: SampleType
-    var format: CMFormatDescription
-    var nalus: [NALU] = []
-    var duration: CMTime
-    var pts: CMTime
-    var decode: CMTime
-    
-    var size: UInt32 {
-        return self.nalus.reduce(0, { last, nalu in last + nalu.totalSize })
-    }
-    
-    var dependsOnOthers: Bool = false
-    var isSync: Bool = false
-    var earlierDisplayTimesAllowed: Bool = false
-    
-    init(sampleBuffer: CMSampleBuffer) {
-        self.type       = .video
-        self.format     = CMSampleBufferGetFormatDescription(sampleBuffer)!
-        self.duration   = CMSampleBufferGetDuration(sampleBuffer)
-        self.pts        = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-        self.decode     = CMSampleBufferGetDecodeTimeStamp(sampleBuffer)
-        
-        self.isSync                     = !sampleBuffer.notSync
-        self.dependsOnOthers            = sampleBuffer.dependsOnOthers
-        self.earlierDisplayTimesAllowed = sampleBuffer.earlierPTS
-        
-        if let bytes = bytes(from: sampleBuffer) {
-            for nalu in NALUStreamIterator(streamBytes: bytes, currentIdx: 0) {
-                self.nalus.append(nalu)
-            }
-        }
     }
     
 }
