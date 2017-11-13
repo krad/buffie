@@ -65,6 +65,8 @@ func configureProperties(for session: VTCompressionSession,
                          with settings: VideoEncoderSettings)
 {
     
+    VTSessionSetProperty(session, kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration, 2 as CFTypeRef)
+    
     VTSessionSetProperty(session,
                          kVTCompressionPropertyKey_RealTime,
                          settings.realTime as CFBoolean)
@@ -84,7 +86,7 @@ func configureProperties(for session: VTCompressionSession,
     VTSessionSetProperty(session,
                          kVTCompressionPropertyKey_ProfileLevel,
                          settings.profileLevel.raw)
-        
+    
     if let bitRate = settings.bitRate {
         VTSessionSetProperty(session,
                              kVTCompressionPropertyKey_AverageBitRate,

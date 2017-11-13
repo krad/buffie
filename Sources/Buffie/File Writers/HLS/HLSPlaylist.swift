@@ -2,7 +2,7 @@ import Foundation
 
 enum HLSPlaylistType: String {
     case vod   = "VOD"
-    case live  = ""
+    case live  = "LIVE"
     case event = "EVENT"
 
     internal func header(with targetDuration: Float64) -> String {
