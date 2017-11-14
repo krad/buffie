@@ -6,7 +6,7 @@ public enum AudioEncoderError: Error {
 }
 
 public protocol AudioEncoderDecoderDelegate {
-    func processed(_ audioBuffer: AudioBufferList)
+    func processed(_ audioBufferList: AudioBufferList)
 }
 
 @available (macOS 10.11, iOS 5, *)

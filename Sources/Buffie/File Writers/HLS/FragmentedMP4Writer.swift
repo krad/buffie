@@ -6,10 +6,12 @@ public enum FragmentedMP4WriterError: Error {
     case directoryDoesNotExist
 }
 
+@available(macOS 10.11, *)
 public class FragmentedMP4Writer {
     
     var segmenter: StreamSegmenter
     var videoInput: FragmentedVideoInput?
+    var audioInput: FragmentedAudioInput?
     
     public init(_ outputDir: URL) throws {
         /// Verify we have a directory to write to
@@ -22,13 +24,16 @@ public class FragmentedMP4Writer {
         self.videoInput = try FragmentedVideoInput() { sample in
             self.segmenter.append(sample)
         }
+        
+        self.audioInput = try FragmentedAudioInput() { audioBufferList in
+        }
     }
     
     
     public func got(_ sample: CMSampleBuffer, type: SampleType) {
         switch type {
         case .video: self.videoInput?.append(sample)
-        default: print("")
+        case .audio: self.audioInput?.append(sample)
         }
     }
     

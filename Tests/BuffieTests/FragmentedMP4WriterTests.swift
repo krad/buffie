@@ -5,32 +5,30 @@ import AVFoundation
 class FragmentedMP4WriterTests: XCTestCase {
     
     class SimpleReader: AVReader {
-        var callback: (CMSampleBuffer) -> Void
-        init(callback: @escaping (CMSampleBuffer) -> Void) {
+        var callback: (CMSampleBuffer, SampleType) -> Void
+        init(callback: @escaping (CMSampleBuffer, SampleType) -> Void) {
             self.callback = callback
         }
         
         override func got(_ sample: CMSampleBuffer, type: SampleType) {
             super.got(sample, type: type)
-            if type == .video {
-                self.callback(sample)
-            }
+            self.callback(sample, type)
         }
     }
 
     
-    func test_that_we_only_accept_directories() {
-        
-        let file = URL(fileURLWithPath: "/tmp/file.mp4")
-        XCTAssertThrowsError(try FragmentedMP4Writer(file))
-        
-        let dir = URL(fileURLWithPath: "/tmp")
-        XCTAssertNoThrow(try FragmentedMP4Writer(dir))
-        
-        let badDir = URL(fileURLWithPath: "/blahblahblahallbalha")
-        XCTAssertThrowsError(try FragmentedMP4Writer(badDir))
-        
-    }
+//    func test_that_we_only_accept_directories() {
+//
+//        let file = URL(fileURLWithPath: "/tmp/file.mp4")
+//        XCTAssertThrowsError(try FragmentedMP4Writer(file))
+//
+//        let dir = URL(fileURLWithPath: "/tmp")
+//        XCTAssertNoThrow(try FragmentedMP4Writer(dir))
+//
+//        let badDir = URL(fileURLWithPath: "/blahblahblahallbalha")
+//        XCTAssertThrowsError(try FragmentedMP4Writer(badDir))
+//
+//    }
     
 //    func test_segment_naming_conventions() {
 //        let dir    = URL(fileURLWithPath: "/tmp")
@@ -57,12 +55,13 @@ class FragmentedMP4WriterTests: XCTestCase {
         XCTAssertEqual(Int(results.first!.payloadSize), compressedFrame.count-4)
     }
     
+    @available (macOS 10.11, *)
     func test_experiment() {
         let dir    = URL(fileURLWithPath: "/tmp")
         let writer = try? FragmentedMP4Writer(dir)
         XCTAssertNotNil(writer)
 
-        let reader = SimpleReader() { sample in writer?.got(sample, type: .video) }
+        let reader = SimpleReader() { sample, type in writer?.got(sample, type: type) }
         let camera = try? Camera(.back, reader: reader, controlDelegate: nil)
         XCTAssertNotNil(camera)
         camera?.start()

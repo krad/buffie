@@ -1,0 +1,28 @@
+import CoreMedia
+
+@available (macOS 10.11, *)
+class FragmentedAudioInput {
+    
+    var settings = AudioEncoderDecoderSettings(.encoding)
+    var audioEncoder: AudioEncoder?
+    var onChunk: (AudioBufferList) -> Void
+    var frames: Int = 0
+    
+    init(_ onChunk: @escaping (AudioBufferList) -> Void) throws {
+        self.onChunk = onChunk
+//        self.settings.outSettings.audioFormat = kAudioFormatMPEG4AAC
+        self.audioEncoder = try AudioEncoder(self.settings, delegate: self)
+    }
+    
+    func append(_ sample: CMSampleBuffer) {
+        self.audioEncoder?.encode(sample)
+    }
+    
+}
+
+@available (macOS 10.11, *)
+extension FragmentedAudioInput: AudioEncoderDecoderDelegate {
+    func processed(_ audioBufferList: AudioBufferList) {
+        self.onChunk(audioBufferList)
+    }
+}

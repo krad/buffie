@@ -7,6 +7,7 @@ class StreamSegmenter {
     var targetSegmentDuration: Double
     
     var playlistWriter: HLSPlaylistWriter
+    var initSegmentWriter: FragementedMP4InitalizationSegment?
     var currentSegmentWriter: FragmentedMP4Segment?
     
     var currentSegment = 0
@@ -27,18 +28,18 @@ class StreamSegmenter {
         self.playlistWriter = try HLSPlaylistWriter(playlistURL)
     }
     
-    func setupInitial(with sample: Sample) {
+    func newInitialSegment(with sample: Sample) {
         do {
-            _ = try FragementedMP4InitalizationSegment(self.currentSegmentURL,
-                                                       format: sample.format,
-                                                       sample: sample)
+            self.initSegmentWriter = try FragementedMP4InitalizationSegment(self.currentSegmentURL,
+                                                                            videoFormat: sample.format,
+                                                                            sample: sample)
             self.playlistWriter.writerHeader(with: self.targetSegmentDuration)
             self.currentSegment += 1
         }
         catch { print("=== Couldn't write init segment") }
     }
     
-    func setupSegment(with sample: Sample) {
+    func newSegment(with sample: Sample) {
         do {
             var currentSequence = 1
             if let csw = self.currentSegmentWriter {
@@ -55,35 +56,44 @@ class StreamSegmenter {
     }
     
     func splitSegmentSamples(in writer: FragmentedMP4Segment, with sample: Sample) {
-        if Int(CMTimeGetSeconds(writer.duration)) >= Int(self.targetSegmentDuration) {
+        
+        let nextDuration = CMTimeGetSeconds(CMTimeAdd(sample.duration, writer.duration))
+        
+        if nextDuration <= self.targetSegmentDuration {
+            
+            writer.append(sample)
+            
+        } else {
+            
             try? writer.write()
             self.playlistWriter.write(segment: writer)
             
             self.currentSegment += 1
-            self.setupSegment(with: sample)
-        } else {
-            writer.append(sample)
+            self.newSegment(with: sample)
+            
         }
     }
     
     public func append(_ sample: Sample) {
-        if self.currentSegment == 0 {
-            self.handleHeader(with: sample)
+        if let _ = self.initSegmentWriter {
             self.handleSegment(with: sample)
         } else {
+            self.newInitialSegment(with: sample)
             self.handleSegment(with: sample)
         }
     }
-
-    func handleHeader(with sample: Sample) {
-        self.setupInitial(with: sample)
-    }
     
+    public func append(_ audioBufferList: AudioBufferList) {
+        if let _ = self.initSegmentWriter {
+            
+        }
+    }
+
     func handleSegment(with sample: Sample) {
         if let writer = self.currentSegmentWriter {
             self.splitSegmentSamples(in: writer, with: sample)
         } else {
-            setupSegment(with: sample)
+            self.newSegment(with: sample)
         }
     }
     

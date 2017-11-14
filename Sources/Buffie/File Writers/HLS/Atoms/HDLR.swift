@@ -17,6 +17,20 @@ struct HDLR: BinarySizedEncodable {
     
     var componentName: String = "Core Media Video\0"
     
+    static func from(with sample: Sample) -> HDLR {
+        var hdlr = HDLR()
+        
+        if sample.type == .video {
+            hdlr.componentName    = "Core Media Video\0"
+            hdlr.componentSubtype = .video
+        } else {
+            hdlr.componentName    = "Core Media Audio\0"
+            hdlr.componentSubtype = .sound
+        }
+        
+        return hdlr
+    }
+    
 }
 
 enum HDLRComponentType: String, BinaryEncodable {

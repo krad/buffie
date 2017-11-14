@@ -30,11 +30,21 @@ struct TKHD: BinarySizedEncodable {
     var trackWidth: UInt32  = 1980 << 16
     var trackHeight: UInt32 = 720 << 16
     
-    static func from(_ config: MOOVConfig) -> TKHD {
+    static func from(_ config: MOOVVideoSettings) -> TKHD {
         var tkhd         = TKHD()
+        tkhd.trackID     = 1
         tkhd.trackWidth  = config.width << 16
         tkhd.trackHeight = config.height << 16
         return tkhd
     }
+    
+    static func from(_ config: MOOVAudioSettings) -> TKHD {
+        var tkhd         = TKHD()
+        tkhd.trackID     = 2
+        tkhd.trackWidth  = 0
+        tkhd.trackHeight = 0
+        return tkhd
+    }
+    
     
 }
