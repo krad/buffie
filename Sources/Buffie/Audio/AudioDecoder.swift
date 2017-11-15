@@ -21,7 +21,7 @@ public class AudioDecoder: AudioEncDecBase {
                                             withInputFrom: self.workBlock!)
         
         if status != .endOfStream && status != .error {
-            self.delegate.processed(self.inBuffer.audioBufferList.pointee)
+            self.delegate.processed(self.inBuffer.audioBufferList.pointee, numberOfSamples: -1)
         }
                 
     }

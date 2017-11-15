@@ -1,84 +1,84 @@
 import Foundation
 import CoreMedia
 
-let mediaStreamDelimeter: [UInt8] = [0x0, 0x0, 0x0, 0x1]
-let paramSetMarker: UInt8         = 0x70
-
-public struct AVMuxerSettings {
-    
-    var videoSettings: VideoEncoderSettings
-    var audioSettings: AudioEncoderDecoderSettings
-    
-    public init() {
-        self.videoSettings = VideoEncoderSettings()
-        self.audioSettings = AudioEncoderDecoderSettings(.encoding)
-    }
-    
-}
-
-public protocol AVMuxerDelegate {
-    func got(paramSet: [[UInt8]])
-    func muxed(data: [UInt8])
-}
-
-@available(OSX 10.11, iOS 5, *)
-public class AVMuxer: AVReader {
-
-    fileprivate var delegate: AVMuxerDelegate?
-    internal var videoEncoder: VideoEncoder?
-    internal var audioEncoder: AudioEncoder?
-    internal var parameterSetData: [[UInt8]]? {
-        didSet {
-            if let params = parameterSetData {
-                self.delegate?.got(paramSet: params)
-            }
-        }
-    }
-    
-    private override init() {
-        super.init()
-    }
-    
-    public convenience init(settings: AVMuxerSettings = AVMuxerSettings(), delegate: AVMuxerDelegate) throws {
-        self.init()
-        self.delegate     = delegate
-        self.videoEncoder = try VideoEncoder(settings.videoSettings, delegate: self)
-        self.audioEncoder = try AudioEncoder(settings.audioSettings, delegate: self)
-    }
-
-    public override func got(_ sample: CMSampleBuffer, type: SampleType) {
-        switch type {
-        case .video: self.videoEncoder?.encode(sample)
-        case .audio: self.audioEncoder?.encode(sample)
-        }
-    }
-    
-}
-
-@available(OSX 10.11, iOS 5, *)
-extension AVMuxer: VideoEncoderDelegate {
-    public func encoded(videoSample: CMSampleBuffer) {
-        
-        if self.parameterSetData == nil {
-            self.parameterSetData = getVideoFormatDescriptionData(videoSample)
-        }
-        
-        if let bytes = bytes(from: videoSample) {
-            let packet: [UInt8] =  [SampleType.video.rawValue] + bytes
-            self.delegate?.muxed(data: packet)
-        }
-    }
-}
-
-@available(OSX 10.11, iOS 5, *)
-extension AVMuxer: AudioEncoderDecoderDelegate {
-    public func processed(_ audioBuffer: AudioBufferList) {
-        if let bytes = bytes(from: audioBuffer) {
-            let packet: [UInt8] =  [SampleType.audio.rawValue] + bytes
-            self.delegate?.muxed(data: packet)
-        }
-    }
-}
+//let mediaStreamDelimeter: [UInt8] = [0x0, 0x0, 0x0, 0x1]
+//let paramSetMarker: UInt8         = 0x70
+//
+//public struct AVMuxerSettings {
+//    
+//    var videoSettings: VideoEncoderSettings
+//    var audioSettings: AudioEncoderDecoderSettings
+//    
+//    public init() {
+//        self.videoSettings = VideoEncoderSettings()
+//        self.audioSettings = AudioEncoderDecoderSettings(.encoding)
+//    }
+//    
+//}
+//
+//public protocol AVMuxerDelegate {
+//    func got(paramSet: [[UInt8]])
+//    func muxed(data: [UInt8])
+//}
+//
+//@available(OSX 10.11, iOS 5, *)
+//public class AVMuxer: AVReader {
+//
+//    fileprivate var delegate: AVMuxerDelegate?
+//    internal var videoEncoder: VideoEncoder?
+//    internal var audioEncoder: AudioEncoder?
+//    internal var parameterSetData: [[UInt8]]? {
+//        didSet {
+//            if let params = parameterSetData {
+//                self.delegate?.got(paramSet: params)
+//            }
+//        }
+//    }
+//    
+//    private override init() {
+//        super.init()
+//    }
+//    
+//    public convenience init(settings: AVMuxerSettings = AVMuxerSettings(), delegate: AVMuxerDelegate) throws {
+//        self.init()
+//        self.delegate     = delegate
+//        self.videoEncoder = try VideoEncoder(settings.videoSettings, delegate: self)
+//        self.audioEncoder = try AudioEncoder(settings.audioSettings, delegate: self)
+//    }
+//
+//    public override func got(_ sample: CMSampleBuffer, type: SampleType) {
+//        switch type {
+//        case .video: self.videoEncoder?.encode(sample)
+//        case .audio: self.audioEncoder?.encode(sample)
+//        }
+//    }
+//    
+//}
+//
+//@available(OSX 10.11, iOS 5, *)
+//extension AVMuxer: VideoEncoderDelegate {
+//    public func encoded(videoSample: CMSampleBuffer) {
+//        
+//        if self.parameterSetData == nil {
+//            self.parameterSetData = getVideoFormatDescriptionData(videoSample)
+//        }
+//        
+//        if let bytes = bytes(from: videoSample) {
+//            let packet: [UInt8] =  [SampleType.video.rawValue] + bytes
+//            self.delegate?.muxed(data: packet)
+//        }
+//    }
+//}
+//
+//@available(OSX 10.11, iOS 5, *)
+//extension AVMuxer: AudioEncoderDecoderDelegate {
+//    public func processed(_ audioBuffer: AudioBufferList) {
+//        if let bytes = bytes(from: audioBuffer) {
+//            let packet: [UInt8] =  [SampleType.audio.rawValue] + bytes
+//            self.delegate?.muxed(data: packet)
+//        }
+//    }
+//}
 
 /// Converts a CMSampleBuffer to an array of unsigned 8 bit integers
 ///

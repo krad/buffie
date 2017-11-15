@@ -22,7 +22,7 @@ class FragmentedAudioInput {
 
 @available (macOS 10.11, *)
 extension FragmentedAudioInput: AudioEncoderDecoderDelegate {
-    func processed(_ audioBufferList: AudioBufferList) {
+    func processed(_ audioBufferList: AudioBufferList, numberOfSamples: Int) {
         self.onChunk(AudioSample(audioBufferList: audioBufferList, settings: self.settings.outSettings))
     }
 }
