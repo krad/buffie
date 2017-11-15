@@ -14,7 +14,7 @@ class FragmentedMP4Segment {
     var duration: CMTime = kCMTimeZero
     var prevDecodeTime: CMTime = kCMTimeZero
     
-    var samples: [Sample] = []
+    var samples: [VideoSample] = []
     
     init(_ file: URL,
          segmentNumber: Int,
@@ -31,7 +31,7 @@ class FragmentedMP4Segment {
         self.currentSequence = currentSequence
     }
     
-    func append(_ sample: Sample) {
+    func append(_ sample: VideoSample) {
         self.duration = CMTimeAdd(duration, sample.duration)
         
         if sample.isSync && self.samples.count > 0 {

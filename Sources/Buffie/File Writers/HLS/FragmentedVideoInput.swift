@@ -4,9 +4,9 @@ class FragmentedVideoInput {
     
     var settings = VideoEncoderSettings()
     var videoEncoder: VideoEncoder?
-    var onChunk: (Sample) -> Void
+    var onChunk: (VideoSample) -> Void
     
-    init(_ onChunk: @escaping (Sample) -> Void) throws {
+    init(_ onChunk: @escaping (VideoSample) -> Void) throws {
         self.onChunk = onChunk
         self.settings.allowFrameReordering        = false
         self.settings.profileLevel                = .h264High_4_0
@@ -22,6 +22,6 @@ class FragmentedVideoInput {
 
 extension FragmentedVideoInput: VideoEncoderDelegate {
     func encoded(videoSample: CMSampleBuffer) {
-        self.onChunk(Sample(sampleBuffer: videoSample))
+        self.onChunk(VideoSample(sampleBuffer: videoSample))
     }
 }

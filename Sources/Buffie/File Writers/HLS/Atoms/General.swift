@@ -32,6 +32,9 @@ enum Atom: String, BinaryEncodable {
     case traf = "traf"
     case moof = "moof"
     case mdat = "mdat"
+    case smhd = "smhd"
+    case mp4a = "mp4a"
+    case esds = "esds"
 }
 
 enum Brand: String, BinaryEncodable {

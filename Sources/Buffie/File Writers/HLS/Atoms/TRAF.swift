@@ -8,7 +8,7 @@ struct TRAF: BinarySizedEncodable {
     var trackDecodeAtom: [TFDT] = [TFDT()]
     var trackRun: [TRUN] = [TRUN()]
     
-    static func from(_ samples: [Sample], previousDuration: UInt64) -> [TRAF] {
+    static func from(_ samples: [VideoSample]) -> [TRAF] {
         
         var traf = TRAF()
         if let sample = samples.first {

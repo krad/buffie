@@ -13,7 +13,7 @@ struct TFHD: BinarySizedEncodable {
     var defaultSampleSize: UInt32      = 0
     var defaultSampleFlags: TrackFragmentFlags = TrackFragmentFlags(rawValue: 0x2000000)
     
-    static func from(sample: Sample) -> TFHD {
+    static func from(sample: VideoSample) -> TFHD {
         var tfhd                   = TFHD()
         tfhd.trackID               = sample.type == .video ? UInt32(1) : UInt32(2)
         tfhd.defaultSampleDuration = UInt32(sample.duration.value)

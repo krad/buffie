@@ -13,7 +13,7 @@ struct TRUN: BinarySizedEncodable {
     
     var samples: [TRUNSample] = []
     
-    static func from(samples: [Sample]) -> TRUN {
+    static func from(samples: [VideoSample]) -> TRUN {
         var trun     = TRUN()
         trun.samples = samples.map { TRUNSample($0) }
         trun.sampleCount = UInt32(trun.samples.count)
@@ -38,7 +38,7 @@ struct TRUNSample: BinaryEncodable {
     var flags: SampleFlags            = []
     //var compositionTimeOffset: UInt32 = 0
     
-    init(_ sample: Sample) {
+    init(_ sample: VideoSample) {
         self.duration              =  UInt32(sample.duration.value)
         self.size                  =  sample.size
         

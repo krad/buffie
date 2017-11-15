@@ -25,7 +25,8 @@ public class FragmentedMP4Writer {
             self.segmenter.append(sample)
         }
         
-        self.audioInput = try FragmentedAudioInput() { audioBufferList in
+        self.audioInput = try FragmentedAudioInput() { sample in
+            self.segmenter.append(sample)
         }
     }
     

@@ -5,10 +5,10 @@ class FragmentedAudioInput {
     
     var settings = AudioEncoderDecoderSettings(.encoding)
     var audioEncoder: AudioEncoder?
-    var onChunk: (AudioBufferList) -> Void
+    var onChunk: (AudioSample) -> Void
     var frames: Int = 0
     
-    init(_ onChunk: @escaping (AudioBufferList) -> Void) throws {
+    init(_ onChunk: @escaping (AudioSample) -> Void) throws {
         self.onChunk = onChunk
 //        self.settings.outSettings.audioFormat = kAudioFormatMPEG4AAC
         self.audioEncoder = try AudioEncoder(self.settings, delegate: self)
@@ -23,6 +23,6 @@ class FragmentedAudioInput {
 @available (macOS 10.11, *)
 extension FragmentedAudioInput: AudioEncoderDecoderDelegate {
     func processed(_ audioBufferList: AudioBufferList) {
-        self.onChunk(audioBufferList)
+        self.onChunk(AudioSample(audioBufferList: audioBufferList, settings: self.settings.outSettings))
     }
 }

@@ -17,10 +17,13 @@ public struct AudioEncoderDecoderSettings {
     init(_ flow: AudioConverterFlow) {
         switch flow {
         case .encoding:
-            self.inSettings             = AudioCodingSettings()
-            self.inSettings.audioFormat = kAudioFormatLinearPCM
-            self.outSettings            = AudioCodingSettings()
+            self.inSettings              = AudioCodingSettings()
+            self.inSettings.audioFormat  = kAudioFormatLinearPCM
+            self.inSettings.bitDepth     = 8
+            
+            self.outSettings             = AudioCodingSettings()
             self.outSettings.audioFormat = kAudioFormatMPEG4AAC_ELD_SBR
+            self.outSettings.bitDepth    = 16
             
         case .decoding:
             self.inSettings              = AudioCodingSettings()
@@ -41,12 +44,14 @@ public struct AudioCodingSettings {
     var audioFormat: AudioFormatID
     var channels: UInt32
     var interleaved: Bool
+    var bitDepth: UInt16
     
     init() {
         self.sampleRate  = 44100.0
         self.audioFormat = kAudioFormatMPEG4AAC_ELD_SBR
         self.channels    = 2
         self.interleaved = false
+        self.bitDepth    = 16
     }
 
     var format: AVAudioFormat? {
@@ -55,7 +60,7 @@ public struct AudioCodingSettings {
             AVFormatIDKey: self.audioFormat,
             AVSampleRateKey: self.sampleRate,
             AVNumberOfChannelsKey: self.channels,
-            AVLinearPCMBitDepthKey: 8,
+            AVLinearPCMBitDepthKey: self.bitDepth,
             AVLinearPCMIsFloatKey: false,
             AVLinearPCMIsBigEndianKey: false,
         ]

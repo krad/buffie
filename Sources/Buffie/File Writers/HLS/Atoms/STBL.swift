@@ -22,4 +22,10 @@ struct STBL: BinarySizedEncodable {
         return stbl
     }
     
+    static func from(config: MOOVAudioSettings) -> STBL {
+        var stbl = STBL()
+        stbl.sampleDescriptionAtom = [STSD.from(config)]
+        return stbl
+    }
+    
 }

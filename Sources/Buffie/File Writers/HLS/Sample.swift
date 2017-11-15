@@ -1,11 +1,25 @@
 import Foundation
 import CoreMedia
 
-public struct Sample {
+protocol Sample {
+    var type: SampleType { get }
+    var data: [UInt8] { get }
+}
+
+public struct VideoSample: Sample {
     
     var type: SampleType
     var format: CMFormatDescription
     var nalus: [NALU] = []
+    
+    var data: [UInt8] {
+        var results: [UInt8] = []
+        for nalu in nalus {
+            results.append(contentsOf: nalu.data)
+        }
+        return results
+    }
+    
     var duration: CMTime
     var pts: CMTime
     var decode: CMTime
@@ -34,6 +48,32 @@ public struct Sample {
                 self.nalus.append(nalu)
             }
         }
+    }
+    
+}
+
+public struct AudioSample: Sample {
+    
+    var type: SampleType
+    var data: [UInt8]
+    
+    var channels: UInt32
+    var sampleRate: UInt32
+    var bitDepth: UInt16
+    var format: AudioFormatID
+    
+    init(audioBufferList: AudioBufferList, settings: AudioCodingSettings) {
+        self.type = .audio
+        if let bufferData = bytes(from: audioBufferList) {
+            self.data = bufferData
+        } else {
+            self.data = []
+        }
+        
+        self.channels   = settings.channels
+        self.sampleRate = UInt32(settings.sampleRate)
+        self.bitDepth   = settings.bitDepth
+        self.format     = settings.audioFormat
     }
     
 }

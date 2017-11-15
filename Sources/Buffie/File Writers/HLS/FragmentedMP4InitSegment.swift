@@ -3,13 +3,7 @@ import CoreMedia
 
 class FragementedMP4InitalizationSegment {
     
-    init(_ file: URL, videoFormat: CMFormatDescription, sample: Sample) throws {
-        
-        var config            = MOOVConfig()
-        var videoConfig       = MOOVVideoSettings(videoFormat)
-        videoConfig.timescale = UInt32(sample.duration.timescale)
-        config.videoSettings  = videoConfig
-        
+    init(_ file: URL, config: MOOVConfig) throws {
         let ftypBytes = try BinaryEncoder.encode(FTYP())
         let moovBytes = try BinaryEncoder.encode(MOOV(config))
         
