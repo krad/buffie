@@ -27,7 +27,6 @@ class StreamSegmenter {
     
     var moovConfig = MOOVConfig()
     
-    
     var currentSegmentName: String {
         return "fileSeq\(self.currentSegment).mp4"
     }
@@ -150,6 +149,7 @@ class StreamSegmenter {
     }
     
     public func append(_ sample: AudioSample) {
+//        self.updateMOOVConfig(with: sample)
 //        if let _ = self.initSegmentWriter {
 //            if let currentSegment = self.currentSegmentWriter {
 //                currentSegment.append(sample)
