@@ -11,10 +11,10 @@ struct MINF: BinarySizedEncodable {
         var minf = MINF()
         minf.videoMediaInformationAtom = [VMHD()]
         minf.soundMediaInformationAtom = nil
-        minf.sampleTableAtom           = [STBL.from(config: config)]
+        minf.sampleTableAtom = [STBL.from(config: config)]
         return minf
     }
-    
+
     static func from(_ config: MOOVAudioSettings) -> MINF {
         var minf = MINF()
         minf.videoMediaInformationAtom = nil
@@ -22,5 +22,6 @@ struct MINF: BinarySizedEncodable {
         minf.sampleTableAtom           = [STBL.from(config: config)]
         return minf
     }
+
     
 }

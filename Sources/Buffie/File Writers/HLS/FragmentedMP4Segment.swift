@@ -14,13 +14,17 @@ class FragmentedMP4Segment {
     var duration: CMTime = kCMTimeZero
     var prevDecodeTime: CMTime = kCMTimeZero
     
-    var samples: [VideoSample] = []
+    var config: MOOVConfig
+    
+    var samples: [Sample] = []
     
     init(_ file: URL,
+         config: MOOVConfig,
          segmentNumber: Int,
          currentSequence: Int = 1) throws
     {
-        self.file          = file
+        self.file     = file
+        self.config  = config
         
         if !FileManager.default.fileExists(atPath: file.path) {
             FileManager.default.createFile(atPath: file.path, contents: nil, attributes: nil)
@@ -31,7 +35,14 @@ class FragmentedMP4Segment {
         self.currentSequence = currentSequence
     }
     
-    func append(_ sample: VideoSample) {
+    func append(_ sample: Sample) {
+        switch sample.type {
+        case .video: self.handle(sample as! VideoSample)
+        case .audio: self.samples.append(sample)
+        }
+    }
+    
+    func handle(_ sample: VideoSample) {
         self.duration = CMTimeAdd(duration, sample.duration)
         
         if sample.isSync && self.samples.count > 0 {
@@ -43,9 +54,9 @@ class FragmentedMP4Segment {
     }
     
     func write() throws {
-        let moof = MOOF(samples: samples,
-                        currentSequence: UInt32(self.currentSequence),
-                        previousDuration: UInt64(self.prevDecodeTime.value))
+        let moof = MOOF(config: self.config,
+                        samples: samples,
+                        currentSequence: UInt32(self.currentSequence))
         
         let mdat = MDAT(samples: samples)
         
@@ -55,7 +66,10 @@ class FragmentedMP4Segment {
         let data = Data(bytes: moofBytes + mdatBytes)
         self.fileHandle.write(data)
         
-        self.prevDecodeTime = samples.reduce(kCMTimeZero) { (cnt, sample) in CMTimeAdd(cnt, sample.duration) }
+        let videoSamples    = samples.filter { $0.type == .video } as! [VideoSample]
+        self.prevDecodeTime = videoSamples.reduce(kCMTimeZero) { (cnt, sample) in
+            CMTimeAdd(cnt, sample.duration)
+        }
         self.currentSequence += 1
         self.samples = []
     }

@@ -2,8 +2,8 @@ import CoreMedia
 
 struct TRUN: BinarySizedEncodable {
     
-    let type: Atom          = .trun
-    let trFlags: TRUNFlags  = [.dataOffsetPresent,
+    let type: Atom          = .trun    
+    var trFlags: TRUNFlags  = [.dataOffsetPresent,
                                .sampleDurationPresent,
                                .sampleSizePresent,
                                .sampleFlagsPresent]
@@ -16,6 +16,14 @@ struct TRUN: BinarySizedEncodable {
     static func from(samples: [VideoSample]) -> TRUN {
         var trun     = TRUN()
         trun.samples = samples.map { TRUNSample($0) }
+        trun.sampleCount = UInt32(trun.samples.count)
+        return trun
+    }
+    
+    static func from(samples: [AudioSample]) -> TRUN {
+        var trun         = TRUN()
+        trun.trFlags     = [.dataOffsetPresent, .sampleSizePresent]
+        trun.samples     = samples.map { TRUNSample($0) }
         trun.sampleCount = UInt32(trun.samples.count)
         return trun
     }
@@ -33,20 +41,23 @@ struct TRUNFlags: BinaryEncodable, OptionSet {
 }
 
 struct TRUNSample: BinaryEncodable {
-    var duration: UInt32              = 0
+    var duration: UInt32?
     var size: UInt32                  = 0
-    var flags: SampleFlags            = []
-    //var compositionTimeOffset: UInt32 = 0
+    var flags: SampleFlags?
     
     init(_ sample: VideoSample) {
         self.duration              =  UInt32(sample.duration.value)
         self.size                  =  sample.size
+        self.flags                 = []
         
-        //self.compositionTimeOffset = UInt32(sample.decode.value)
-        
-        if sample.isSync          { self.flags.insert(.sampleIsDependedOn) }
-        if sample.dependsOnOthers { self.flags.insert(.sampleDependsOn) }
-        
+        if sample.isSync          { self.flags?.insert(.sampleIsDependedOn) }
+        if sample.dependsOnOthers { self.flags?.insert(.sampleDependsOn) }
+    }
+    
+    init(_ sample: AudioSample) {
+        self.size     = sample.size
+        self.flags    = nil
+        self.duration = nil
     }
 }
 

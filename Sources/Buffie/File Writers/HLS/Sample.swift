@@ -4,6 +4,7 @@ import CoreMedia
 protocol Sample {
     var type: SampleType { get }
     var data: [UInt8] { get }
+    var size: UInt32 { get }
 }
 
 public struct VideoSample: Sample {
@@ -57,6 +58,10 @@ public struct AudioSample: Sample {
     var type: SampleType
     var data: [UInt8]
     
+    var size: UInt32 {
+        return UInt32(self.data.count)
+    }
+    
     var channels: UInt32
     var sampleRate: UInt32
     var bitDepth: UInt16
@@ -67,6 +72,7 @@ public struct AudioSample: Sample {
         if let bufferData = bytes(from: audioBufferList) {
             self.data = bufferData
         } else {
+            print("FUCK COUlDNT MAKE BYTES")
             self.data = []
         }
         

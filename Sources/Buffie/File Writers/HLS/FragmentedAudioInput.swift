@@ -10,7 +10,7 @@ class FragmentedAudioInput {
     
     init(_ onChunk: @escaping (AudioSample) -> Void) throws {
         self.onChunk = onChunk
-//        self.settings.outSettings.audioFormat = kAudioFormatMPEG4AAC
+        self.settings.outSettings.audioFormat = kAudioFormatMPEG4AAC_ELD_V2
         self.audioEncoder = try AudioEncoder(self.settings, delegate: self)
     }
     

@@ -6,12 +6,19 @@ struct TFDT: BinarySizedEncodable {
     var flags: [UInt8]  = [0, 0, 0]
     
     var baseMediaDecodeTime: UInt64 = 0
-    var trackFragmentDuration: UInt64 = 0
+    var trackFragmentDuration: UInt64?
     
     static func from(decode: UInt64, duration: UInt64) -> TFDT {
         var tfdt                   = TFDT()
         tfdt.baseMediaDecodeTime   = decode
         tfdt.trackFragmentDuration = duration
+        return tfdt
+    }
+    
+    static func from(sample: AudioSample) -> TFDT {
+        var tfdt = TFDT()
+        tfdt.baseMediaDecodeTime   = UInt64(sample.size / sample.sampleRate)
+        tfdt.trackFragmentDuration = nil
         return tfdt
     }
     

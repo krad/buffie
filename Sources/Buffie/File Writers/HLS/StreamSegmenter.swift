@@ -36,7 +36,7 @@ class StreamSegmenter {
         return self.outputDir.appendingPathComponent(self.currentSegmentName)
     }
     
-    init(outputDir: URL, targetSegmentDuration: Double, streamContents: StreamContents = [.video, .audio]) throws {
+    init(outputDir: URL, targetSegmentDuration: Double, streamContents: StreamContents = [.video]) throws {
         self.outputDir             = outputDir
         self.targetSegmentDuration = targetSegmentDuration
         self.streamContents        = streamContents
@@ -49,6 +49,7 @@ class StreamSegmenter {
         if self.streamContents == [.video, .audio] {
             if let _ = self.moovConfig.videoSettings {
                 if let _ = self.moovConfig.audioSettings {
+                    print(#line, "Audio & Video")
                     return true
                 }
             }
@@ -56,12 +57,14 @@ class StreamSegmenter {
         
         if self.streamContents == [.video] {
             if let _ = self.moovConfig.videoSettings {
+                print(#line, "Video")
                 return true
             }
         }
         
         if self.streamContents == [.audio] {
             if let _ = self.moovConfig.audioSettings {
+                print(#line, "Audio")
                 return true
             }
         }
@@ -87,16 +90,15 @@ class StreamSegmenter {
     }
     
     func newInitialSegment(with sample: Sample) {
-        guard self.readyForMOOV() else {
-            self.updateMOOVConfig(with: sample)
-            return
-        }
+        guard self.readyForMOOV() else { return }
         
         do {
             self.initSegmentWriter = try FragementedMP4InitalizationSegment(self.currentSegmentURL,
                                                                             config: self.moovConfig)
             self.playlistWriter.writerHeader(with: self.targetSegmentDuration)
             self.currentSegment += 1
+            
+            self.handleSegment(with: sample as! VideoSample)
         }
         catch { print("=== Couldn't write init segment") }
     }
@@ -109,6 +111,7 @@ class StreamSegmenter {
             }
             
             self.currentSegmentWriter = try FragmentedMP4Segment(self.currentSegmentURL,
+                                                                 config: self.moovConfig,
                                                                  segmentNumber: self.currentSegment,
                                                                  currentSequence: currentSequence)
             
@@ -137,20 +140,23 @@ class StreamSegmenter {
     }
     
     public func append(_ sample: VideoSample) {
+        self.updateMOOVConfig(with: sample)
+
         if let _ = self.initSegmentWriter {
-            //self.handleSegment(with: sample)
+            self.handleSegment(with: sample)
         } else {
             self.newInitialSegment(with: sample)
-            //self.handleSegment(with: sample)
         }
     }
     
     public func append(_ sample: AudioSample) {
-        if let _ = self.initSegmentWriter {
-            
-        } else {
-            self.newInitialSegment(with: sample)
-        }
+//        if let _ = self.initSegmentWriter {
+//            if let currentSegment = self.currentSegmentWriter {
+//                currentSegment.append(sample)
+//            }
+//        } else {
+//            self.newInitialSegment(with: sample)
+//        }
     }
 
     func handleSegment(with sample: VideoSample) {

@@ -2,22 +2,36 @@
 struct TFHD: BinarySizedEncodable {
     
     let type: Atom = .tfhd
-//    var version: UInt8 = 0
     var tfFlags: TrackFragmentFlags = [.defaultBaseIsMOOF,
                                        .defaultSampleDurationPresent,
+                                       .sampleDescriptionIndexPresent,
                                        .defaultSampleSizePresent,
                                        .defaultSampleFlagsPresent]
     
     var trackID: UInt32                = 1
+    var sampleDescriptionIndexPresent: UInt32 = 1
     var defaultSampleDuration: UInt32  = 0
     var defaultSampleSize: UInt32      = 0
     var defaultSampleFlags: TrackFragmentFlags = TrackFragmentFlags(rawValue: 0x2000000)
     
     static func from(sample: VideoSample) -> TFHD {
         var tfhd                   = TFHD()
-        tfhd.trackID               = sample.type == .video ? UInt32(1) : UInt32(2)
+        tfhd.trackID               = 1
         tfhd.defaultSampleDuration = UInt32(sample.duration.value)
         tfhd.defaultSampleSize     = sample.size
+        return tfhd
+    }
+    
+    static func from(sample: AudioSample) -> TFHD {
+        var tfhd               = TFHD()
+        tfhd.trackID           = 2
+        tfhd.tfFlags           = [.defaultBaseIsMOOF,
+                                  .defaultSampleDurationPresent,
+                                  .defaultSampleSizePresent]
+        
+        tfhd.defaultSampleSize     = sample.size
+        tfhd.defaultSampleDuration = 1024
+
         return tfhd
     }
     

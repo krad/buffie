@@ -7,10 +7,12 @@ struct MOOF: BinaryEncodable {
     var movieFragmentHeaderAtom: [MFHD] = [MFHD()]
     var trackFragments: [TRAF] = [TRAF()]
     
-    init(samples: [VideoSample], currentSequence: UInt32, previousDuration: UInt64)
+    init(config: MOOVConfig,
+         samples: [Sample],
+         currentSequence: UInt32)
     {
         self.movieFragmentHeaderAtom = [MFHD(sequenceNumber: currentSequence)]
-        self.trackFragments          = TRAF.from(samples)
+        self.trackFragments          = TRAF.from(samples, config: config)
     }
     
     func binaryEncode(to encoder: BinaryEncoder) throws {
@@ -26,19 +28,21 @@ struct MOOF: BinaryEncodable {
         let padding       = 4 + 4 + 4 // 32bits for moof size, 32bits for mdat size, 32 bits for mdat tag
         var currentOffset = UInt32(newEncoder.data.count + padding) // Size of the moof
         
-        if var traf = self.trackFragments.first {
-            
+        for traf in self.trackFragments {
+            var xtraf = traf
+
             var results: [TRUN] = []
             for xrun in traf.trackRun {
-                var run = xrun
+                var run        = xrun
                 run.dataOffset = Int32(currentOffset)
-                currentOffset += run.samples.reduce(0, { (cnt, sample) in  cnt + sample.size  })
+                currentOffset  += run.samples.reduce(0) { cnt, sample in cnt + sample.size }
                 results.append(run)
             }
-            
-            traf.trackRun = results
-            try encoder.encode([traf])
+
+            xtraf.trackRun = results
+            try encoder.encode([xtraf])
         }
+        
     }
     
     
