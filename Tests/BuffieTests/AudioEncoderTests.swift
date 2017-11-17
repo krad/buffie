@@ -19,7 +19,7 @@ class AudioEncoderTests: XCTestCase {
         
     }
     
-    func test_new_aac_encoder() {
+    func xtest_new_aac_encoder() {
         
         let e = self.expectation(description: "Encoded an AAC sample")
         let encoder = AACEncoder() { sample in
@@ -37,9 +37,9 @@ class AudioEncoderTests: XCTestCase {
         
     }
 
-    static var allTests = [
-        ("test_new_aac_encoder", test_new_aac_encoder),
-    ]
+//    static var allTests = [
+//        ("test_new_aac_encoder", test_new_aac_encoder),
+//    ]
 
 }
 

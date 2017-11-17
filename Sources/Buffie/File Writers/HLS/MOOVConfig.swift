@@ -32,17 +32,14 @@ struct MOOVVideoSettings {
 struct MOOVAudioSettings {
     
     var channels: UInt32   = 2
-    var sampleSize: UInt32 = 16
+//    var sampleSize: UInt32 = 16
     var sampleRate: UInt32 = 44100
-    var bitDepth: UInt16   = 8
-    var format: AudioFormatID
+    var sampleSize: UInt16   = 16
     
     init(_ sample: AudioSample) {
         self.channels   = sample.channels
-        self.sampleSize = UInt32(sample.data.count)
-        self.sampleRate = sample.sampleRate
-        self.bitDepth   = sample.bitDepth
-        self.format     = sample.format
+        self.sampleSize = sample.sampleSize
+        self.sampleRate = UInt32(sample.sampleRate)
     }
     
 }

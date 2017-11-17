@@ -10,7 +10,7 @@ struct TKHD: BinarySizedEncodable {
     var creationTime: UInt32     = 3592932068
     var modificationTime: UInt32 = 3592932068
 
-    var trackID: UInt32     = 5
+    var trackID: UInt32     = 2
     var reservedA: UInt32   = 0
     var duration: UInt32    = 0
     var reservedB: UInt64   = 0
@@ -40,7 +40,7 @@ struct TKHD: BinarySizedEncodable {
     
     static func from(_ config: MOOVAudioSettings) -> TKHD {
         var tkhd         = TKHD()
-        tkhd.trackID     = 5
+        tkhd.trackID     = 2
         tkhd.trackWidth  = 0
         tkhd.trackHeight = 0
         return tkhd

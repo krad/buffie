@@ -20,7 +20,7 @@ struct TREX: BinarySizedEncodable {
     
     static func from(_ config: MOOVAudioSettings) -> TREX {
         var trex         = TREX()
-        trex.trackID     = 5
+        trex.trackID     = 2
         trex.sampleFlags = []
         return trex
     }

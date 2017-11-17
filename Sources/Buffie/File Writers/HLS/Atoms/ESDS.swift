@@ -1,8 +1,17 @@
 struct ESDS: BinarySizedEncodable {
     
     let type: Atom = .esds
-    var version: UInt8 = 0
-    var flags: [UInt8] = [0, 0, 0]
+//    var version: UInt8 = 0
+//    var flags: [UInt8] = [0, 0, 0]
+    
+//    var esDescTag: UInt8 = 0x03
+//
+//    //// TODO: write decoder config len
+//
+//    var esid: UInt16 = 0 // TODO
+//    var streamPriority: UInt8 = 0x10
+    
+    
     
     var fake: [UInt8] = [0x00, 0x00, 0x00, 0x00, 0x03, 0x80, 0x80, 0x80,
                          0x22, 0x00, 0x00, 0x00, 0x04, 0x80, 0x80, 0x80,

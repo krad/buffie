@@ -7,12 +7,9 @@ internal struct AudioIO {
     var srcFormat: AudioStreamBasicDescription
     var dstFormat: AudioStreamBasicDescription
     var maxOutputPacketSize: UInt32
-    var packetsPerBuffer: UInt32
-    var outputBufferSize: UInt32
     
-    var inputBuffer: CMBlockBuffer?
-    var packetDescriptions: UnsafeMutablePointer<AudioStreamPacketDescription>?
-
+    var pcmBuffer: UnsafeMutablePointer<Int8>?
+    var pcmBufferSize: Int?
 }
 
 public class AACEncoder {
@@ -47,64 +44,43 @@ public class AACEncoder {
         guard let audioIO = self.audioIO else { return }
         
         var status              = noErr
-        var inBuffer            = AudioBufferList()
-        inBuffer.mNumberBuffers = audioIO.srcFormat.mChannelsPerFrame
-        var blockBuffer: CMBlockBuffer?
-        var size: Int = 0
+
+        let blockBuffer = CMSampleBufferGetDataBuffer(sample)
+        var bufferPtr: UnsafeMutablePointer<Int8>? = nil
+        var bufferSize: Int = 0
+
+        status = CMBlockBufferGetDataPointer(blockBuffer!, 0, nil, &bufferSize, &bufferPtr)
         
-    
-        status = CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(sample,
-                                                                         &size,
-                                                                         &inBuffer,
-                                                                         AudioBufferList.sizeInBytes(maximumBuffers: Int(audioIO.srcFormat.mChannelsPerFrame)),
-                                                                         kCFAllocatorDefault,
-                                                                         kCFAllocatorDefault,
-                                                                         0,
-                                                                         &blockBuffer)
+        if status != noErr { print("Couldn't get pointer to pcm data"); return }
         
-        if status != noErr {
-            print("Couldn't prepare input samples: ", status)
-            return
-        }
+        self.audioIO?.pcmBuffer     = bufferPtr
+        self.audioIO?.pcmBufferSize = bufferSize
+
         
-        if blockBuffer == nil {
-            print("Input sample buffer was nil")
-            return
-        }
+        var outBuffer = AudioBufferList.allocate(maximumBuffers: 1)
+        outBuffer[0].mNumberChannels = 2
+        outBuffer[0].mDataByteSize = UInt32(bufferSize)
         
-        if let inputBuffer = self.audioIO?.inputBuffer {
-            status = CMBlockBufferAppendBufferReference(inputBuffer,
-                                               blockBuffer!,
-                                               0,
-                                               CMBlockBufferGetDataLength(blockBuffer!),
-                                               0)
-            if status != noErr {
-                print("Could not concat buffer", status)
-            }
-            
-        } else {
-            self.audioIO?.inputBuffer = blockBuffer
-        }
+        let ptr = UnsafeMutableRawPointer(bufferPtr!)
+        outBuffer[0].mData = ptr
         
-        
-        var outBuffer                      = AudioBufferList()
-        outBuffer.mNumberBuffers           = 1
-        outBuffer.mBuffers.mNumberChannels = audioIO.dstFormat.mChannelsPerFrame
-        outBuffer.mBuffers.mDataByteSize   = UInt32(CMBlockBufferGetDataLength(blockBuffer!)*2)
-        outBuffer.mBuffers.mData           = UnsafeMutableRawPointer.allocate(bytes: Int(CMBlockBufferGetDataLength(blockBuffer!)*2), alignedTo: 0)
+//        var outBuffer                      = AudioBufferList()
+//        outBuffer.mNumberBuffers           = 1
+//        outBuffer.mBuffers.mNumberChannels = audioIO.dstFormat.mChannelsPerFrame
+//        outBuffer.mBuffers.mDataByteSize   = UInt32(bufferSize)
+//        outBuffer.mBuffers.mData           = UnsafeMutableRawPointer.allocate(bytes: bufferSize, alignedTo: 0)
         
         var ioOutputDataPackets: UInt32 = 1
         
-        var packet = AudioStreamPacketDescription()
-
         status = AudioConverterFillComplexBuffer(audioIO.converter,
                                                  fillComplexCallback,
                                                  Unmanaged.passUnretained(self).toOpaque(),
                                                  &ioOutputDataPackets,
-                                                 &outBuffer,
+                                                 outBuffer.unsafeMutablePointer,
                                                  nil)
 
         if status != noErr {
+            
             print("Error converting:", status)
 //            var x = 0
 //            x += status == kAudioConverterErr_FormatNotSupported ? #line : 0
@@ -131,36 +107,27 @@ public class AACEncoder {
         ioData: UnsafeMutablePointer<AudioBufferList>,
         outDataPacketDescription: UnsafeMutablePointer<UnsafeMutablePointer<AudioStreamPacketDescription>?>?) -> OSStatus
     {
-        guard let audioIO = self.audioIO,
-              let inBuffer = audioIO.inputBuffer,
-              ((CMBlockBufferGetDataLength(inBuffer)/Int(audioIO.srcFormat.mChannelsPerFrame))/Int(audioIO.srcFormat.mBytesPerFrame)) >= Int(ioNumberDataPackets.pointee) else {
-            ioNumberDataPackets.pointee = 0
-            return -1
-        }
-        
-        let bufferSize = ioNumberDataPackets.pointee * audioIO.srcFormat.mChannelsPerFrame * audioIO.srcFormat.mBytesPerFrame
-        let ptr = UnsafeMutableRawPointer.allocate(bytes: Int(bufferSize), alignedTo: 0)
-        var status = CMBlockBufferCopyDataBytes(audioIO.inputBuffer!, 0, Int(bufferSize), ptr)
-        
-        ioData.pointee.mNumberBuffers = 1
-        ioData.pointee.mBuffers.mData = ptr
-        ioData.pointee.mBuffers.mDataByteSize = bufferSize
-        
-//        print(audioIO.inputBuffer)
-        print(ioData.pointee)
-        print(ioNumberDataPackets.pointee)
-        
-        ioNumberDataPackets.pointee = 1
+     
+        let ptr = UnsafeMutableRawPointer(audioIO!.pcmBuffer!)
+        ioData.pointee.mNumberBuffers           = 1
+        ioData.pointee.mBuffers.mData           = ptr
+        ioData.pointee.mBuffers.mDataByteSize   = UInt32(audioIO!.pcmBufferSize!)
+        ioData.pointee.mBuffers.mNumberChannels = audioIO!.srcFormat.mChannelsPerFrame
 
+        print(ioData.pointee)
+        print("---", ioNumberDataPackets.pointee)
+        
+        let packetsWritten = (UInt32(audioIO!.pcmBufferSize!) / audioIO!.srcFormat.mChannelsPerFrame) / audioIO!.srcFormat.mBytesPerPacket
+        print(packetsWritten)
+        
+        // https://developer.apple.com/library/content/qa/qa1317/_index.html
+        ioNumberDataPackets.pointee = packetsWritten
         return noErr
     }
     
     private func setupConverter(with sample: CMSampleBuffer) {
         if var src = getStreamDescription(from: sample) {
             
-            print(src)
-            print("---", src.mFormatFlags & kAudioFormatFlagIsNonInterleaved != 0)
-                        
             var dst               = AudioStreamBasicDescription()
             dst.mSampleRate       = src.mSampleRate
             dst.mChannelsPerFrame = src.mChannelsPerFrame
@@ -187,33 +154,20 @@ public class AACEncoder {
             status          = AudioConverterGetProperty(converter!, kAudioConverterCurrentOutputStreamDescription, &realDstSize, &realDst)
             if status != noErr { print("Couldn't get real dst stream description") }
             
-            print(realDst)
-            
             // Get the maximum output packet size
             var maxOutputPacketSize: UInt32 = 0
             var maxpktsize: UInt32 = 0
             status = AudioConverterGetProperty(converter!, kAudioConverterPropertyMaximumOutputPacketSize, &maxpktsize, &maxOutputPacketSize)
             if status != noErr { print("Couldn't max packet output size") }
-            
-            print(maxOutputPacketSize)
-            
-            var packetsPerBuffer: UInt32 = 0
-            var outputBufferSize = UInt32(32 * 1024)
-            if maxOutputPacketSize > outputBufferSize {
-                outputBufferSize = maxOutputPacketSize
+
+            if audioIO == nil {
+                self.audioIO = AudioIO(converter: converter!,
+                                       srcFormat: src,
+                                       dstFormat: realDst,
+                                       maxOutputPacketSize: maxOutputPacketSize,
+                                       pcmBuffer: nil,
+                                       pcmBufferSize: nil)
             }
-            
-            packetsPerBuffer = outputBufferSize / maxOutputPacketSize
-            
-            
-            self.audioIO = AudioIO(converter: converter!,
-                                   srcFormat: src,
-                                   dstFormat: realDst,
-                                   maxOutputPacketSize: maxOutputPacketSize,
-                                   packetsPerBuffer: packetsPerBuffer,
-                                   outputBufferSize: outputBufferSize,
-                                   inputBuffer: nil,
-                                   packetDescriptions: nil)
         }
     }
     

@@ -6,7 +6,6 @@ public enum FragmentedMP4WriterError: Error {
     case directoryDoesNotExist
 }
 
-@available(macOS 10.11, *)
 public class FragmentedMP4Writer {
     
     var segmenter: StreamSegmenter

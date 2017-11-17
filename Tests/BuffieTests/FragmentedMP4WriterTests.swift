@@ -55,18 +55,17 @@ class FragmentedMP4WriterTests: XCTestCase {
         XCTAssertEqual(Int(results.first!.payloadSize), compressedFrame.count-4)
     }
     
-//    @available (macOS 10.11, *)
-//    func test_experiment() {
-//        let dir    = URL(fileURLWithPath: "/tmp")
-//        let writer = try? FragmentedMP4Writer(dir)
-//        XCTAssertNotNil(writer)
-//
-//        let reader = SimpleReader() { sample, type in writer?.got(sample, type: type) }
-//        let camera = try? Camera(.back, reader: reader, controlDelegate: nil)
-//        XCTAssertNotNil(camera)
-//        camera?.start()
-//        let e = self.expectation(description: "Blah")
-//        self.wait(for: [e], timeout: 20)
-//    }
+    func test_experiment() {
+        let dir    = URL(fileURLWithPath: "/tmp")
+        let writer = try? FragmentedMP4Writer(dir)
+        XCTAssertNotNil(writer)
+
+        let reader = SimpleReader() { sample, type in writer?.got(sample, type: type) }
+        let camera = try? Camera(.back, reader: reader, controlDelegate: nil)
+        XCTAssertNotNil(camera)
+        camera?.start()
+        let e = self.expectation(description: "Blah")
+        self.wait(for: [e], timeout: 20)
+    }
     
 }

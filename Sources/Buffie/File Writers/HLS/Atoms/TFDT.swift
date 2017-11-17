@@ -15,11 +15,4 @@ struct TFDT: BinarySizedEncodable {
         return tfdt
     }
     
-    static func from(size: UInt32, sampleRate: UInt32) -> TFDT {
-        var tfdt = TFDT()
-        tfdt.baseMediaDecodeTime   = 0
-        tfdt.trackFragmentDuration = nil
-        return tfdt
-    }
-    
 }

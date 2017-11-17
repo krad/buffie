@@ -30,7 +30,7 @@ struct MVHD: BinarySizedEncodable {
     var selectionTime: UInt32 = 0
     var selectionDuration: UInt32 = 0
     var currentTime: UInt32 = 0
-    var nextTrackID: UInt32 = 5
+    var nextTrackID: UInt32 = 2
     
     static func from(_ config: MOOVVideoSettings) -> MVHD {
         var mvhd = MVHD()
