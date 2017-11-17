@@ -12,7 +12,7 @@ struct TRAF: BinarySizedEncodable {
                      config: MOOVConfig) -> [TRAF]
     {
         var trackFragments: [TRAF] = []
-
+        
         if let _ = config.videoSettings {
             print("+==== VIDEO")
             let videoSamples = samples.filter { $0.type == .video } as! [VideoSample]
@@ -36,9 +36,12 @@ struct TRAF: BinarySizedEncodable {
             let audioSamples = samples.filter { $0.type == .audio } as! [AudioSample]
 
             if let sample = audioSamples.first {
+                
+                let size = audioSamples.reduce(0) { cnt, sample in cnt + sample.size }
+                
                 var traf                 = TRAF()
                 traf.trackFragmentHeader = [TFHD.from(sample: sample)]
-                traf.trackDecodeAtom     = [TFDT.from(sample: sample)]
+                traf.trackDecodeAtom     = [TFDT.from(size: size, sampleRate: sample.sampleRate)]
                 traf.trackRun            = [TRUN.from(samples: audioSamples)]
                 trackFragments.append(traf)
             }

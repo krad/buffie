@@ -24,13 +24,13 @@ struct TFHD: BinarySizedEncodable {
     
     static func from(sample: AudioSample) -> TFHD {
         var tfhd               = TFHD()
-        tfhd.trackID           = 2
-        tfhd.tfFlags           = [.defaultBaseIsMOOF,
-                                  .defaultSampleDurationPresent,
-                                  .defaultSampleSizePresent]
-        
-        tfhd.defaultSampleSize     = sample.size
-        tfhd.defaultSampleDuration = 1024
+        tfhd.trackID           = 5
+//        tfhd.tfFlags           = [.defaultBaseIsMOOF,
+//                                  .defaultSampleDurationPresent,
+//                                  .defaultSampleSizePresent]
+//
+//        tfhd.defaultSampleSize     = sample.size
+//        tfhd.defaultSampleDuration = 1024
 
         return tfhd
     }

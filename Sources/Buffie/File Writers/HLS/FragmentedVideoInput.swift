@@ -10,7 +10,7 @@ class FragmentedVideoInput {
         self.onChunk = onChunk
         self.settings.allowFrameReordering        = false
         self.settings.profileLevel                = .h264High_4_0
-        self.settings.maxKeyFrameIntervalDuration = 2
+        self.settings.maxKeyFrameIntervalDuration = 1
         self.videoEncoder = try VideoEncoder(settings, delegate: self)
     }
     

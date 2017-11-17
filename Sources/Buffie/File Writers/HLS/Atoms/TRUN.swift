@@ -42,7 +42,7 @@ struct TRUNFlags: BinaryEncodable, OptionSet {
 
 struct TRUNSample: BinaryEncodable {
     var duration: UInt32?
-    var size: UInt32                  = 0
+    var size: UInt32 = 0
     var flags: SampleFlags?
     
     init(_ sample: VideoSample) {
@@ -55,9 +55,7 @@ struct TRUNSample: BinaryEncodable {
     }
     
     init(_ sample: AudioSample) {
-        self.size     = sample.size
-        self.flags    = nil
-        self.duration = nil
+        self.size = sample.size
     }
 }
 

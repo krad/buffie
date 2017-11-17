@@ -35,7 +35,7 @@ class StreamSegmenter {
         return self.outputDir.appendingPathComponent(self.currentSegmentName)
     }
     
-    init(outputDir: URL, targetSegmentDuration: Double, streamContents: StreamContents = [.video]) throws {
+    init(outputDir: URL, targetSegmentDuration: Double, streamContents: StreamContents = [.video, .audio]) throws {
         self.outputDir             = outputDir
         self.targetSegmentDuration = targetSegmentDuration
         self.streamContents        = streamContents
@@ -97,7 +97,7 @@ class StreamSegmenter {
             self.playlistWriter.writerHeader(with: self.targetSegmentDuration)
             self.currentSegment += 1
             
-            self.handleSegment(with: sample as! VideoSample)
+//            self.handleSegment(with: sample as! VideoSample)
         }
         catch { print("=== Couldn't write init segment") }
     }
@@ -149,14 +149,14 @@ class StreamSegmenter {
     }
     
     public func append(_ sample: AudioSample) {
-//        self.updateMOOVConfig(with: sample)
-//        if let _ = self.initSegmentWriter {
-//            if let currentSegment = self.currentSegmentWriter {
-//                currentSegment.append(sample)
-//            }
-//        } else {
+        self.updateMOOVConfig(with: sample)
+        if let _ = self.initSegmentWriter {
+            if let currentSegment = self.currentSegmentWriter {
+                currentSegment.append(sample)
+            }
+        } else {
 //            self.newInitialSegment(with: sample)
-//        }
+        }
     }
 
     func handleSegment(with sample: VideoSample) {

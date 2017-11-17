@@ -67,19 +67,33 @@ public struct AudioSample: Sample {
     var bitDepth: UInt16
     var format: AudioFormatID
     
-    init(audioBufferList: AudioBufferList, settings: AudioCodingSettings) {
-        self.type = .audio
-        if let bufferData = bytes(from: audioBufferList) {
-            self.data = bufferData
-        } else {
-            print("FUCK COUlDNT MAKE BYTES")
-            self.data = []
-        }
+    static func samples(from audioBufferList: AudioBufferList,
+                        numberOfSamples: Int) -> [AudioSample] {
         
-        self.channels   = settings.channels
-        self.sampleRate = UInt32(settings.sampleRate)
-        self.bitDepth   = settings.bitDepth
-        self.format     = settings.audioFormat
+        var results: [AudioSample] = []
+
+//        if let bufferData = bytes(from: audioBufferList) {
+//                        
+//            let sampleLength = (bufferData.count / numberOfSamples) * 128
+//            let samplesArray: [[UInt8]] =
+//            stride(from: 0, through: bufferData.count, by: sampleLength).map { startIndex in
+//                let endIndex = min(bufferData.count, startIndex.advanced(by: sampleLength))
+//                return Array(bufferData[startIndex..<endIndex])
+//            }
+//
+//            results = samplesArray.map {
+//                AudioSample(type: .audio,
+//                            data: $0,
+//                            channels: settings.channels,
+//                            sampleRate: UInt32(settings.sampleRate),
+//                            bitDepth: settings.bitDepth,
+//                            format: settings.audioFormat)
+//            }
+//            
+//        }
+//
+        
+        return results
     }
-    
+
 }
