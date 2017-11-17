@@ -17,7 +17,6 @@ internal struct AudioIO {
 public class AACEncoder {
     
     var audioIO: AudioIO?
-    let encoderQ = DispatchQueue(label: "aac.encoder.q")
     
     var fillComplexCallback: AudioConverterComplexInputDataProc = { (inAudioConverter, ioDataPacketCount, ioData, outDataPacketDescriptionPtrPtr, inUserData) in
         return Unmanaged<AACEncoder>.fromOpaque(inUserData!).takeUnretainedValue().audioConverterCallback(
@@ -36,11 +35,11 @@ public class AACEncoder {
     public func encode(_ sample: CMSampleBuffer) {
         guard let _ = self.audioIO else {
             self.setupConverter(with: sample)
-            encoderQ.async { self.process(sample) }
+            self.process(sample)
             return
         }
         
-        encoderQ.async { self.process(sample) }
+        self.process(sample)
     }
     
     private func process(_ sample: CMSampleBuffer) {
