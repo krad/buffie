@@ -53,4 +53,29 @@ class AtomTests: XCTestCase {
         
     }
     
+    func test_that_we_can_create_an_esds_properly() {
+        
+
+        let config      = MOOVAudioSettings(audioObjectType: .AAC_LC,
+                                            samplingFreq: .hz44100,
+                                            channelLayout: .frontLeftAndFrontRight)
+        
+        let esds        = ESDS.from(config)
+        let expectedOut = "000000000380808022000000048080801440150018000001f4000001f40005808080021210068080800102"
+
+        let bytes = try? BinaryEncoder.encode(esds)
+        XCTAssertNotNil(bytes)
+        
+        let data    = Data(bytes: bytes!)
+        var hexData = data.hexEncodedString()
+        hexData.removeFirst(16) // first 8 bytes length of the atom and the esds tag
+        
+        XCTAssertEqual(hexData.count, expectedOut.count)
+        
+        let errorMessage = "\nExpected: \(expectedOut)\nGot:      \(hexData)"
+        XCTAssertEqual(hexData, expectedOut, errorMessage)
+        
+        
+    }
+    
 }

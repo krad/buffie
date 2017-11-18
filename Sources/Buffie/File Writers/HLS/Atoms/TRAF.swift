@@ -39,8 +39,6 @@ struct TRAF: BinarySizedEncodable {
 
             if let sample = audioSamples.first {
                 
-                //let size = audioSamples.reduce(0) { cnt, sample in cnt + sample.size }
-                
                 var traf                 = TRAF()
                 traf.trackFragmentHeader = [TFHD.from(sample: sample)]
                 traf.trackDecodeAtom     = [TFDT.from(decode: UInt64(sample.pts.value),

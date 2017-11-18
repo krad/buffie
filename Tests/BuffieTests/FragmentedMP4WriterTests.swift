@@ -62,6 +62,11 @@ class FragmentedMP4WriterTests: XCTestCase {
 
         let reader = SimpleReader() { sample, type in writer?.got(sample, type: type) }
         let camera = try? Camera(.back, reader: reader, controlDelegate: nil)
+//        let camera = try? Camera(videoDeviceID: "DJH4314BF2VF6VTDF",
+//                                 audioDeviceID: "AppleUSBAudioEngine:ZOOM Corporation:H6:000000000000:2,1",
+//                                 reader: reader,
+//                                 controlDelegate: nil)
+        
         XCTAssertNotNil(camera)
         camera?.start()
         let e = self.expectation(description: "Blah")

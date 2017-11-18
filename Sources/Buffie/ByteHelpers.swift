@@ -32,6 +32,16 @@ public extension Int64 {
     
 }
 
+public func byteArray(from uint16: UInt16) -> [UInt8] {
+    var bigEndian = uint16.bigEndian
+    let count = MemoryLayout<UInt16>.size
+    let bytePtr = withUnsafePointer(to: &bigEndian) {
+        $0.withMemoryRebound(to: UInt8.self, capacity: count) {
+            UnsafeBufferPointer(start: $0, count: count)
+        }
+    }
+    return Array(bytePtr)
+}
 
 public func byteArray(from uint32: UInt32) -> [UInt8] {
     var bigEndian = uint32.bigEndian

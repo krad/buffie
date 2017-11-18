@@ -32,14 +32,33 @@ struct MOOVVideoSettings {
 struct MOOVAudioSettings {
     
     var channels: UInt32   = 2
-//    var sampleSize: UInt32 = 16
     var sampleRate: UInt32 = 44100
-    var sampleSize: UInt16   = 16
+    var sampleSize: UInt16 = 16
+    var audioObjectType: AudioObjectType
+    var samplingFreq: SamplingFrequency
+    var channelLayout: ChannelConfiguration
+    
+    init(audioObjectType: AudioObjectType,
+         samplingFreq: SamplingFrequency,
+         channelLayout: ChannelConfiguration)
+    {
+        self.audioObjectType = audioObjectType
+        self.samplingFreq    = samplingFreq
+        self.channelLayout   = channelLayout
+    }
     
     init(_ sample: AudioSample) {
         self.channels   = sample.channels
         self.sampleSize = sample.sampleSize
         self.sampleRate = UInt32(sample.sampleRate)
+        
+        self.audioObjectType = sample.audioObjectType
+        self.samplingFreq    = sample.samplingFreq
+        self.channelLayout   = sample.channelConfig
+        
+//        print(self.audioObjectType.rawValue)
+//        print(self.samplingFreq.rawValue)
+//        print(self.channelLayout.rawValue)
     }
     
 }

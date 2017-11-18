@@ -48,7 +48,6 @@ class StreamSegmenter {
         if self.streamContents == [.video, .audio] {
             if let _ = self.moovConfig.videoSettings {
                 if let _ = self.moovConfig.audioSettings {
-                    print(#line, "Audio & Video")
                     return true
                 }
             }
@@ -56,14 +55,12 @@ class StreamSegmenter {
         
         if self.streamContents == [.video] {
             if let _ = self.moovConfig.videoSettings {
-                print(#line, "Video")
                 return true
             }
         }
         
         if self.streamContents == [.audio] {
             if let _ = self.moovConfig.audioSettings {
-                print(#line, "Audio")
                 return true
             }
         }
