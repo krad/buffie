@@ -11,8 +11,7 @@ class FragmentedMP4Segment {
     /// Current moof we're on
     var currentSequence: Int
     
-    var duration: CMTime = kCMTimeZero
-    var prevDecodeTime: CMTime = kCMTimeZero
+    var duration: Double = 0
     
     var config: MOOVConfig
     
@@ -43,7 +42,7 @@ class FragmentedMP4Segment {
     }
     
     func handle(_ sample: VideoSample) {
-        self.duration = CMTimeAdd(duration, sample.duration)
+        self.duration += sample.durationSeconds
         
         if sample.isSync && self.samples.count > 0 {
             try? self.write()
@@ -66,10 +65,6 @@ class FragmentedMP4Segment {
         let data = Data(bytes: moofBytes + mdatBytes)
         self.fileHandle.write(data)
         
-        let videoSamples    = samples.filter { $0.type == .video } as! [VideoSample]
-        self.prevDecodeTime = videoSamples.reduce(kCMTimeZero) { (cnt, sample) in
-            CMTimeAdd(cnt, sample.duration)
-        }
         self.currentSequence += 1
         self.samples = []
     }

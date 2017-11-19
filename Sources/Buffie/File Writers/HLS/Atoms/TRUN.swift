@@ -46,7 +46,7 @@ struct TRUNSample: BinaryEncodable {
     var flags: SampleFlags?
     
     init(_ sample: VideoSample) {
-        self.duration              =  UInt32(sample.duration.value)
+        self.duration              =  UInt32(sample.duration)
         self.size                  =  sample.size
         self.flags                 = []
         

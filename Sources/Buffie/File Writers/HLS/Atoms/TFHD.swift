@@ -17,7 +17,7 @@ struct TFHD: BinarySizedEncodable {
     static func from(sample: VideoSample) -> TFHD {
         var tfhd                   = TFHD()
         tfhd.trackID               = 1
-        tfhd.defaultSampleDuration = UInt32(sample.duration.value)
+        tfhd.defaultSampleDuration = UInt32(sample.duration)
         tfhd.defaultSampleSize     = sample.size
         return tfhd
     }

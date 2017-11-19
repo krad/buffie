@@ -56,7 +56,7 @@ public class VideoEncoder {
     }
     
     internal func completeFrame() {
-        VTCompressionSessionCompleteFrames(self.session!, CMTime(seconds: 1, preferredTimescale: 24))
+        VTCompressionSessionCompleteFrames(self.session!, CMTime(seconds: 1, preferredTimescale: Int32(self.settings.frameRate)))
     }
     
 }

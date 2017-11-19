@@ -19,13 +19,10 @@ struct TRAF: BinarySizedEncodable {
             let videoSamples = samples.filter { $0.type == .video } as! [VideoSample]
 
             if let sample = videoSamples.first {
+                
                 var traf                 = TRAF()
                 traf.trackFragmentHeader = [TFHD.from(sample: sample)]
-                
-                let duration             = videoSamples.reduce(0) { cnt, sample in cnt + sample.duration.value }
-                traf.trackDecodeAtom     = [TFDT.from(decode: UInt64(sample.decode.value),
-                                                      duration: UInt64(duration))]
-                
+                traf.trackDecodeAtom     = [TFDT.from(decode: sample.decode)]
                 traf.trackRun            = [TRUN.from(samples: videoSamples)]
                 
                 trackFragments.append(traf)
@@ -41,8 +38,7 @@ struct TRAF: BinarySizedEncodable {
                 
                 var traf                 = TRAF()
                 traf.trackFragmentHeader = [TFHD.from(sample: sample)]
-                traf.trackDecodeAtom     = [TFDT.from(decode: UInt64(sample.pts.value),
-                                                      duration: UInt64(sample.duration.value))]
+                traf.trackDecodeAtom     = [TFDT.from(decode: sample.decode)]
                 traf.trackRun            = [TRUN.from(samples: audioSamples)]
                 trackFragments.append(traf)
             }

@@ -55,10 +55,6 @@ struct MOOVAudioSettings {
         self.audioObjectType = sample.audioObjectType
         self.samplingFreq    = sample.samplingFreq
         self.channelLayout   = sample.channelConfig
-        
-//        print(self.audioObjectType.rawValue)
-//        print(self.samplingFreq.rawValue)
-//        print(self.channelLayout.rawValue)
     }
     
 }

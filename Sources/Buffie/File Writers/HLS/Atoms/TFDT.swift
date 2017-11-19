@@ -6,12 +6,10 @@ struct TFDT: BinarySizedEncodable {
     var flags: [UInt8]  = [0, 0, 0]
     
     var baseMediaDecodeTime: UInt64 = 0
-    var trackFragmentDuration: UInt64?
     
-    static func from(decode: UInt64, duration: UInt64) -> TFDT {
+    static func from(decode: Double) -> TFDT {
         var tfdt                   = TFDT()
-        tfdt.baseMediaDecodeTime   = decode
-        tfdt.trackFragmentDuration = duration
+        tfdt.baseMediaDecodeTime   = UInt64(decode)
         return tfdt
     }
     

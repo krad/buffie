@@ -72,7 +72,7 @@ class HLSPlaylistWriter {
     
     func write(segment: FragmentedMP4Segment) {
         if let name = segment.file.path.components(separatedBy: "/").last {
-            self.writeSegment(named: name, with: CMTimeGetSeconds(segment.duration))
+            self.writeSegment(named: name, with: Double(segment.duration))
         }
     }
     

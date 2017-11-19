@@ -21,9 +21,10 @@ public struct VideoSample: Sample {
         return results
     }
     
-    var duration: CMTime
-    var pts: CMTime
-    var decode: CMTime
+    var duration: Int64          = 0
+    var durationSeconds: Double  = 0
+    var decode: Double           = 0
+    var timescale: Double        = 0
     
     var size: UInt32 {
         return self.nalus.reduce(0, { last, nalu in last + nalu.totalSize })
@@ -36,9 +37,6 @@ public struct VideoSample: Sample {
     init(sampleBuffer: CMSampleBuffer) {
         self.type       = .video
         self.format     = CMSampleBufferGetFormatDescription(sampleBuffer)!
-        self.duration   = CMSampleBufferGetDuration(sampleBuffer)
-        self.pts        = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-        self.decode     = CMSampleBufferGetDecodeTimeStamp(sampleBuffer)
         
         self.isSync                     = !sampleBuffer.notSync
         self.dependsOnOthers            = sampleBuffer.dependsOnOthers
@@ -70,9 +68,8 @@ public struct AudioSample: Sample {
     let samplingFreq: SamplingFrequency
     let framesPerPacket: UInt32
     
-    var duration: CMTime
-    var pts: CMTime
-    var decode: CMTime
+    var duration: Double = 0
+    var decode: Double   = 0
     
     init(sampleBuffer: CMSampleBuffer) {
         
@@ -98,12 +95,7 @@ public struct AudioSample: Sample {
         self.channelConfig   = ChannelConfiguration(rawValue: UInt8(asbd.mChannelsPerFrame))!
         self.samplingFreq    = SamplingFrequency(sampleRate: asbd.mSampleRate)
         self.framesPerPacket  = asbd.mFramesPerPacket
-        
-        /// Not sure if this is necessary or necessarily accurate for VBR
-        self.duration   = CMSampleBufferGetDuration(sampleBuffer)
-        self.pts        = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-        self.decode     = CMSampleBufferGetDecodeTimeStamp(sampleBuffer)
-        
+                
     }
     
 

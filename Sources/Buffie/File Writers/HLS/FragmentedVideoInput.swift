@@ -6,6 +6,8 @@ class FragmentedVideoInput {
     var videoEncoder: VideoEncoder?
     var onChunk: (VideoSample) -> Void
     
+    var decodeCount: Int64 = 0
+    
     init(_ onChunk: @escaping (VideoSample) -> Void) throws {
         self.onChunk = onChunk
         self.settings.allowFrameReordering        = false
@@ -22,6 +24,15 @@ class FragmentedVideoInput {
 
 extension FragmentedVideoInput: VideoEncoderDelegate {
     func encoded(videoSample: CMSampleBuffer) {
-        self.onChunk(VideoSample(sampleBuffer: videoSample))
+        
+        let duration     = CMSampleBufferGetDuration(videoSample)
+        decodeCount += duration.value
+        
+        var sample             = VideoSample(sampleBuffer: videoSample)
+        sample.durationSeconds = Double(duration.value) / Double(duration.timescale)
+        sample.duration        = duration.value
+        sample.decode          = Double(CMSampleBufferGetDecodeTimeStamp(videoSample).value)
+
+        self.onChunk(sample)
     }
 }
