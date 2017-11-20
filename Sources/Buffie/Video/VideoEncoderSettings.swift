@@ -8,6 +8,7 @@ public struct VideoEncoderSettings {
     var codec: CMVideoCodecType
     var videoFormat: VideoFormat
     var frameRate: Int
+    var maxKeyFrameIntervalDuration: Int?
     
     var realTime: Bool
     var dataRateLimit: Int?
@@ -18,10 +19,10 @@ public struct VideoEncoderSettings {
     var useHardwareEncoding: Bool
     
     init() {
-        self.width                    = 480
-        self.height                   = 640
+        self.width                    = 640
+        self.height                   = 480
         self.codec                    = kCMVideoCodecType_H264
-        self.frameRate                = 24
+        self.frameRate                = 30
         self.videoFormat              = .x420YpCbCr8BiPlanarVideoRange
         self.realTime                 = true
         self.allowFrameReordering     = true
@@ -59,6 +60,7 @@ enum VideoFormat {
 enum VideoProfileLevel {
     case h264BaselineAutoLevel
     case h264Baseline_4_0
+    case h264High_4_0
     
     var raw: CFString {
         get {
@@ -67,6 +69,8 @@ enum VideoProfileLevel {
                 return kVTProfileLevel_H264_Baseline_AutoLevel
             case .h264Baseline_4_0:
                 return kVTProfileLevel_H264_Baseline_4_0
+            case .h264High_4_0:
+                return kVTProfileLevel_H264_High_4_0
             }
         }
     }

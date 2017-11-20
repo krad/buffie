@@ -56,7 +56,7 @@ public class VideoEncoder {
     }
     
     internal func completeFrame() {
-        VTCompressionSessionCompleteFrames(self.session!, CMTime(seconds: 1, preferredTimescale: 24))
+        VTCompressionSessionCompleteFrames(self.session!, CMTime(seconds: 1, preferredTimescale: Int32(self.settings.frameRate)))
     }
     
 }
@@ -64,6 +64,12 @@ public class VideoEncoder {
 func configureProperties(for session: VTCompressionSession,
                          with settings: VideoEncoderSettings)
 {
+    
+    if let maxKeyFrameIntervalDuration = settings.maxKeyFrameIntervalDuration {
+        VTSessionSetProperty(session,
+                             kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration,
+                             maxKeyFrameIntervalDuration as CFTypeRef)
+    }
     
     VTSessionSetProperty(session,
                          kVTCompressionPropertyKey_RealTime,
