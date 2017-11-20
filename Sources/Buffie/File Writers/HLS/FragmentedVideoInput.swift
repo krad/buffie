@@ -25,11 +25,12 @@ class FragmentedVideoInput {
 extension FragmentedVideoInput: VideoEncoderDelegate {
     func encoded(videoSample: CMSampleBuffer) {
         
-        let duration     = CMSampleBufferGetDuration(videoSample)
-        decodeCount      += duration.value
+        let duration           = CMSampleBufferGetDuration(videoSample)
+        print(duration)
+        decodeCount            += duration.value
         
         var sample             = VideoSample(sampleBuffer: videoSample)
-        sample.timescale       = Double(duration.timescale)
+        sample.timescale       = UInt32(duration.timescale)
         sample.durationSeconds = Double(duration.value) / Double(duration.timescale)
         sample.duration        = duration.value
         sample.decode          = Double(decodeCount)

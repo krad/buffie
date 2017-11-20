@@ -53,6 +53,11 @@ class FragmentedMP4Segment {
     }
     
     func write() throws {
+        
+        let audioSamples = self.samples.filter { $0.type == .audio } as! [AudioSample]
+        let duration = audioSamples.reduce(0) { cnt, sample in cnt + sample.duration }
+        print(duration, audioSamples.count, duration / 44100)
+        
         let moof = MOOF(config: self.config,
                         samples: samples,
                         currentSequence: UInt32(self.currentSequence))

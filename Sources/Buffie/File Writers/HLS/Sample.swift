@@ -5,12 +5,28 @@ protocol Sample {
     var type: SampleType { get }
     var data: [UInt8] { get }
     var size: UInt32 { get }
+    var duration: Int64 { get }
+    var durationInSeconds: Double { get }
+    
+    var decode: Double { get }
+    var timescale: UInt32 { get }
+    var format: MediaFormat { get }
+    var isSync: Bool { get }
 }
+
+extension Sample {
+    var durationInSeconds: Double {
+        return Double(self.duration) / Double(self.timescale)
+    }
+}
+
+protocol MediaFormat { }
+extension CMFormatDescription: MediaFormat { }
+extension AudioStreamBasicDescription: MediaFormat { }
 
 public struct VideoSample: Sample {
     
     var type: SampleType
-    var format: CMFormatDescription
     var nalus: [NALU] = []
     
     var data: [UInt8] {
@@ -24,7 +40,9 @@ public struct VideoSample: Sample {
     var duration: Int64          = 0
     var durationSeconds: Double  = 0
     var decode: Double           = 0
-    var timescale: Double        = 0
+    var timescale: UInt32        = 0
+    
+    var format: MediaFormat // CMFormatDescription
     
     var size: UInt32 {
         return self.nalus.reduce(0, { last, nalu in last + nalu.totalSize })
@@ -59,17 +77,18 @@ public struct AudioSample: Sample {
     var size: UInt32 {
         return UInt32(self.data.count)
     }
+    
+    var duration: Int64  = 0
+    var decode: Double   = 0
+    var timescale: UInt32
+    
+    var format: MediaFormat // AudioStreamBasicDescription
+    
+    var isSync: Bool = false
 
     let sampleSize: UInt16
     let channels: UInt32
     let sampleRate: Double
-    let audioObjectType: AudioObjectType
-    let channelConfig: ChannelConfiguration
-    let samplingFreq: SamplingFrequency
-    let framesPerPacket: UInt32
-    
-    var duration: Double = 0
-    var decode: Double   = 0
     
     init(sampleBuffer: CMSampleBuffer) {
         
@@ -79,23 +98,16 @@ public struct AudioSample: Sample {
         
         /// Get the stream description
         let asbd        = getStreamDescription(from: sampleBuffer)!
-
-        /// Get sample size
-        var packet      = AudioStreamPacketDescription()
-        var packetSize: Int = 0
-        CMSampleBufferGetAudioStreamPacketDescriptions(sampleBuffer, Int(asbd.mFramesPerPacket), &packet, &packetSize)
-        self.sampleSize = UInt16(packetSize)
+        
+        self.format     = asbd
+        self.timescale  = UInt32(asbd.mSampleRate)
+        
+        /// Set the sample size
+        self.sampleSize = 16
         
         /// Set the channels and sample rate
         self.channels   = asbd.mChannelsPerFrame
         self.sampleRate = asbd.mSampleRate
-        
-        /// Set flags for help with decoder
-        self.audioObjectType = AudioObjectType(objectID: MPEG4ObjectID(rawValue: Int(asbd.mFormatFlags))!)
-        self.channelConfig   = ChannelConfiguration(rawValue: UInt8(asbd.mChannelsPerFrame))!
-        self.samplingFreq    = SamplingFrequency(sampleRate: asbd.mSampleRate)
-        self.framesPerPacket  = asbd.mFramesPerPacket
-                
     }
     
 
@@ -195,4 +207,3 @@ enum ChannelConfiguration: UInt8 {
     case frontCenterAndFrontLeftAndFrontRightAndBackLeftAndBackRightLFE                        = 6
     case frontCenterAndFrontLeftAndFrontRightAndSideLeftAndSideRightAndBackLeftAndBackRightLFE = 7
 }
-

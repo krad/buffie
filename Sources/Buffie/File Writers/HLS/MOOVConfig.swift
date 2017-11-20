@@ -17,10 +17,16 @@ struct MOOVVideoSettings {
     var height: UInt32
     var timescale: UInt32 = 30000
     
-    init(_ format: CMFormatDescription) {
+    init(_ sample: Sample) {
+        
+        let format     = sample.format as! CMFormatDescription
+        self.timescale = sample.timescale
+        
+        /// This is only setup this way for tests
+        /// If we get a format description with no param set we're hosed either way
         let paramSet = getVideoFormatDescriptionData(format)
-        self.sps = paramSet.first!
-        self.pps = paramSet.last!
+        self.sps = paramSet.first == nil ? [] : paramSet.first!
+        self.pps = paramSet.last == nil ? [] : paramSet.last!
         
         let dimensions = CMVideoFormatDescriptionGetDimensions(format)
         self.width     = UInt32(dimensions.width)
@@ -47,14 +53,17 @@ struct MOOVAudioSettings {
         self.channelLayout   = channelLayout
     }
     
-    init(_ sample: AudioSample) {
-        self.channels   = sample.channels
-        self.sampleSize = sample.sampleSize
-        self.sampleRate = UInt32(sample.sampleRate)
+    init(_ sample: Sample) {
         
-        self.audioObjectType = sample.audioObjectType
-        self.samplingFreq    = sample.samplingFreq
-        self.channelLayout   = sample.channelConfig
+        let format = sample.format as! AudioStreamBasicDescription
+        
+        self.channels   = format.mChannelsPerFrame
+        self.sampleRate = sample.timescale
+        
+        
+        self.audioObjectType  = AudioObjectType(objectID: MPEG4ObjectID(rawValue: Int(format.mFormatFlags))!)
+        self.channelLayout    = ChannelConfiguration(rawValue: UInt8(format.mChannelsPerFrame))!
+        self.samplingFreq     = SamplingFrequency(sampleRate: format.mSampleRate)
     }
     
 }

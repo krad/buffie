@@ -56,7 +56,6 @@ struct TRUNSample: BinaryEncodable {
     
     init(_ sample: AudioSample) {
         self.size     = sample.size
-//        self.duration = UInt32(sample.duration.value)
     }
 }
 

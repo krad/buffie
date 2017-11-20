@@ -21,11 +21,11 @@ public class FragmentedMP4Writer {
         
         self.segmenter  = try StreamSegmenter(outputDir: outputDir, targetSegmentDuration: 6.0)
         self.videoInput = try FragmentedVideoInput() { sample in
-            self.segmenter.append(sample)
+            //self.segmenter.append(sample)
         }
         
         self.audioInput = try FragmentedAudioInput() { sample in
-            self.segmenter.append(sample)
+            //self.segmenter.append(sample)
         }
     }
     

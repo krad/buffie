@@ -3,7 +3,6 @@ import CoreMedia
 class FragmentedAudioInput {
     
     var onChunk: (AudioSample) -> Void
-    var frames: Int = 0
     
     var decodeCount: Int64 = 0
     
@@ -12,13 +11,13 @@ class FragmentedAudioInput {
     }
     
     func append(_ sample: CMSampleBuffer) {
-        
-        let duration    = CMSampleBufferGetDuration(sample)
-        decodeCount     += duration.value
+        let duration         = CMSampleBufferGetDuration(sample)
         
         var audioSample      = AudioSample(sampleBuffer: sample)
-        audioSample.duration = Double(duration.value)
+        audioSample.duration = duration.value
         audioSample.decode   = Double(decodeCount)
+
+        decodeCount          += duration.value
         
         self.onChunk(audioSample)
     }
