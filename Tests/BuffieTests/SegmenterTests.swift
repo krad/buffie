@@ -16,20 +16,17 @@ class SegmenterTests: XCTestCase {
         var samples: [Sample] = []
         
         func writeInitSegment(with config: MOOVConfig) {
-            print(#function)
             self.config = config
             self.initExp?.fulfill()
         }
         
         func createNewSegment(with segmentID: Int, and sequenceNumber: Int) {
-            print(#function)
             self.segmentID      = segmentID
             self.sequenceNumber = sequenceNumber
             self.newSegExp?.fulfill()
         }
         
-        func writeMOOF(with samples: [Sample]) {
-            print(#function)
+        func writeMOOF(with samples: [Sample], and duration: Double) {
             self.samples = samples
             self.moofExp?.fulfill()
         }
@@ -193,15 +190,15 @@ class SegmenterTests: XCTestCase {
         self.wait(for: [delegate.newSegExp!], timeout: 1)
         
         delegate.newSegExp = self.expectation(description: "The next segment")
-        for i in 1...72 {
-            if i % 24 == 0 { segmenter.append(makeVideoSample(with: 2499, isSync: true)) }
+        for i in 1...120 {
+            if i % 30 == 0 { segmenter.append(makeVideoSample(with: 2499, isSync: true)) }
             else { segmenter.append(makeVideoSample(with: 2499, isSync: false)) }
         }
         self.wait(for: [delegate.newSegExp!], timeout: 1)
         XCTAssertEqual(2, delegate.segmentID)
-        XCTAssertEqual(3, delegate.sequenceNumber)
+        XCTAssertEqual(4, delegate.sequenceNumber)
         
-        XCTAssertEqual(24, delegate.samples.count)
+        XCTAssertEqual(30, delegate.samples.count)
         XCTAssertTrue(delegate.samples.first!.isSync)
     }
     
@@ -227,11 +224,11 @@ class SegmenterTests: XCTestCase {
         
         DispatchQueue.main.async {
             /// write a bunch of audio samples
-            splitQ.async { for _ in 0...1024 { segmenter.append(makeAudioSample(with: 1024)) } }
+            splitQ.async { for _ in 0...2048 { segmenter.append(makeAudioSample(with: 1024)) } }
 
             /// write a bunch of video samples
             splitQ.async {
-                for i in 0...70 {
+                for i in 1...120 {
                     if i % 30 == 0 { segmenter.append(makeVideoSample(with: 2499, isSync: true)) }
                     else { segmenter.append(makeVideoSample(with: 2499, isSync: false)) }
                 }
@@ -239,9 +236,12 @@ class SegmenterTests: XCTestCase {
 
         }
         
-        self.wait(for: [delegate.newSegExp!], timeout: 1)
-        XCTAssertEqual(3, delegate.segmentID)
+        self.wait(for: [delegate.newSegExp!], timeout: 5)
+        XCTAssertEqual(2, delegate.segmentID)
         XCTAssertEqual(4, delegate.sequenceNumber)
+
+        XCTAssertEqual(138, delegate.samples.count)
+        XCTAssertTrue(delegate.samples.first!.isSync)
     }
 
 }
@@ -328,7 +328,7 @@ func makeAudioSample(with duration: Int64 = 0) -> MockAudioSample {
                                                 size: 0,
                                                 duration: duration,
                                                 decode: 0,
-                                                timescale: 0,
+                                                timescale: 44100,
                                                 format: aFormat,
                                                 isSync: false)
     return audioSample

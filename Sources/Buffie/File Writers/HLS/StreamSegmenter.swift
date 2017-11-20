@@ -23,7 +23,7 @@ struct StreamType: OptionSet {
 protocol StreamSegmenterDelegate {
     func writeInitSegment(with config: MOOVConfig)
     func createNewSegment(with segmentID: Int, and sequenceNumber: Int)
-    func writeMOOF(with samples: [Sample])
+    func writeMOOF(with samples: [Sample], and duration: Double)
 }
 
 class StreamSegmenter {
@@ -49,7 +49,7 @@ class StreamSegmenter {
     
 
     private var segmenterQ = DispatchQueue(label: "stream.segmenter.Q")
-    private var moovConfig = MOOVConfig()
+    internal var moovConfig = MOOVConfig()
     private var delegate: StreamSegmenterDelegate?
     private var wroteInitSegment: Bool = false
 
@@ -118,7 +118,6 @@ class StreamSegmenter {
             self.delegate?.createNewSegment(with: self.currentSegment, and: self.currentSequence)
         } else {
             
-            
             if sample.isSync {
                 self.writeMOOF()
             }
@@ -126,40 +125,23 @@ class StreamSegmenter {
     }
     
     private func writeMOOF() {
-        let samplesToWrite = self.vendSamples()
-        self.delegate?.writeMOOF(with: samplesToWrite)
-        self.currentSequence += 1
-    }
-    
-    private func nearingTargetDuration(with nextDuration: Double) -> Bool {
+        let vSamples  = self.vendVideoSamples()
+        let vDuration = vSamples.reduce(0) { cnt, sample in cnt + sample.durationInSeconds }
+        let aSamples  = self.vendAudioSamples(upTo: vDuration)
         
-        if streamType == [.video, .audio] {
-            if (self.videoSamplesDuration + nextDuration) >= self.targetSegmentDuration &&
-                (self.audioSamplesDuration + nextDuration) >= self.targetSegmentDuration {
-                return true
-            }
+        if vDuration + self.currentSegmentDuration >= self.targetSegmentDuration {
+            self.delegate?.writeMOOF(with: vSamples + aSamples, and: vDuration)
+            self.currentSequence        += 1
+            self.currentSegmentDuration = vDuration
+
+            self.currentSegment += 1
+            self.delegate?.createNewSegment(with: self.currentSegment, and: self.currentSequence)
+            
+        } else {
+            self.delegate?.writeMOOF(with: vSamples + aSamples, and: vDuration)
+            self.currentSequence        += 1
+            self.currentSegmentDuration += vDuration
         }
-        
-        if streamType == [.video] {
-            if self.videoSamplesDuration + nextDuration >= self.targetSegmentDuration {
-                return true
-            }
-        }
-        
-        if streamType == [.audio] {
-            if self.audioSamplesDuration + nextDuration >= self.targetSegmentDuration {
-                return true
-            }
-        }
-    
-        return false
-    }
-    
-    private func vendSamples() -> [Sample] {
-        if streamType == [.video]         { return vendVideoSamples() }
-        if streamType == [.audio]         { return vendAudioSamples() }
-        if streamType == [.video, .audio] { return vendVideoSamples() + vendAudioSamples() }
-        return []
     }
     
     private func vendVideoSamples() -> [Sample] {
@@ -175,15 +157,19 @@ class StreamSegmenter {
         }
         
         self.videoSamples.removeFirst(n: results.count)
-        print(results.map { $0.isSync })
         return results
     }
     
-    private func vendAudioSamples() -> [Sample] {
+    private func vendAudioSamples(upTo duration: Double) -> [Sample] {
         var results: [Sample] = []
-        
+
+        var bufferDuration: Double = 0.0
         for sample in self.audioSamples {
+            bufferDuration += sample.durationInSeconds
             results.append(sample)
+            if bufferDuration >= duration {
+                break
+            }
         }
         
         self.audioSamples.removeFirst(n: results.count)
@@ -197,8 +183,8 @@ class StreamSegmenter {
     
     private func buffer(sample: Sample) {
         switch sample.type {
-        case .audio: self.audioSamples.append(newElement: sample)
-        case .video: self.videoSamples.append(newElement: sample)
+        case .audio: self.audioSamples.append(sample)
+        case .video: self.videoSamples.append(sample)
         }
     }
 
@@ -206,75 +192,6 @@ class StreamSegmenter {
         switch sample.type {
         case .audio: self.moovConfig.audioSettings = MOOVAudioSettings(sample)
         case .video: self.moovConfig.videoSettings = MOOVVideoSettings(sample)
-        }
-    }
-    
-}
-
-internal class ThreadSafeArray<T>: Collection {
-    
-    var startIndex: Int = 0
-    var endIndex: Int {
-        return self.count
-    }
-
-    private var array: [T] = []
-    private let q = DispatchQueue(label: "threadSafeArray.q",
-                                  qos: .default,
-                                  attributes: .concurrent,
-                                  autoreleaseFrequency: .inherit,
-                                  target: nil)
-    
-    internal func append(newElement: T) {
-        q.async(flags: .barrier) {
-            self.array.append(newElement)
-        }
-    }
-    
-    internal func remove(at index: Int) {
-        q.async(flags: .barrier) {
-            self.array.remove(at: index)
-        }
-    }
-    
-    internal func removeFirst(n: Int) {
-        q.async(flags: .barrier) {
-            self.array.removeFirst(n)
-        }
-    }
-    
-    internal var count: Int {
-        var count = 0
-        q.sync {
-            count = self.array.count
-        }
-        return count
-    }
-    
-    internal var first: T? {
-        var element: T?
-        q.sync {
-            element = self.array.first
-        }
-        return element
-    }
-    
-    func index(after i: Int) -> Int {
-        var index: Int = 0
-        q.sync { index = self.array.index(after: i) }
-        return index
-    }
-
-    
-    internal subscript(index: Int) -> T {
-        set {
-            q.async(flags: .barrier) { self.array[index] = newValue }
-        }
-        
-        get {
-            var element: T!
-            q.sync { element = self.array[index] }
-            return element
         }
     }
     
