@@ -70,7 +70,7 @@ class FragmentedMP4WriterTests: XCTestCase {
         XCTAssertNotNil(camera)
         camera?.start()
         let e = self.expectation(description: "Blah")
-        self.wait(for: [e], timeout: 20)
+        self.wait(for: [e], timeout: 10)
     }
     
 }

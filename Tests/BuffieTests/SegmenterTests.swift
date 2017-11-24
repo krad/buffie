@@ -144,7 +144,7 @@ class SegmenterTests: XCTestCase {
         XCTAssertNotNil(delegate.config?.audioSettings)
         
         XCTAssertEqual(1, delegate.segmentID)
-        XCTAssertEqual(1, delegate.sequenceNumber)
+        XCTAssertEqual(0, delegate.sequenceNumber)
     }
     
     func test_that_we_get_moof_notifications_for_video() {
@@ -196,7 +196,7 @@ class SegmenterTests: XCTestCase {
         }
         self.wait(for: [delegate.newSegExp!], timeout: 1)
         XCTAssertEqual(2, delegate.segmentID)
-        XCTAssertEqual(4, delegate.sequenceNumber)
+        XCTAssertEqual(3, delegate.sequenceNumber)
         
         XCTAssertEqual(30, delegate.samples.count)
         XCTAssertTrue(delegate.samples.first!.isSync)
@@ -238,7 +238,7 @@ class SegmenterTests: XCTestCase {
         
         self.wait(for: [delegate.newSegExp!], timeout: 5)
         XCTAssertEqual(2, delegate.segmentID)
-        XCTAssertEqual(4, delegate.sequenceNumber)
+        XCTAssertEqual(3, delegate.sequenceNumber)
 
         XCTAssertEqual(138, delegate.samples.count)
         XCTAssertTrue(delegate.samples.first!.isSync)
@@ -292,13 +292,13 @@ struct MockAudioSample: Sample {
 func makeSegmenter(for streamType: StreamType, with delegate: StreamSegmenterDelegate? = nil) -> StreamSegmenter {
     let url       = URL(fileURLWithPath: "/tmp", isDirectory: true)
     let segmenter = try? StreamSegmenter(outputDir: url,
-                                         targetSegmentDuration: 6.0,
+                                         targetSegmentDuration: 6,
                                          streamType: streamType,
                                          delegate: delegate)
     
     XCTAssertNotNil(segmenter)
     
-    XCTAssertEqual(6.0, segmenter?.targetSegmentDuration)
+    XCTAssertEqual(6, segmenter?.targetSegmentDuration)
     XCTAssertFalse(segmenter!.readyForMOOV)
     
     return segmenter!
