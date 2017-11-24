@@ -90,6 +90,30 @@ file4.mp4
         
         writer?.end()
         
+        let output = try? String(contentsOf: file)
+        XCTAssertNotNil(output)
+        
+        let expectedOutput =
+"""
+#EXTM3U
+#EXT-X-TARGETDURATION:6
+#EXT-X-VERSION:7
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXT-X-INDEPENDENT-SEGMENTS
+#EXT-X-MAP:URI="fileSeq0.mp4"
+#EXTINF:5.0,
+file2.mp4
+#EXTINF:5.0,
+file3.mp4
+#EXTINF:5.0,
+file4.mp4
+
+"""
+        
+        XCTAssertEqual(expectedOutput, output)
+
+        
     }
     
     

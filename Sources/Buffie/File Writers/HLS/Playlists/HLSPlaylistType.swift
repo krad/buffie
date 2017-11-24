@@ -7,7 +7,7 @@ protocol PlaylistWriter {
     func end() -> String
 }
 
-enum HLSPlaylistType: String {
+public enum HLSPlaylistType: String {
     case vod   = "VOD"
     case live  = "LIVE"
     case event = "EVENT"

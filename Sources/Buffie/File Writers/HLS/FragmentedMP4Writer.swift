@@ -15,7 +15,9 @@ public class FragmentedMP4Writer: StreamSegmenterDelegate {
     
     fileprivate var playerListWriter: HLSPlaylistWriter
     
-    public init(_ outputDir: URL, targetDuration: Int64 = 6) throws {
+    public init(_ outputDir: URL,
+                targetDuration: Int64 = 6,
+                playlistType: HLSPlaylistType = .live) throws {
         /// Verify we have a directory to write to
         var isDir: ObjCBool = false
         let pathExists      = FileManager.default.fileExists(atPath: outputDir.path, isDirectory: &isDir)
@@ -23,7 +25,7 @@ public class FragmentedMP4Writer: StreamSegmenterDelegate {
         if !pathExists      { throw FragmentedMP4WriterError.directoryDoesNotExist }
         
         self.playerListWriter = try HLSPlaylistWriter(outputDir.appendingPathComponent("out.m3u8"),
-                                                      playlistType: .vod,
+                                                      playlistType: playlistType,
                                                       targetDuration: targetDuration)
         
         self.segmenter  = try StreamSegmenter(outputDir: outputDir,
