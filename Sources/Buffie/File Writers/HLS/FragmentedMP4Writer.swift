@@ -48,6 +48,10 @@ public class FragmentedMP4Writer: StreamSegmenterDelegate {
         }
     }
     
+    public func end() {
+        self.playerListWriter.end()
+    }
+    
     func writeInitSegment(with config: MOOVConfig) {
         _ = try? FragementedMP4InitalizationSegment(self.segmenter!.currentSegmentURL,
                                                     config: config)
