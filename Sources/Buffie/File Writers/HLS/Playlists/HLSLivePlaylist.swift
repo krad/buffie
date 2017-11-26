@@ -20,7 +20,7 @@ class HLSLivePlayerWriter: PlaylistWriter {
             "#EXT-X-TARGETDURATION:\(targetDuration)",
             "#EXT-X-VERSION:7",
             "#EXT-X-MEDIA-SEQUENCE:0",
-            "#EXT-X-PLAYLIST-TYPE:VOD",
+            "#EXT-X-PLAYLIST-TYPE:LIVE",
             "#EXT-X-INDEPENDENT-SEGMENTS",
             "#EXT-X-MAP:URI=\"fileSeq0.mp4\"\n"
         ].joined(separator: "\n")
