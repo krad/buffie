@@ -16,7 +16,7 @@ class FragmentedMP4Segment {
     
     init(_ file: URL,
          config: MOOVConfig,
-         currentSequence: Int = 1) throws
+         currentSequence: Int) throws
     {
         self.file     = file
         self.config  = config

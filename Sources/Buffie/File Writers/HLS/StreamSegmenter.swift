@@ -33,7 +33,7 @@ class StreamSegmenter {
     var streamType: StreamType
     
     var currentSegment  = 0
-    var currentSequence = 1
+    var currentSequence = 0
     
     internal var videoSamples: ThreadSafeArray<Sample>
     internal var videoSamplesDuration: Double {
