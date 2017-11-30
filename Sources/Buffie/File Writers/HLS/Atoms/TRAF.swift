@@ -15,7 +15,6 @@ struct TRAF: BinarySizedEncodable {
         
         
         if let _ = config.videoSettings {
-            print("+==== VIDEO")
             let videoSamples = samples.filter { $0.type == .video } as! [VideoSample]
 
             if let sample = videoSamples.first {
@@ -31,7 +30,6 @@ struct TRAF: BinarySizedEncodable {
         
 
         if let _ = config.audioSettings {
-            print("+==== AUDIO")
             let audioSamples = samples.filter { $0.type == .audio } as! [AudioSample]
 
             if let sample = audioSamples.first {
