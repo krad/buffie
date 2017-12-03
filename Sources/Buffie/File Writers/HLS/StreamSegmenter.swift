@@ -170,7 +170,7 @@ class StreamSegmenter {
         for sample in self.audioSamples {
             bufferDuration += sample.durationInSeconds
             results.append(sample)
-            if bufferDuration >= duration {
+            if bufferDuration >= duration+1 {
                 break
             }
         }
