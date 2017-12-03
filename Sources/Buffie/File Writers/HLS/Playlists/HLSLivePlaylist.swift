@@ -2,11 +2,11 @@ import Foundation
 
 class HLSLivePlayerWriter: PlaylistWriter {
     
-    var segments: [(String, Float64)] = []
-    var currentMediaSequence: Int = 0
+    var segments: [(String, Float64, Int)] = []
     private var header: String = ""
     private var numberOfSegments: Int
     private var targetDuration: Int64 = 0
+    private var currentMediaSequence: Int = 0
     
     
     init(numberOfSegments: Int = 6) {
@@ -31,13 +31,18 @@ class HLSLivePlayerWriter: PlaylistWriter {
         return self.header
     }
     
-    func writeSegment(with filename: String, and duration: Float64) -> String {
+    func writeSegment(with filename: String,
+                      duration: Float64,
+                      and firstMediaSequence: Int) -> String {
         
         if segments.count == self.numberOfSegments {
             self.segments.removeFirst(1)
+            if let firstSegment = self.segments.first {
+                self.currentMediaSequence = firstSegment.2
+            }
         }
         
-        self.segments.append((filename, duration))
+        self.segments.append((filename, duration, firstMediaSequence))
         
         let segmentsSection = self.segments.map { entry in
             segmentEntry(fileName: entry.0, duration: entry.1)

@@ -45,14 +45,14 @@ class PlaylistWriterTests: XCTestCase {
 file1.mp4
 
 """
-        XCTAssertEqual(expectedOut, writer.writeSegment(with: "file1.mp4", and: 5.0))
+        XCTAssertEqual(expectedOut, writer.writeSegment(with: "file1.mp4", duration: 5.0, and: 0))
         
         expectedOut =
 """
 #EXTM3U
 #EXT-X-TARGETDURATION:6
 #EXT-X-VERSION:7
-#EXT-X-MEDIA-SEQUENCE:4
+#EXT-X-MEDIA-SEQUENCE:0
 #EXT-X-PLAYLIST-TYPE:LIVE
 #EXT-X-INDEPENDENT-SEGMENTS
 #EXT-X-MAP:URI="fileSeq0.mp4"
@@ -62,15 +62,14 @@ file1.mp4
 file2.mp4
 
 """
-        writer.currentMediaSequence = 4
-        XCTAssertEqual(expectedOut, writer.writeSegment(with: "file2.mp4", and: 5.0))
+        XCTAssertEqual(expectedOut, writer.writeSegment(with: "file2.mp4", duration: 5.0, and: 4))
         
         expectedOut =
 """
 #EXTM3U
 #EXT-X-TARGETDURATION:6
 #EXT-X-VERSION:7
-#EXT-X-MEDIA-SEQUENCE:7
+#EXT-X-MEDIA-SEQUENCE:0
 #EXT-X-PLAYLIST-TYPE:LIVE
 #EXT-X-INDEPENDENT-SEGMENTS
 #EXT-X-MAP:URI="fileSeq0.mp4"
@@ -82,15 +81,14 @@ file2.mp4
 file3.mp4
 
 """
-        writer.currentMediaSequence = 7
-        XCTAssertEqual(expectedOut, writer.writeSegment(with: "file3.mp4", and: 5.0))
+        XCTAssertEqual(expectedOut, writer.writeSegment(with: "file3.mp4", duration: 5.0, and: 7))
 
 expectedOut =
 """
 #EXTM3U
 #EXT-X-TARGETDURATION:6
 #EXT-X-VERSION:7
-#EXT-X-MEDIA-SEQUENCE:11
+#EXT-X-MEDIA-SEQUENCE:4
 #EXT-X-PLAYLIST-TYPE:LIVE
 #EXT-X-INDEPENDENT-SEGMENTS
 #EXT-X-MAP:URI="fileSeq0.mp4"
@@ -102,12 +100,7 @@ file3.mp4
 file4.mp4
 
 """
-        writer.currentMediaSequence = 11
-        XCTAssertEqual(expectedOut, writer.writeSegment(with: "file4.mp4", and: 5.0))
-        
-        
-
-        
+        XCTAssertEqual(expectedOut, writer.writeSegment(with: "file4.mp4", duration: 5.0, and: 11))
     }
     
     func test_that_we_write_the_outfile_properly() {
@@ -118,10 +111,10 @@ file4.mp4
         
         writer?.writerHeader()
 
-        writer?.writeSegment(name: "file1.mp4", duration: 5.0)
-        writer?.writeSegment(name: "file2.mp4", duration: 5.0)
-        writer?.writeSegment(name: "file3.mp4", duration: 5.0)
-        writer?.writeSegment(name: "file4.mp4", duration: 5.0)
+        writer?.writeSegment(name: "file1.mp4", duration: 5.0, mediaSequence: 0)
+        writer?.writeSegment(name: "file2.mp4", duration: 5.0, mediaSequence: 4)
+        writer?.writeSegment(name: "file3.mp4", duration: 5.0, mediaSequence: 8)
+        writer?.writeSegment(name: "file4.mp4", duration: 5.0, mediaSequence: 12)
         
         writer?.end()
         
@@ -133,7 +126,7 @@ file4.mp4
 #EXTM3U
 #EXT-X-TARGETDURATION:6
 #EXT-X-VERSION:7
-#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-MEDIA-SEQUENCE:4
 #EXT-X-PLAYLIST-TYPE:LIVE
 #EXT-X-INDEPENDENT-SEGMENTS
 #EXT-X-MAP:URI="fileSeq0.mp4"

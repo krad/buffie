@@ -35,16 +35,19 @@ class HLSPlaylistWriter {
     
     func write(segment: FragmentedMP4Segment) {
         if let name = segment.file.path.components(separatedBy: "/").last {
-            self.contentGenerator.currentMediaSequence = segment.firstSequence
-            self.writeSegment(name: name, duration: segment.duration)
+            self.writeSegment(name: name,
+                              duration: segment.duration,
+                              mediaSequence: segment.firstSequence)
         }
     }
     
-    internal func writeSegment(name: String, duration: Double) {
+    internal func writeSegment(name: String, duration: Double, mediaSequence: Int) {
         if let truncatePosition = contentGenerator.positionToSeek() {
             self.fileHandle.truncateFile(atOffset: truncatePosition)
         }
-        self.write(contentGenerator.writeSegment(with: name, and: duration))
+        self.write(contentGenerator.writeSegment(with: name,
+                                                 duration: duration,
+                                                 and: mediaSequence))
     }
     
     private func write(_ string: String) {
