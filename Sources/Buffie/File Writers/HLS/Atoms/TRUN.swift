@@ -41,6 +41,7 @@ struct TRUNFlags: BinaryEncodable, OptionSet {
 }
 
 struct TRUNSample: BinaryEncodable {
+    
     var duration: UInt32?
     var size: UInt32 = 0
     var flags: SampleFlags?

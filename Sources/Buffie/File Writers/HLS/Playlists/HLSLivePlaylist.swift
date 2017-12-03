@@ -21,7 +21,7 @@ class HLSLivePlayerWriter: PlaylistWriter {
         self.targetDuration = targetDuration
         self.header = [
             "#EXTM3U",
-            "#EXT-X-TARGETDURATION:\(targetDuration)",
+            "#EXT-X-TARGETDURATION:\(Int64(targetDuration))",
             "#EXT-X-VERSION:7",
             "#EXT-X-MEDIA-SEQUENCE:\(currentMediaSequence)",
             "#EXT-X-PLAYLIST-TYPE:LIVE",

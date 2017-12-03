@@ -118,9 +118,7 @@ class StreamSegmenter {
             self.delegate?.createNewSegment(with: self.currentSegment, and: self.currentSequence)
         } else {
             
-            if sample.isSync {
-                self.writeMOOF()
-            }
+            if sample.isSync { self.writeMOOF() }
         }
     }
     
@@ -129,15 +127,20 @@ class StreamSegmenter {
         let vDuration = vSamples.reduce(0) { cnt, sample in cnt + sample.durationInSeconds }
         let aSamples  = self.vendAudioSamples(upTo: vDuration)
         
+        // We're gonna hit our target duration
         if vDuration + self.currentSegmentDuration >= self.targetSegmentDuration {
             self.delegate?.writeMOOF(with: vSamples + aSamples, and: vDuration)
+            
+            // Bump the sequence and duration
             self.currentSequence        += 1
             self.currentSegmentDuration = vDuration
 
+            // Signal that we should create a new segment
             self.currentSegment += 1
             self.delegate?.createNewSegment(with: self.currentSegment, and: self.currentSequence)
             
         } else {
+            // Write another moof
             self.delegate?.writeMOOF(with: vSamples + aSamples, and: vDuration)
             self.currentSequence        += 1
             self.currentSegmentDuration += vDuration

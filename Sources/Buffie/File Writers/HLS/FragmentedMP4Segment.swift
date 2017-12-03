@@ -47,5 +47,9 @@ class FragmentedMP4Segment {
         self.fileHandle.write(data)        
     }
     
+    deinit {
+        self.fileHandle.closeFile()
+    }
+    
 }
 
