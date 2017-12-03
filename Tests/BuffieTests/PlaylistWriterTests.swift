@@ -9,7 +9,9 @@ class PlaylistWriterTests: XCTestCase {
         
         XCTAssertEqual(0, writer.positionToSeek())
         _ = writer.header(with: 6)
-        XCTAssertEqual(156, writer.positionToSeek())
+        
+        // Change the behavior to truncate the whole file so we blow away the header
+        XCTAssertEqual(0, writer.positionToSeek())
 
     }
     
@@ -23,7 +25,7 @@ class PlaylistWriterTests: XCTestCase {
 #EXT-X-TARGETDURATION:6
 #EXT-X-VERSION:7
 #EXT-X-MEDIA-SEQUENCE:0
-#EXT-X-PLAYLIST-TYPE:VOD
+#EXT-X-PLAYLIST-TYPE:LIVE
 #EXT-X-INDEPENDENT-SEGMENTS
 #EXT-X-MAP:URI="fileSeq0.mp4"
 
@@ -32,6 +34,13 @@ class PlaylistWriterTests: XCTestCase {
         
         expectedOut =
 """
+#EXTM3U
+#EXT-X-TARGETDURATION:6
+#EXT-X-VERSION:7
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-PLAYLIST-TYPE:LIVE
+#EXT-X-INDEPENDENT-SEGMENTS
+#EXT-X-MAP:URI="fileSeq0.mp4"
 #EXTINF:5.0,
 file1.mp4
 
@@ -40,16 +49,31 @@ file1.mp4
         
         expectedOut =
 """
+#EXTM3U
+#EXT-X-TARGETDURATION:6
+#EXT-X-VERSION:7
+#EXT-X-MEDIA-SEQUENCE:4
+#EXT-X-PLAYLIST-TYPE:LIVE
+#EXT-X-INDEPENDENT-SEGMENTS
+#EXT-X-MAP:URI="fileSeq0.mp4"
 #EXTINF:5.0,
 file1.mp4
 #EXTINF:5.0,
 file2.mp4
 
 """
+        writer.currentMediaSequence = 4
         XCTAssertEqual(expectedOut, writer.writeSegment(with: "file2.mp4", and: 5.0))
         
         expectedOut =
 """
+#EXTM3U
+#EXT-X-TARGETDURATION:6
+#EXT-X-VERSION:7
+#EXT-X-MEDIA-SEQUENCE:7
+#EXT-X-PLAYLIST-TYPE:LIVE
+#EXT-X-INDEPENDENT-SEGMENTS
+#EXT-X-MAP:URI="fileSeq0.mp4"
 #EXTINF:5.0,
 file1.mp4
 #EXTINF:5.0,
@@ -58,10 +82,18 @@ file2.mp4
 file3.mp4
 
 """
+        writer.currentMediaSequence = 7
         XCTAssertEqual(expectedOut, writer.writeSegment(with: "file3.mp4", and: 5.0))
 
 expectedOut =
 """
+#EXTM3U
+#EXT-X-TARGETDURATION:6
+#EXT-X-VERSION:7
+#EXT-X-MEDIA-SEQUENCE:11
+#EXT-X-PLAYLIST-TYPE:LIVE
+#EXT-X-INDEPENDENT-SEGMENTS
+#EXT-X-MAP:URI="fileSeq0.mp4"
 #EXTINF:5.0,
 file2.mp4
 #EXTINF:5.0,
@@ -70,7 +102,10 @@ file3.mp4
 file4.mp4
 
 """
+        writer.currentMediaSequence = 11
         XCTAssertEqual(expectedOut, writer.writeSegment(with: "file4.mp4", and: 5.0))
+        
+        
 
         
     }
@@ -99,7 +134,7 @@ file4.mp4
 #EXT-X-TARGETDURATION:6
 #EXT-X-VERSION:7
 #EXT-X-MEDIA-SEQUENCE:0
-#EXT-X-PLAYLIST-TYPE:VOD
+#EXT-X-PLAYLIST-TYPE:LIVE
 #EXT-X-INDEPENDENT-SEGMENTS
 #EXT-X-MAP:URI="fileSeq0.mp4"
 #EXTINF:5.0,

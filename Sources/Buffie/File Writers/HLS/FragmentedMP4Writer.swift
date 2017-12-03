@@ -66,7 +66,7 @@ public class FragmentedMP4Writer: StreamSegmenterDelegate {
         
         self.currentSegment = try? FragmentedMP4Segment(self.segmenter!.currentSegmentURL,
                                                        config: self.segmenter!.moovConfig,
-                                                       currentSequence: self.segmenter!.currentSequence)
+                                                       firstSequence: self.segmenter!.currentSequence)
     }
     
     func writeMOOF(with samples: [Sample], and duration: Double) {

@@ -35,6 +35,7 @@ class HLSPlaylistWriter {
     
     func write(segment: FragmentedMP4Segment) {
         if let name = segment.file.path.components(separatedBy: "/").last {
+            self.contentGenerator.currentMediaSequence = segment.firstSequence
             self.writeSegment(name: name, duration: segment.duration)
         }
     }

@@ -3,27 +3,31 @@ import Foundation
 class HLSLivePlayerWriter: PlaylistWriter {
     
     var segments: [(String, Float64)] = []
+    var currentMediaSequence: Int = 0
     private var header: String = ""
     private var numberOfSegments: Int
+    private var targetDuration: Int64 = 0
+    
     
     init(numberOfSegments: Int = 6) {
         self.numberOfSegments = numberOfSegments
     }
     
     func positionToSeek() -> UInt64? {
-        return UInt64(self.header.count)
+        return 0
     }
     
     func header(with targetDuration: Int64) -> String {
+        self.targetDuration = targetDuration
         self.header = [
             "#EXTM3U",
             "#EXT-X-TARGETDURATION:\(targetDuration)",
             "#EXT-X-VERSION:7",
-            "#EXT-X-MEDIA-SEQUENCE:0",
+            "#EXT-X-MEDIA-SEQUENCE:\(currentMediaSequence)",
             "#EXT-X-PLAYLIST-TYPE:LIVE",
             "#EXT-X-INDEPENDENT-SEGMENTS",
             "#EXT-X-MAP:URI=\"fileSeq0.mp4\"\n"
-        ].joined(separator: "\n")
+            ].joined(separator: "\n")
         return self.header
     }
     
@@ -34,9 +38,15 @@ class HLSLivePlayerWriter: PlaylistWriter {
         }
         
         self.segments.append((filename, duration))
-        return self.segments.map { entry in
+        
+        let segmentsSection = self.segments.map { entry in
             segmentEntry(fileName: entry.0, duration: entry.1)
         }.joined(separator: "\n") + "\n"
+        
+        let headerSection = self.header(with: self.targetDuration)
+        
+        return headerSection + segmentsSection
+        
     }
     
     func end() -> String {

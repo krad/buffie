@@ -2,6 +2,8 @@ import Foundation
 
 class HLSVODPlaylist: PlaylistWriter {
     
+    var currentMediaSequence: Int = 0
+    
     func positionToSeek() -> UInt64? {
         return nil
     }
@@ -11,7 +13,7 @@ class HLSVODPlaylist: PlaylistWriter {
             "#EXTM3U",
             "#EXT-X-TARGETDURATION:\(targetDuration)",
             "#EXT-X-VERSION:7",
-            "#EXT-X-MEDIA_SEQUENCE:0",
+            "#EXT-X-MEDIA_SEQUENCE:\(self.currentMediaSequence)",
             "#EXT-X-PLAYLIST-TYPE:LIVE",
             "#EXT-X-INDEPENDENT-SEGMENTS",
             "#EXT-X-MAP:URI=\"fileSeq0.mp4\"\n"
