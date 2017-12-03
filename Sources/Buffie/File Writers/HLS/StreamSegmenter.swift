@@ -165,14 +165,22 @@ class StreamSegmenter {
     
     private func vendAudioSamples(upTo duration: Double) -> [Sample] {
         var results: [Sample] = []
-        var bufferDuration: Double = 0.0
+        
         for sample in self.audioSamples {
-            bufferDuration += sample.durationInSeconds
             results.append(sample)
-            if bufferDuration >= duration {
+            if results.count > 50 {
                 break
             }
         }
+        
+//        var bufferDuration: Double = 0.0
+//        for sample in self.audioSamples {
+//            bufferDuration += sample.durationInSeconds
+//            results.append(sample)
+//            if bufferDuration >= duration {
+//                break
+//            }
+//        }
 
         self.audioSamples.removeFirst(n: results.count)
         return results
