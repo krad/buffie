@@ -98,6 +98,7 @@ public struct AudioSample: Sample {
         
         /// Get the stream description
         let asbd        = getStreamDescription(from: sampleBuffer)!
+        print(asbd)
         
         self.format     = asbd
         self.timescale  = UInt32(asbd.mSampleRate)
