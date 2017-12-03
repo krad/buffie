@@ -5,8 +5,8 @@ class HLSLivePlayerWriter: PlaylistWriter {
     var segments: [(String, Float64, Int)] = []
     private var header: String = ""
     private var numberOfSegments: Int
-    private var targetDuration: Int64 = 0
-    private var currentMediaSequence: Int = 0
+    private var targetDuration: Double = 0
+    private var currentMediaSequence: Int = 1
     
     
     init(numberOfSegments: Int = 6) {
@@ -17,7 +17,7 @@ class HLSLivePlayerWriter: PlaylistWriter {
         return 0
     }
     
-    func header(with targetDuration: Int64) -> String {
+    func header(with targetDuration: Double) -> String {
         self.targetDuration = targetDuration
         self.header = [
             "#EXTM3U",

@@ -16,7 +16,7 @@ public class FragmentedMP4Writer: StreamSegmenterDelegate {
     fileprivate var playerListWriter: HLSPlaylistWriter
     
     public init(_ outputDir: URL,
-                targetDuration: Int64 = 6,
+                targetDuration: Double = 6,
                 playlistType: HLSPlaylistType = .live) throws {
         /// Verify we have a directory to write to
         var isDir: ObjCBool = false

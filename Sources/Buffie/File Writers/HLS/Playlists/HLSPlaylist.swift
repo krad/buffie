@@ -7,9 +7,9 @@ class HLSPlaylistWriter {
     var fileHandle: FileHandle
     var playlistType: HLSPlaylistType
     var contentGenerator: PlaylistWriter
-    var targetDuration: Int64
+    var targetDuration: Double
     
-    init(_ file: URL, playlistType: HLSPlaylistType = .vod, targetDuration: Int64) throws {
+    init(_ file: URL, playlistType: HLSPlaylistType = .vod, targetDuration: Double) throws {
         self.file         = file
         self.playlistType = playlistType
         

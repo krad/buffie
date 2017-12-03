@@ -29,11 +29,11 @@ protocol StreamSegmenterDelegate {
 class StreamSegmenter {
     
     var outputDir: URL
-    let targetSegmentDuration: Int64
+    let targetSegmentDuration: Double
     var streamType: StreamType
     
     var currentSegment  = 0
-    var currentSequence = 0
+    var currentSequence = 1
     
     internal var videoSamples: ThreadSafeArray<Sample>
     internal var videoSamplesDuration: Double {
@@ -81,7 +81,7 @@ class StreamSegmenter {
     }
 
     init(outputDir: URL,
-         targetSegmentDuration: Int64,
+         targetSegmentDuration: Double,
          streamType: StreamType = [.video, .audio],
          delegate: StreamSegmenterDelegate? = nil) throws
     {
@@ -129,7 +129,7 @@ class StreamSegmenter {
         let vDuration = vSamples.reduce(0) { cnt, sample in cnt + sample.durationInSeconds }
         let aSamples  = self.vendAudioSamples(upTo: vDuration)
         
-        if Int64(vDuration + self.currentSegmentDuration) >= self.targetSegmentDuration {
+        if vDuration + self.currentSegmentDuration >= self.targetSegmentDuration {
             self.delegate?.writeMOOF(with: vSamples + aSamples, and: vDuration)
             self.currentSequence        += 1
             self.currentSegmentDuration = vDuration

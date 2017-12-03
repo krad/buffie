@@ -2,13 +2,13 @@ import Foundation
 
 class HLSEventPlaylist: PlaylistWriter {
     
-    private var firstMediaSequence: Int = 0
+    private var firstMediaSequence: Int = 1
     
     func positionToSeek() -> UInt64? {
         return nil
     }
     
-    func header(with targetDuration: Int64) -> String {
+    func header(with targetDuration: Double) -> String {
         return [
             "#EXTM3U",
             "#EXT-X-TARGETDURATION:\(targetDuration)",
