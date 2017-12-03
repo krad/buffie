@@ -49,7 +49,7 @@ internal class CaptureSession: CaptureSessionProtocol {
 //                                               AVFormatIDKey: kAudioFormatLinearPCM]
             
             self.audioOutput?.audioSettings = [AVFormatIDKey: kAudioFormatMPEG4AAC]
-            
+
             // Add the audio i/o to the session
             self.session.addInput(self.audioInput!)
             self.session.addOutput(self.audioOutput!)

@@ -30,9 +30,12 @@ struct ESDS: BinarySizedEncodable {
 
 //    var maxBitRate: [UInt8] = [0x00, 0x01, 0xf4, 0x00, 0x00, 0x01, 0xf4, 0x00]
 
-        var maxBitRate: UInt32         = 128000
-        var avgBitRate: UInt32         = 128000
+    var maxBitRate: UInt32         = 0
+    var avgBitRate: UInt32         = 0
+//    var maxBitRate: UInt32         = 128000
+//    var avgBitRate: UInt32         = 128000
 
+    
     var decoderSpecificInfoTag: UInt8 = 0x05
 
     var esExtDescTypeTag3: [UInt8] = [0x80, 0x80, 0x80] // 0x80 = start & 0xfe = end
