@@ -175,6 +175,7 @@ class StreamSegmenter {
             }
         }
         
+        print(results.count)
         self.audioSamples.removeFirst(n: results.count)
         return results
     }
