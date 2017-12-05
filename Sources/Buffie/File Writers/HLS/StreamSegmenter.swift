@@ -1,15 +1,15 @@
 import Foundation
 import CoreMedia
 
-struct StreamType: OptionSet {
-    var rawValue: UInt8
+public struct StreamType: OptionSet {
+    public var rawValue: UInt8
     
-    init(rawValue: UInt8) {
+    public init(rawValue: UInt8) {
         self.rawValue = rawValue
     }
     
-    static let video = StreamType(rawValue: 1 << 0)
-    static let audio = StreamType(rawValue: 1 << 1)
+    public static let video = StreamType(rawValue: 1 << 0)
+    public static let audio = StreamType(rawValue: 1 << 1)
     
     func supported(_ sample: Sample) -> Bool {
         if self == [.video, .audio] { return true }

@@ -17,7 +17,8 @@ public class FragmentedMP4Writer: StreamSegmenterDelegate {
     
     public init(_ outputDir: URL,
                 targetDuration: Double = 6,
-                playlistType: HLSPlaylistType = .live) throws {
+                playlistType: HLSPlaylistType = .live,
+                streamType: StreamType = [.video, .audio]) throws {
         /// Verify we have a directory to write to
         var isDir: ObjCBool = false
         let pathExists      = FileManager.default.fileExists(atPath: outputDir.path, isDirectory: &isDir)
@@ -30,6 +31,7 @@ public class FragmentedMP4Writer: StreamSegmenterDelegate {
         
         self.segmenter  = try StreamSegmenter(outputDir: outputDir,
                                               targetSegmentDuration: targetDuration,
+                                              streamType: streamType,
                                               delegate: self)
         
         self.videoInput = try FragmentedVideoInput() { sample in
