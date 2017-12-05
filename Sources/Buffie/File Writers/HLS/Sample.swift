@@ -90,9 +90,7 @@ public struct AudioSample: Sample {
     let channels: UInt32
     let sampleRate: Double
     
-    init(sampleBuffer: CMSampleBuffer) {
-        print(sampleBuffer)
-        
+    init(sampleBuffer: CMSampleBuffer) {        
         /// Set the type and data
         self.type       = .audio
         self.data       = bytes(from: sampleBuffer)!

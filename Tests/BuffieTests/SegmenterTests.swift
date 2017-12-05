@@ -238,9 +238,9 @@ class SegmenterTests: XCTestCase {
         
         self.wait(for: [delegate.newSegExp!], timeout: 5)
         XCTAssertEqual(2, delegate.segmentID)
-        XCTAssertEqual(3, delegate.sequenceNumber)
+        XCTAssertEqual(4, delegate.sequenceNumber)
 
-        XCTAssertEqual(138, delegate.samples.count)
+        XCTAssertEqual(81, delegate.samples.count)
         XCTAssertTrue(delegate.samples.first!.isSync)
     }
 

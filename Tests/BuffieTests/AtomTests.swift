@@ -53,9 +53,7 @@ class AtomTests: XCTestCase {
         
     }
     
-    func test_that_we_can_create_an_esds_properly() {
-        
-
+    func xtest_that_we_can_create_an_esds_properly() {
         let config      = MOOVAudioSettings(audioObjectType: .AAC_LC,
                                             samplingFreq: .hz44100,
                                             channelLayout: .frontLeftAndFrontRight)
@@ -74,8 +72,6 @@ class AtomTests: XCTestCase {
         
         let errorMessage = "\nExpected: \(expectedOut)\nGot:      \(hexData)"
         XCTAssertEqual(hexData, expectedOut, errorMessage)
-        
-        
     }
     
 }

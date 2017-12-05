@@ -54,12 +54,10 @@ struct MOOVAudioSettings {
     }
     
     init(_ sample: Sample) {
-        
         let format = sample.format as! AudioStreamBasicDescription
         
         self.channels   = format.mChannelsPerFrame
         self.sampleRate = sample.timescale
-        
         
         self.audioObjectType  = AudioObjectType(objectID: MPEG4ObjectID(rawValue: Int(format.mFormatFlags))!)
         self.channelLayout    = ChannelConfiguration(rawValue: UInt8(format.mChannelsPerFrame))!

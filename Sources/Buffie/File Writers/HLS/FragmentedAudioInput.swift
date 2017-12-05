@@ -3,7 +3,6 @@ import CoreMedia
 class FragmentedAudioInput {
     
     var onChunk: (AudioSample) -> Void
-    
     var decodeCount: Int64 = 0
     
     init(_ onChunk: @escaping (AudioSample) -> Void) throws {
