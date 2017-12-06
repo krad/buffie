@@ -1,9 +1,6 @@
 import Foundation
 import CoreMedia
 
-let mediaStreamDelimeter: [UInt8] = [0x0, 0x0, 0x0, 0x1]
-let paramSetMarker: UInt8         = 0x70
-
 public struct AVMuxerSettings {
     var videoSettings: VideoEncoderSettings
     
@@ -18,6 +15,9 @@ public protocol AVMuxerDelegate {
 }
 
 public class AVMuxer: AVReader {
+    
+    public static let streamDelimeter: [UInt8] = [0x0, 0x0, 0x0, 0x1]
+    public static let paramSetMarker: UInt8    = 0x70
 
     fileprivate var delegate: AVMuxerDelegate?
     internal var videoEncoder: VideoEncoder?
