@@ -12,13 +12,13 @@ public class FragmentedMP4Writer: StreamSegmenterDelegate {
     var videoInput: FragmentedVideoInput?
     var audioInput: FragmentedAudioInput?
     var currentSegment: FragmentedMP4Segment?
-    
     fileprivate var playerListWriter: HLSPlaylistWriter
     
     public init(_ outputDir: URL,
                 targetDuration: Double = 6,
                 playlistType: HLSPlaylistType = .live,
-                streamType: StreamType = [.video, .audio]) throws {
+                streamType: StreamType = [.video, .audio]) throws
+    {
         /// Verify we have a directory to write to
         var isDir: ObjCBool = false
         let pathExists      = FileManager.default.fileExists(atPath: outputDir.path, isDirectory: &isDir)

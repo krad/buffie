@@ -1,61 +1,29 @@
 import Foundation
 import CoreMedia
-//
-//public protocol AVDemuxerDelegate {
-//    func demuxed(sample: CVPixelBuffer, with pts: CMTime)
-//    func demuxed(audioBufferList: AudioBufferList)
-//}
-//
-//@available (macOS 10.11, iOS 5, *)
-//public class AVDemuxer {
-//
-//    private var videoDecoder: VideoDecoder?
-//    private var audioDecoder: AudioDecoder?
-//
-//    private var delegate: AVDemuxerDelegate
-//    private var readBuffer: [UInt8] = []
-//
-//    init(delegate: AVDemuxerDelegate) throws {
-//        self.delegate     = delegate
-//        self.audioDecoder = try AudioDecoder(AudioEncoderDecoderSettings(.decoding), delegate: self)
-//    }
-//
-//    func got(sampleFormatData: [[UInt8]]) {
-//        if let format = formatFrom(sampleFormatData) {
-//            self.videoDecoder = try? VideoDecoder(format: format, delegate: self)
-//        }
-//    }
-//
-//    func demux(_ data: [UInt8]) {
-//        guard let sampleType = SampleType(rawValue: data[0]) else { return }
-//
-//        let payload = Array(data[1..<data.count])
-//
-//        switch sampleType {
-//        case .video:
-//            self.videoDecoder?.decode(payload)
-//        case .audio:
-//            self.audioDecoder?.decode(payload)
-//        }
-//
-//    }
-//
-//}
-//
-//@available (macOS 10.11, iOS 5, *)
-//extension AVDemuxer: VideoDecoderDelegate {
-//    public func decoded(_ pixelBuffer: CVPixelBuffer, with pts: CMTime) {
-//        self.delegate.demuxed(sample: pixelBuffer, with: pts)
-//    }
-//}
-//
-//@available (macOS 10.11, iOS 5, *)
-//extension AVDemuxer: AudioEncoderDecoderDelegate {
-//    public func processed(_ audioBuffer: AudioBufferList) {
-//        self.delegate.demuxed(audioBufferList: audioBuffer)
-//    }
-//}
-//
+
+public protocol AVDemuxerDelegate {
+    func demuxed(sample: CVPixelBuffer, with pts: CMTime)
+    func demuxed(audioBufferList: AudioBufferList)
+}
+
+public class AVDemuxer {
+
+    private var delegate: AVDemuxerDelegate
+    private var readBuffer: [UInt8] = []
+
+    init(delegate: AVDemuxerDelegate) throws {
+        self.delegate     = delegate
+    }
+
+    func got(sampleFormatData: [[UInt8]]) {
+    }
+
+    func demux(_ data: [UInt8]) {
+        guard let sampleType = SampleType(rawValue: data[0]) else { return }
+        let payload = Array(data[1..<data.count])
+
+    }
+}
 
 /// Creates a format description from an array of bytes (SPS & PPS)
 ///
