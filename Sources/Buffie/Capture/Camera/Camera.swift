@@ -75,6 +75,19 @@ public class Camera {
                                                  cameraReader: self.cameraReader)
     }
     
+    public init(videoDeviceID: String?,
+                audioDeviceID: String?,
+                reader: AVReaderProtocol = AVReader(),
+                controlDelegate: CameraControlDelegate? = nil) throws {
+        self.controlDelegate = controlDelegate
+        self.cameraReader    = reader
+        self.cameraSession   = try CaptureSession(videoDeviceID: videoDeviceID,
+                                                  audioDeviceID: audioDeviceID,
+                                                  controlDelegate: self,
+                                                  cameraReader: self.cameraReader)
+    }
+
+    
     /// Start the camera
     public func start() {
         self.cameraSession?.start()
