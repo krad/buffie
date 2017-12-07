@@ -206,3 +206,13 @@ enum ChannelConfiguration: UInt8 {
     case frontCenterAndFrontLeftAndFrontRightAndBackLeftAndBackRightLFE                        = 6
     case frontCenterAndFrontLeftAndFrontRightAndSideLeftAndSideRightAndBackLeftAndBackRightLFE = 7
 }
+
+
+internal func getStreamDescription(from sample: CMSampleBuffer) -> AudioStreamBasicDescription? {
+    if let formatDescription = CMSampleBufferGetFormatDescription(sample) {
+        if let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription)?.pointee {
+            return asbd
+        }
+    }
+    return nil
+}

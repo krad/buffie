@@ -1,7 +1,7 @@
 import Foundation
 import CoreMedia
 
-extension CMSampleBuffer {
+public extension CMSampleBuffer {
     
     internal var sampleAttachments: [CFString: Any]? {
         if let buffAttach = CMSampleBufferGetSampleAttachmentsArray(self, false) as? [Any] {
