@@ -1,27 +1,63 @@
 import Foundation
 import CoreMedia
+import BoyerMoore
 
 public protocol AVDemuxerDelegate {
-    func demuxed(sample: CVPixelBuffer, with pts: CMTime)
-    func demuxed(audioBufferList: AudioBufferList)
+    func got(sampleFormatData: [[UInt8]])
+    func got(sample: [UInt8], sampleType: SampleType)
 }
 
 public class AVDemuxer {
 
     private var delegate: AVDemuxerDelegate
-    private var readBuffer: [UInt8] = []
-
-    init(delegate: AVDemuxerDelegate) throws {
-        self.delegate     = delegate
+    private let q = DispatchQueue(label: "demuxer.q",
+                                  qos: .default,
+                                  attributes: .concurrent,
+                                  autoreleaseFrequency: .inherit,
+                                  target: nil)
+    
+    private var readBuffer: [UInt8] = [] { didSet { self.searchForPacket() } }
+    private var params: [[UInt8]] = [] {
+        didSet {
+            if self.params.count == 2 { self.delegate.got(sampleFormatData: self.params) }
+        }
     }
 
-    func got(sampleFormatData: [[UInt8]]) {
+    
+    public init(delegate: AVDemuxerDelegate) {
+        self.delegate = delegate
     }
+    
+    final public func received(bytes: [UInt8]) {
+        q.async(flags: .barrier) { self.readBuffer.append(contentsOf: bytes) }
+    }
+    
+    internal func searchForPacket() {
+        q.async(flags: .barrier) {
+            var rangesToRemove: [Range<Int>] = []
+            for chunk in self.readBuffer.chunk(with: AVMuxer.streamDelimeter, includeSeperator: true) {
+                // strip the media deliminator
+                let packet = Array(chunk[chunk.startIndex+4..<chunk.endIndex])
+                self.demux(packet)
+                
+                // Add range to remove so we can slim the buffer of processed data
+                rangesToRemove.append(Range(chunk.startIndex..<chunk.endIndex))
+            }
 
-    func demux(_ data: [UInt8]) {
-        guard let sampleType = SampleType(rawValue: data[0]) else { return }
+            // Remove ranges from the buffer
+            for range in rangesToRemove.reversed() { self.readBuffer.removeSubrange(range) }
+        }
+    }
+    
+    internal func demux(_ data: [UInt8]) {
         let payload = Array(data[1..<data.count])
-
+        if let sampleType = SampleType(rawValue: data[0]) {
+            self.delegate.got(sample: payload, sampleType: sampleType)
+        } else {
+            if data[0] == AVMuxer.paramSetMarker {
+                self.params.append(payload)
+            }
+        }
     }
 }
 
@@ -44,3 +80,8 @@ internal func formatFrom(_ bytes: [[UInt8]]) -> CMFormatDescription? {
     else { return format }
 }
 
+extension Data {
+    
+    
+    
+}

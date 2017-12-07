@@ -144,7 +144,7 @@ class SegmenterTests: XCTestCase {
         XCTAssertNotNil(delegate.config?.audioSettings)
         
         XCTAssertEqual(1, delegate.segmentID)
-        XCTAssertEqual(0, delegate.sequenceNumber)
+        XCTAssertEqual(1, delegate.sequenceNumber)
     }
     
     func test_that_we_get_moof_notifications_for_video() {
@@ -196,7 +196,7 @@ class SegmenterTests: XCTestCase {
         }
         self.wait(for: [delegate.newSegExp!], timeout: 1)
         XCTAssertEqual(2, delegate.segmentID)
-        XCTAssertEqual(3, delegate.sequenceNumber)
+        XCTAssertEqual(4, delegate.sequenceNumber)
         
         XCTAssertEqual(30, delegate.samples.count)
         XCTAssertTrue(delegate.samples.first!.isSync)

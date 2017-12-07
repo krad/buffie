@@ -8,9 +8,11 @@ let package = Package(
     products: [
         .library(name: "Buffie", type: .dynamic, targets: ["Buffie"]),
     ],
-    dependencies: [ ],
+    dependencies: [ 
+      .package(url: "https://github.com/krad/boyermoore.git", from: "0.0.4"),
+    ],
     targets: [
-        .target(name: "Buffie", dependencies: []),
+        .target(name: "Buffie", dependencies: ["BoyerMoore"]),
         .testTarget(name: "BuffieTests", dependencies: ["Buffie"]),
     ]
 )

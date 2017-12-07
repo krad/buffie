@@ -41,28 +41,28 @@ public class AACEncoder {
     }
     
     private func process(_ sample: CMSampleBuffer) {
-        guard let audioIO = self.audioIO else { return }
+//        guard let audioIO = self.audioIO else { return }
         
-        var status              = noErr
-
-        let blockBuffer = CMSampleBufferGetDataBuffer(sample)
-        var bufferPtr: UnsafeMutablePointer<Int8>? = nil
-        var bufferSize: Int = 0
-
-        status = CMBlockBufferGetDataPointer(blockBuffer!, 0, nil, &bufferSize, &bufferPtr)
-        
-        if status != noErr { print("Couldn't get pointer to pcm data"); return }
-        
-        self.audioIO?.pcmBuffer     = bufferPtr
-        self.audioIO?.pcmBufferSize = bufferSize
-
-        
-        var outBuffer = AudioBufferList.allocate(maximumBuffers: 1)
-        outBuffer[0].mNumberChannels = 2
-        outBuffer[0].mDataByteSize = UInt32(bufferSize)
-        
-        let ptr = UnsafeMutableRawPointer(bufferPtr!)
-        outBuffer[0].mData = ptr
+//        var status              = noErr
+//
+//        let blockBuffer = CMSampleBufferGetDataBuffer(sample)
+//        var bufferPtr: UnsafeMutablePointer<Int8>? = nil
+//        var bufferSize: Int = 0
+//
+//        status = CMBlockBufferGetDataPointer(blockBuffer!, 0, nil, &bufferSize, &bufferPtr)
+//
+//        if status != noErr { print("Couldn't get pointer to pcm data"); return }
+//
+//        self.audioIO?.pcmBuffer     = bufferPtr
+//        self.audioIO?.pcmBufferSize = bufferSize
+//
+//
+//        var outBuffer = AudioBufferList.allocate(maximumBuffers: 1)
+//        outBuffer[0].mNumberChannels = 2
+//        outBuffer[0].mDataByteSize = UInt32(bufferSize)
+//
+//        let ptr = UnsafeMutableRawPointer(bufferPtr!)
+//        outBuffer[0].mData = ptr
         
 //        var outBuffer                      = AudioBufferList()
 //        outBuffer.mNumberBuffers           = 1
@@ -70,18 +70,18 @@ public class AACEncoder {
 //        outBuffer.mBuffers.mDataByteSize   = UInt32(bufferSize)
 //        outBuffer.mBuffers.mData           = UnsafeMutableRawPointer.allocate(bytes: bufferSize, alignedTo: 0)
         
-        var ioOutputDataPackets: UInt32 = 1
-        
-        status = AudioConverterFillComplexBuffer(audioIO.converter,
-                                                 fillComplexCallback,
-                                                 Unmanaged.passUnretained(self).toOpaque(),
-                                                 &ioOutputDataPackets,
-                                                 outBuffer.unsafeMutablePointer,
-                                                 nil)
-
-        if status != noErr {
-            
-            print("Error converting:", status)
+//        var ioOutputDataPackets: UInt32 = 1
+//
+//        status = AudioConverterFillComplexBuffer(audioIO.converter,
+//                                                 fillComplexCallback,
+//                                                 Unmanaged.passUnretained(self).toOpaque(),
+//                                                 &ioOutputDataPackets,
+//                                                 outBuffer.unsafeMutablePointer,
+//                                                 nil)
+//
+//        if status != noErr {
+//
+//            print("Error converting:", status)
 //            var x = 0
 //            x += status == kAudioConverterErr_FormatNotSupported ? #line : 0
 //            x += status == kAudioConverterErr_OperationNotSupported ? #line : 0
@@ -95,10 +95,10 @@ public class AACEncoder {
 //            x += status == kAudioConverterErr_OutputSampleRateOutOfRange ? #line : 0
 //
 //            print(x)
-            return
-        } else {
-            print("!!!!!!!!!!!!!VICTORY!!!!!!!!!!!!!!!")
-        }
+//            return
+//        } else {
+//            print("!!!!!!!!!!!!!VICTORY!!!!!!!!!!!!!!!")
+//        }
 
     }
     

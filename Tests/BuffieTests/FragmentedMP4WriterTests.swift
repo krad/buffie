@@ -55,7 +55,7 @@ class FragmentedMP4WriterTests: XCTestCase {
         XCTAssertEqual(Int(results.first!.payloadSize), compressedFrame.count-4)
     }
     
-    func test_experiment() {
+    func xtest_experiment() {
         let dir    = URL(fileURLWithPath: "/tmp")
         let writer = try? FragmentedMP4Writer(dir, playlistType: .vod)
         XCTAssertNotNil(writer)
