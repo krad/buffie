@@ -39,7 +39,7 @@ public struct VideoEncoderSettings {
     
 }
 
-enum VideoFormat {
+public enum VideoFormat {
     case x420YpCbCr8BiPlanarVideoRange
     case x32ARGB
     
@@ -57,7 +57,7 @@ enum VideoFormat {
     
 }
 
-enum VideoProfileLevel {
+public enum VideoProfileLevel {
     case h264BaselineAutoLevel
     case h264Baseline_4_0
     case h264High_4_0
