@@ -18,7 +18,7 @@ public struct VideoEncoderSettings {
     var profileLevel: VideoProfileLevel
     var useHardwareEncoding: Bool
     
-    init() {
+    public init() {
         self.width                    = 640
         self.height                   = 480
         self.codec                    = kCMVideoCodecType_H264
