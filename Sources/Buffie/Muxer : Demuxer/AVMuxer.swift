@@ -66,7 +66,7 @@ extension AVMuxer: VideoEncoderDelegate {
 ///
 /// - Parameter sample: CMSampleBuffer
 /// - Returns: Array of unsigned 8 bit integers
-internal func bytes(from sample: CMSampleBuffer) -> [UInt8]? {
+public func bytes(from sample: CMSampleBuffer) -> [UInt8]? {
     if let dataBuffer = CMSampleBufferGetDataBuffer(sample) {
         var bufferLength: Int = 0
         var bufferDataPointer: UnsafeMutablePointer<Int8>? = nil
