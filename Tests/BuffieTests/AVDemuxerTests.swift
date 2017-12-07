@@ -41,7 +41,6 @@ class AVDemuxerTests: XCTestCase {
         demuxerDelegate.sampleExpectation = self.expectation(description: "Ensure we get a video sample")
         demuxerDelegate.sampleExpectation?.assertForOverFulfill = false
 
-
         let camera = try? Camera(.back, reader: muxer!, controlDelegate: nil)
         XCTAssertNotNil(camera)
         camera?.start()

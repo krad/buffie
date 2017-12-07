@@ -6,7 +6,7 @@ public enum FragmentedMP4WriterError: Error {
     case directoryDoesNotExist
 }
 
-public class FragmentedMP4Writer: StreamSegmenterDelegate {
+public class FragmentedMP4Writer {
     
     var segmenter: StreamSegmenter?
     var videoInput: FragmentedVideoInput?
@@ -54,6 +54,13 @@ public class FragmentedMP4Writer: StreamSegmenterDelegate {
         self.playerListWriter.end()
     }
     
+    func stop() {
+        self.playerListWriter.end()
+    }
+
+}
+
+extension FragmentedMP4Writer: StreamSegmenterDelegate {
     func writeInitSegment(with config: MOOVConfig) {
         _ = try? FragementedMP4InitalizationSegment(self.segmenter!.currentSegmentURL,
                                                     config: config)
@@ -67,20 +74,13 @@ public class FragmentedMP4Writer: StreamSegmenterDelegate {
         }
         
         self.currentSegment = try? FragmentedMP4Segment(self.segmenter!.currentSegmentURL,
-                                                       config: self.segmenter!.moovConfig,
-                                                       firstSequence: self.segmenter!.currentSequence)
+                                                        config: self.segmenter!.moovConfig,
+                                                        firstSequence: self.segmenter!.currentSequence)
     }
     
     func writeMOOF(with samples: [Sample], and duration: Double) {
         self.currentSegment?.currentSequence = self.segmenter!.currentSequence
         try? self.currentSegment?.write(samples, with: duration)
     }
-    
-    
-    func stop() {
-        self.playerListWriter.end()
-    }
-
-    
 }
 

@@ -23,7 +23,6 @@ public class AVDemuxer {
         }
     }
 
-    
     public init(delegate: AVDemuxerDelegate) {
         self.delegate = delegate
     }

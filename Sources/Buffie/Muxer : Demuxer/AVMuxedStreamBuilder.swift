@@ -1,6 +1,6 @@
 import Foundation
 
-protocol AVMuxedStreamDelegate {
+public protocol AVMuxedStreamDelegate {
     func packetized(payload: [UInt8])
 }
 
