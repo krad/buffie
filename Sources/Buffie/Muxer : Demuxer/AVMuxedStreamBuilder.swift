@@ -7,7 +7,7 @@ public protocol AVMuxedStreamDelegate {
 public class AVMuxedStreamBuilder: AVMuxerDelegate {
     private var delegate: AVMuxedStreamDelegate
     
-    init(delegate: AVMuxedStreamDelegate) {
+    public init(delegate: AVMuxedStreamDelegate) {
         self.delegate = delegate
     }
     
