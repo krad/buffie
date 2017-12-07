@@ -15,6 +15,8 @@ public enum SampleType: UInt8 {
     case audio    = 0x61 // a
 }
 
+extension SampleType: BinaryEncodable { }
+
 open class AVReader: AVReaderProtocol, SampleReader {
     
     final public var videoReader: AVCaptureVideoDataOutputSampleBufferDelegate
