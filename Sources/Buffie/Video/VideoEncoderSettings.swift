@@ -3,20 +3,20 @@ import VideoToolbox
 
 public struct VideoEncoderSettings {
     
-    var width: Int32
-    var height: Int32
-    var codec: CMVideoCodecType
-    var videoFormat: VideoFormat
-    var frameRate: Int
-    var maxKeyFrameIntervalDuration: Int?
+    public var width: Int32
+    public var height: Int32
+    public var codec: CMVideoCodecType
+    public var videoFormat: VideoFormat
+    public var frameRate: Int
+    public var maxKeyFrameIntervalDuration: Int?
     
-    var realTime: Bool
-    var dataRateLimit: Int?
-    var bitRate: Int?
-    var allowFrameReordering: Bool
-    var allowTemporalCompression: Bool
-    var profileLevel: VideoProfileLevel
-    var useHardwareEncoding: Bool
+    public var realTime: Bool
+    public var dataRateLimit: Int?
+    public var bitRate: Int?
+    public var allowFrameReordering: Bool
+    public var allowTemporalCompression: Bool
+    public var profileLevel: VideoProfileLevel
+    public var useHardwareEncoding: Bool
     
     public init() {
         self.width                    = 640
