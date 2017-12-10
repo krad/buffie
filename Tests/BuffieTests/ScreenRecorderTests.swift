@@ -1,6 +1,7 @@
 import XCTest
 @testable import Buffie
 
+#if os(macOS)
 @available (macOS 10.11, *)
 class ScreenRecorderTests: XCTestCase {
     
@@ -26,3 +27,4 @@ class ScreenRecorderTests: XCTestCase {
     ]
     
 }
+#endif

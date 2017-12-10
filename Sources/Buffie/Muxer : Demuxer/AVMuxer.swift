@@ -30,7 +30,7 @@ public class AVMuxer: AVReader {
     }
     
     private override init() {
-        super.init()
+        super.init()        
     }
     
     public convenience init(settings: AVMuxerSettings = AVMuxerSettings(), delegate: AVMuxerDelegate) throws {

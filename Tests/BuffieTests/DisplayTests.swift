@@ -1,6 +1,7 @@
 import XCTest
 @testable import Buffie
 
+#if os(macOS)
 @available (macOS 10.11, *)
 class DisplayTests: XCTestCase {
     
@@ -41,3 +42,4 @@ class DisplayTests: XCTestCase {
     ]
     
 }
+#endif
