@@ -23,11 +23,17 @@ public class VideoEncoder {
         
         var status = noErr
         
+        
+        var encoderSpec: CFDictionary?
+        #if os(macOS)
+            encoderSpec = [kVTVideoEncoderSpecification_EnableHardwareAcceleratedVideoEncoder as String: self.settings.useHardwareEncoding] as CFDictionary
+        #endif
+        
         status = VTCompressionSessionCreate(kCFAllocatorDefault,
                                             settings.width,
                                             settings.height,
                                             settings.codec,
-                                            [kVTVideoEncoderSpecification_EnableHardwareAcceleratedVideoEncoder as String: self.settings.useHardwareEncoding] as CFDictionary,
+                                            encoderSpec,
                                             settings.imageBufferAttributes as CFDictionary?,
                                             nil,
                                             self.encodeCallback,
