@@ -1,6 +1,7 @@
 import Foundation
 import AVFoundation
 
+#if os(macOS)
 @available (macOS 10.11, *)
 public class ScreenRecorder {
     
@@ -75,3 +76,4 @@ extension ScreenRecorder: CameraControlDelegate {
         self.controlDelegate?.cameraInteruppted()
     }
 }
+#endif
