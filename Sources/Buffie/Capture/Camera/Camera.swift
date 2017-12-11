@@ -93,6 +93,10 @@ public class Camera {
         self.cameraSession?.start()
     }
     
+    public func start(onComplete: ((AVCaptureSession) -> Void)? = nil) {
+        self.cameraSession?.start(onComplete: onComplete) 
+    }
+    
     /// Stop the camera
     public func stop() {
         self.cameraSession?.stop()

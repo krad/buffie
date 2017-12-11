@@ -6,6 +6,8 @@ internal protocol CaptureSessionProtocol {
     var audioOutput: AVCaptureAudioDataOutput? { get }
 
     func start()
+    func start(onComplete: ((AVCaptureSession) -> Void)?)
+    
     func stop()
 }
 
