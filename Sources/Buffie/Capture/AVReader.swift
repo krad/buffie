@@ -66,7 +66,6 @@ internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBuffer
             if status != noErr {
                 print("Problem updating sample buffer timing info:", status)
             } else {
-                print("New timing info:", timingInfo)
                 self.delegate?.got(newSampleBuffer!, type: .video)
                 return
             }
