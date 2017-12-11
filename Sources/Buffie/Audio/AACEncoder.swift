@@ -41,7 +41,7 @@ public class AACEncoder {
                 outASBD.mBytesPerPacket     = 0
                 outASBD.mFramesPerPacket    = 1024
                 outASBD.mBytesPerFrame      = 0
-                outASBD.mChannelsPerFrame   = 2
+                outASBD.mChannelsPerFrame   = 1
                 outASBD.mBitsPerChannel     = 0
                 outASBD.mReserved           = 0
                 
@@ -64,7 +64,7 @@ public class AACEncoder {
             self.aacBuffer = [UInt8](repeating: 0, count: Int(self.pcmBufferSize))
             
             let outBuffer:UnsafeMutableAudioBufferListPointer = AudioBufferList.allocate(maximumBuffers: 1)
-            outBuffer[0].mNumberChannels = 2
+            outBuffer[0].mNumberChannels = 1
             outBuffer[0].mDataByteSize = self.pcmBufferSize
             
             self.aacBuffer.withUnsafeMutableBytes({ rawBufPtr in
