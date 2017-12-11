@@ -61,12 +61,16 @@ public class AACEncoder {
                 self.pcmBufferSize = UInt32(sampleBytes.count)
             }
             
-            self.aacBuffer = [UInt8](repeating: 0, count: 1024)
+            self.aacBuffer = [UInt8](repeating: 0, count: Int(self.pcmBufferSize))
             
             let outBuffer:UnsafeMutableAudioBufferListPointer = AudioBufferList.allocate(maximumBuffers: 1)
             outBuffer[0].mNumberChannels = 2
             outBuffer[0].mDataByteSize = self.pcmBufferSize
-            outBuffer[0].mData = UnsafeMutableRawPointer.allocate(bytes: Int(self.pcmBufferSize), alignedTo: 0)
+            
+            self.aacBuffer.withUnsafeMutableBytes({ rawBufPtr in
+                let ptr = rawBufPtr.baseAddress
+                outBuffer[0].mData = ptr
+            })
             
             var ioOutputDataPacketSize: UInt32 = 1
         
@@ -77,7 +81,7 @@ public class AACEncoder {
                                                          outBuffer.unsafeMutablePointer,
                                                          nil)
         
-            if status == noErr {
+            if status == noErr {                
                 let rawAAC = Data(self.aacBuffer)
                 print(self.aacBuffer)
                 onComplete(rawAAC, noErr)
