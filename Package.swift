@@ -9,10 +9,9 @@ let package = Package(
         .library(name: "Buffie", type: .dynamic, targets: ["Buffie"]),
     ],
     dependencies: [ 
-      .package(url: "https://github.com/krad/boyermoore.git", from: "0.0.4"),
     ],
     targets: [
-        .target(name: "Buffie", dependencies: ["BoyerMoore"]),
+        .target(name: "Buffie", dependencies: []),
         .testTarget(name: "BuffieTests", dependencies: ["Buffie"]),
     ]
 )

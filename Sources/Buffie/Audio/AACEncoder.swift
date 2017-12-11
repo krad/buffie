@@ -45,22 +45,22 @@ public class AACEncoder {
                 outASBD.mBitsPerChannel     = 0
                 outASBD.mReserved           = 0
                 
-                #if os(macOS)
+//                #if os(macOS)
                     let status = AudioConverterNew(&inASBD, &outASBD, &audioConverter)
                     if status != noErr { print("Failed to setup converter:", status) }
-                #else
-                if var descriptor = self.getAudioClassDescription(with: kAudioFormatMPEG4AAC,
-                                                                  from: kAppleSoftwareAudioCodecManufacturer) {
-                    
-                    let status = AudioConverterNewSpecific(&inASBD,
-                                                           &outASBD,
-                                                           1,
-                                                           &descriptor,
-                                                           &audioConverter)
-                    if status != noErr { print("Failed to setup converter:", status) }
-                    
-                }
-                #endif
+//                #else
+//                if var descriptor = self.getAudioClassDescription(with: kAudioFormatMPEG4AAC,
+//                                                                  from: kAppleSoftwareAudioCodecManufacturer) {
+//
+//                    let status = AudioConverterNewSpecific(&inASBD,
+//                                                           &outASBD,
+//                                                           1,
+//                                                           &descriptor,
+//                                                           &audioConverter)
+//                    if status != noErr { print("Failed to setup converter:", status) }
+//
+//                }
+//                #endif
 
             }
         }

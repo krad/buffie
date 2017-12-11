@@ -1,67 +1,6 @@
 import Foundation
 import CoreMedia
 
-public struct AVMuxerSettings {
-    var videoSettings: VideoEncoderSettings
-    
-    public init() {
-        self.videoSettings = VideoEncoderSettings()
-    }
-}
-
-public protocol AVMuxerDelegate {
-    func got(paramSet: [[UInt8]])
-    func muxed(data: [UInt8])
-}
-
-public class AVMuxer: AVReader {
-    
-    public static let streamDelimeter: [UInt8] = [0x0, 0x0, 0x0, 0x1]
-    public static let paramSetMarker: UInt8    = 0x70
-
-    fileprivate var delegate: AVMuxerDelegate?
-    internal var videoEncoder: VideoEncoder?
-    internal var parameterSetData: [[UInt8]]? {
-        didSet {
-            if let params = parameterSetData {
-                self.delegate?.got(paramSet: params)
-            }
-        }
-    }
-    
-    private override init() {
-        super.init()        
-    }
-    
-    public convenience init(settings: AVMuxerSettings = AVMuxerSettings(), delegate: AVMuxerDelegate) throws {
-        self.init()
-        self.delegate     = delegate
-        self.videoEncoder = try VideoEncoder(settings.videoSettings, delegate: self)
-    }
-
-    public override func got(_ sample: CMSampleBuffer, type: SampleType) {
-        switch type {
-        case .video: self.videoEncoder?.encode(sample)
-        case .audio: _ = 0 + 0
-        }
-    }
-    
-}
-
-extension AVMuxer: VideoEncoderDelegate {
-    public func encoded(videoSample: CMSampleBuffer) {
-        
-        if self.parameterSetData == nil {
-            self.parameterSetData = getVideoFormatDescriptionData(videoSample)
-        }
-        
-        if let bytes = bytes(from: videoSample) {
-            let packet: [UInt8] =  [SampleType.video.rawValue] + bytes
-            self.delegate?.muxed(data: packet)
-        }
-    }
-}
-
 /// Converts a CMSampleBuffer to an array of unsigned 8 bit integers
 ///
 /// - Parameter sample: CMSampleBuffer
@@ -121,7 +60,7 @@ public func getVideoFormatDescriptionData(_ buffer: CMSampleBuffer) -> [[UInt8]]
 
 public func getVideoFormatDescriptionData(_ format: CMFormatDescription) -> [[UInt8]] {
     var results: [[UInt8]] = []
-
+    
     var numberOfParamSets: size_t = 0
     CMVideoFormatDescriptionGetH264ParameterSetAtIndex(format, 0, nil, nil, &numberOfParamSets, nil)
     
@@ -152,3 +91,4 @@ public func getFormatDescription(_ buffer: CMSampleBuffer) -> CMFormatDescriptio
     }
     return nil
 }
+
