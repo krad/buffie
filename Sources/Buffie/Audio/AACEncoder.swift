@@ -81,9 +81,9 @@ public class AACEncoder {
                                                          outBuffer.unsafeMutablePointer,
                                                          nil)
         
-            if status == noErr {                
+            if status == noErr {
                 let rawAAC = Data(self.aacBuffer)
-                print(self.aacBuffer)
+                print(outBuffer[0].mDataByteSize, self.aacBuffer)
                 onComplete(rawAAC, noErr)
             } else {
                 print("Error converting buffer:", status)
