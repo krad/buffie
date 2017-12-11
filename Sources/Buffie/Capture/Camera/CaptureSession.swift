@@ -87,6 +87,12 @@ internal class CaptureSession: CaptureSessionProtocol {
     {
         let videoDevice = try AVCaptureDevice.firstDevice(for: .video, in: position)
         let audioDevice = try AVCaptureDevice.firstDevice(for: .audio, in: position)
+        
+        try videoDevice.lockForConfiguration()
+        videoDevice.activeVideoMinFrameDuration = CMTimeMake(1, 24)
+        videoDevice.activeVideoMaxFrameDuration = CMTimeMake(1, 24)
+        videoDevice.unlockForConfiguration()
+        
         try self.init(videoDeviceID: videoDevice.uniqueID,
                       audioDeviceID: audioDevice.uniqueID,
                       controlDelegate: controlDelegate,
