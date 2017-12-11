@@ -16,7 +16,7 @@ public class VideoEncoder {
     
     fileprivate var session: VTCompressionSession?
     fileprivate var encodeCallback: VTCompressionOutputCallback = videoSampleCompressedCallback
-    
+        
     public init(_ settings: VideoEncoderSettings, delegate: VideoEncoderDelegate) throws {
         self.settings = settings
         self.delegate = delegate
@@ -49,10 +49,9 @@ public class VideoEncoder {
     
     public func encode(_ sample: CMSampleBuffer) {
         if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
+            
             let pts         = CMSampleBufferGetPresentationTimeStamp(sample)
             let duration    = CMSampleBufferGetDuration(sample)
-            
-            print("Buffie", #line, pts, duration, CMSampleBufferGetOutputDuration(sample))
             
             VTCompressionSessionEncodeFrame(self.session!,
                                             pixelBuffer,

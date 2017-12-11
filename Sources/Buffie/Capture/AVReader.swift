@@ -46,11 +46,34 @@ open class AVReader: AVReaderProtocol, SampleReader {
 internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     internal var delegate: SampleReader?
+    internal var previousPTS = kCMTimeZero
     
     internal func captureOutput(_ output: AVCaptureOutput,
                                 didOutput sampleBuffer: CMSampleBuffer,
                                 from connection: AVCaptureConnection)
     {
+        let pts      = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+        var duration = CMSampleBufferGetDuration(sampleBuffer)
+        
+        print(pts, duration)
+        
+        if duration.value <= 0 {
+            duration = CMTimeMake(pts.value, pts.timescale)
+            self.previousPTS = pts
+            
+            var newSampleBuffer: CMSampleBuffer?
+            var timingInfo = CMSampleTimingInfo(duration: duration, presentationTimeStamp: pts, decodeTimeStamp: kCMTimeInvalid)
+            let status = CMSampleBufferCreateCopyWithNewTiming(kCFAllocatorDefault, sampleBuffer, 1, &timingInfo, &newSampleBuffer)
+            
+            if status != noErr {
+                print("Problem updating sample buffer timing info:", status)
+            } else {
+                print("New timing info:", timingInfo)
+                self.delegate?.got(newSampleBuffer!, type: .video)
+                return
+            }
+        }
+        
         self.delegate?.got(sampleBuffer, type: .video)
     }
     
