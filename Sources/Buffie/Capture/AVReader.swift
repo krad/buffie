@@ -46,34 +46,61 @@ open class AVReader: AVReaderProtocol, SampleReader {
 internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     internal var delegate: SampleReader?
-    internal var previousPTS = kCMTimeZero
+    
+    internal var samples = ThreadSafeArray<CMSampleBuffer>()
     
     internal func captureOutput(_ output: AVCaptureOutput,
                                 didOutput sampleBuffer: CMSampleBuffer,
                                 from connection: AVCaptureConnection)
     {
-        let pts      = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-        var duration = CMSampleBufferGetDuration(sampleBuffer)
+        let duration = CMSampleBufferGetDuration(sampleBuffer)
         
+        /// iOS sets all the duration timestamps to 0.
+        /// This means we have to calculate them.
         if duration.value <= 0 {
-            
-            duration = CMTimeSubtract(pts, self.previousPTS)
-            print(duration)
-            self.previousPTS = pts
-            
-            var newSampleBuffer: CMSampleBuffer?
-            var timingInfo = CMSampleTimingInfo(duration: duration, presentationTimeStamp: pts, decodeTimeStamp: kCMTimeInvalid)
-            let status = CMSampleBufferCreateCopyWithNewTiming(kCFAllocatorDefault, sampleBuffer, 1, &timingInfo, &newSampleBuffer)
-            
-            if status != noErr {
-                print("Problem updating sample buffer timing info:", status)
-            } else {
-                self.delegate?.got(newSampleBuffer!, type: .video)
-                return
-            }
+            self.recalculateDuration(for: sampleBuffer)
+            return
         }
         
         self.delegate?.got(sampleBuffer, type: .video)
+    }
+    
+    private func recalculateDuration(for sampleBuffer: CMSampleBuffer) {
+        if let prevSampleBuffer = self.samples.last {
+            
+            let prevPTS  = CMSampleBufferGetPresentationTimeStamp(prevSampleBuffer)
+            let currPTS  = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+            let duration =  CMTimeSubtract(currPTS, prevPTS)
+            if let newSample = self.createNewSample(from: prevSampleBuffer, with: duration, and: prevPTS) {
+                self.delegate?.got(newSample, type: .video)
+                self.samples.removeLast()
+                self.samples.append(sampleBuffer)
+            }
+            
+        } else {
+            self.samples.append(sampleBuffer)
+        }
+    }
+    
+    private func createNewSample(from sampleBuffer: CMSampleBuffer,
+                                 with duration: CMTime,
+                                 and pts: CMTime) -> CMSampleBuffer?
+    {
+        var newSampleBuffer: CMSampleBuffer?
+        var timingInfo = CMSampleTimingInfo(duration: duration,
+                                            presentationTimeStamp: pts,
+                                            decodeTimeStamp: kCMTimeInvalid)
+        
+        let status = CMSampleBufferCreateCopyWithNewTiming(kCFAllocatorDefault,
+                                                           sampleBuffer,
+                                                           1,
+                                                           &timingInfo,
+                                                           &newSampleBuffer)
+        
+        if status != noErr {
+            print("Problem updating sample buffer timing info:", status)
+        }
+        return newSampleBuffer
     }
     
 }

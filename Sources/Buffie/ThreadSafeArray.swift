@@ -26,6 +26,14 @@ internal class ThreadSafeArray<T>: Collection {
         q.async(flags: .barrier) { self.array.removeFirst(n) }
     }
     
+    internal func removeLast() {
+        q.async(flags: .barrier) { self.array.removeLast() }
+    }
+    
+    internal func removeLast(n: Int) {
+        q.async(flags: .barrier) { self.array.removeLast(n) }
+    }
+    
     internal var count: Int {
         var count = 0
         q.sync { count = self.array.count }
@@ -35,6 +43,12 @@ internal class ThreadSafeArray<T>: Collection {
     internal var first: T? {
         var element: T?
         q.sync { element = self.array.first }
+        return element
+    }
+    
+    internal var last: T? {
+        var element: T?
+        q.sync { element = self.array.last }
         return element
     }
     
