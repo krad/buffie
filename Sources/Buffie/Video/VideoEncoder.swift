@@ -51,6 +51,9 @@ public class VideoEncoder {
         if let pixelBuffer = CMSampleBufferGetImageBuffer(sample) {
             let pts         = CMSampleBufferGetPresentationTimeStamp(sample)
             let duration    = CMSampleBufferGetDuration(sample)
+            
+            print("Buffie", #line, pts, duration)
+            
             VTCompressionSessionEncodeFrame(self.session!,
                                             pixelBuffer,
                                             pts,
@@ -62,7 +65,9 @@ public class VideoEncoder {
     }
     
     internal func completeFrame() {
-        VTCompressionSessionCompleteFrames(self.session!, CMTime(seconds: 1, preferredTimescale: Int32(self.settings.frameRate)))
+        VTCompressionSessionCompleteFrames(self.session!,
+                                           CMTime(seconds: 1,
+                                                  preferredTimescale: Int32(self.settings.frameRate)))
     }
     
 }
