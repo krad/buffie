@@ -29,8 +29,9 @@ internal class CaptureSession: CaptureSessionProtocol {
                   controlDelegate: CameraControlDelegate,
                   cameraReader: AVReaderProtocol) throws
     {
-        self.controlDelegate = controlDelegate
-        self.session         = AVCaptureSession()
+        self.controlDelegate       = controlDelegate
+        self.session               = AVCaptureSession()
+        self.session.sessionPreset = .low
         
         if let vInput = videoInput {
             self.videoInput     = vInput
