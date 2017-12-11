@@ -41,7 +41,7 @@ public class AACEncoder {
                 outASBD.mBytesPerPacket     = 0
                 outASBD.mFramesPerPacket    = 1024
                 outASBD.mBytesPerFrame      = 0
-                outASBD.mChannelsPerFrame   = 1
+                outASBD.mChannelsPerFrame   = 2
                 outASBD.mBitsPerChannel     = 0
                 outASBD.mReserved           = 0
                 

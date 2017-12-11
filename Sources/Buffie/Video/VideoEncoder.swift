@@ -52,7 +52,7 @@ public class VideoEncoder {
             
             let pts         = CMSampleBufferGetPresentationTimeStamp(sample)
             let duration    = CMSampleBufferGetDuration(sample)
-            
+                        
             VTCompressionSessionEncodeFrame(self.session!,
                                             pixelBuffer,
                                             pts,
