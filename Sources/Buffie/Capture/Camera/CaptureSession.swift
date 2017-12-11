@@ -94,11 +94,16 @@ internal class CaptureSession: CaptureSessionProtocol {
                       cameraReader: cameraReader)
     }
     
-    func start() {
-        self.session.startRunning()
+    public func start() {
+        self.start(onComplete: nil)
     }
     
-    func stop() {
+    public func start(onComplete: ((AVCaptureSession) -> Void)? = nil) {
+        self.session.startRunning()
+        onComplete?(self.session)
+    }
+    
+    public func stop() {
         self.session.stopRunning()
     }
     
