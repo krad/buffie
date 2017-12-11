@@ -51,7 +51,7 @@ public class AACEncoder {
         }
     }
     
-    public func encode(_ sampleBuffer: CMSampleBuffer, onComplete: @escaping (Data?, OSStatus) -> Void) {
+    public func encode(_ sampleBuffer: CMSampleBuffer, onComplete: @escaping ([UInt8]?, OSStatus) -> Void) {
         self.encoderQ.async {
             if self.audioConverter == nil { self.setupEncoder(from: sampleBuffer) }
             guard let audioConverter = self.audioConverter else { return }
@@ -82,9 +82,8 @@ public class AACEncoder {
                                                          nil)
         
             if status == noErr {
-                let rawAAC = Data(self.aacBuffer)
-                print(outBuffer[0].mDataByteSize, self.aacBuffer)
-                onComplete(rawAAC, noErr)
+                let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
+                onComplete(aacPayload, noErr)
             } else {
                 print("Error converting buffer:", status)
                 onComplete(nil, status)
