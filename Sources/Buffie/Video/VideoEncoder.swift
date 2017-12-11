@@ -52,7 +52,7 @@ public class VideoEncoder {
             let pts         = CMSampleBufferGetPresentationTimeStamp(sample)
             let duration    = CMSampleBufferGetDuration(sample)
             
-            print("Buffie", #line, pts, duration)
+            print("Buffie", #line, pts, duration, CMSampleBufferGetOutputDuration(sample))
             
             VTCompressionSessionEncodeFrame(self.session!,
                                             pixelBuffer,
