@@ -56,7 +56,9 @@ internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBuffer
         var duration = CMSampleBufferGetDuration(sampleBuffer)
         
         if duration.value <= 0 {
+            
             duration = CMTimeSubtract(pts, self.previousPTS)
+            print(duration)
             self.previousPTS = pts
             
             var newSampleBuffer: CMSampleBuffer?
