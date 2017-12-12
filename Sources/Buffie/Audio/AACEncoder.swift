@@ -39,16 +39,16 @@ public class AACEncoder {
         if let format = CMSampleBufferGetFormatDescription(sampleBuffer) {
             if var inASBD = CMAudioFormatDescriptionGetStreamBasicDescription(format)?.pointee {
                 
-                if inASBD.mChannelsPerFrame == 1 {
-                    inASBD.mChannelsPerFrame = 2
-                }
+//                if inASBD.mChannelsPerFrame == 1 {
+//                    inASBD.mChannelsPerFrame = 2
+//                }
                 
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
                 outASBD.mFormatID           = kAudioFormatMPEG4AAC
                 outASBD.mFormatFlags        = UInt32(MPEG4ObjectID.AAC_LC.rawValue)
                 outASBD.mBytesPerPacket     = 0
-                outASBD.mFramesPerPacket    = 1024
+                outASBD.mFramesPerPacket    = inASBD.mChannelsPerFrame == 1 ? 2048 : 1024
                 outASBD.mBytesPerFrame      = 0
                 outASBD.mChannelsPerFrame   = inASBD.mChannelsPerFrame
                 outASBD.mBitsPerChannel     = 0
