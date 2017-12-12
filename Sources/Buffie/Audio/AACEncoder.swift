@@ -83,8 +83,7 @@ public class AACEncoder {
                                                          nil)
         
             if status == noErr {
-                let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
-                print("aac", aacPayload)
+                let aacPayload = Array(self.aacBuffer[6..<Int(outBuffer[0].mDataByteSize)])
                 onComplete(aacPayload, noErr)
             } else {
                 print("Error converting buffer:", status)
@@ -103,8 +102,6 @@ public class AACEncoder {
         
         var pcmBufferSize: UInt32 = 0
         if var pcmBuffer = self.pcmBuffer.first {
-            
-            print("pcm", pcmBuffer)
             
             pcmBufferSize = UInt32(pcmBuffer.count)
             pcmBuffer.withUnsafeMutableBufferPointer { bufferPtr in
