@@ -32,8 +32,6 @@ public class AACEncoder {
         
         if let format = CMSampleBufferGetFormatDescription(sampleBuffer) {
             if var inASBD = CMAudioFormatDescriptionGetStreamBasicDescription(format)?.pointee {
-                
-                print(inASBD)
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
                 outASBD.mFormatID           = kAudioFormatMPEG4AAC
@@ -84,6 +82,7 @@ public class AACEncoder {
                                                          nil)
         
             if status == noErr {
+                print("NO ERR")
                 let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
                 onComplete(aacPayload, noErr)
             } else {
