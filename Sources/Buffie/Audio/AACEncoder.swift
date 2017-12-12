@@ -11,8 +11,7 @@ public class AACEncoder {
     private var audioConverter: AudioConverterRef?
     fileprivate var aacBuffer: [UInt8] = []
     fileprivate var aacBufferSize: UInt32
-    private var pcmBuffer: [UInt8]     = []
-    private var pcmBufferSize: UInt32
+    private var pcmBuffer: [[UInt8]] = []
     private var outASBD: AudioStreamBasicDescription?
     
     fileprivate var fillComplexCallback: AudioConverterComplexInputDataProc = { (inAudioConverter, 
@@ -27,7 +26,6 @@ public class AACEncoder {
     public init() {
         self.audioConverter = nil
         self.aacBufferSize  = 1024
-        self.pcmBufferSize  = 0
     }
     
     func setupEncoder(from sampleBuffer: CMSampleBuffer) {
@@ -58,16 +56,17 @@ public class AACEncoder {
             if self.audioConverter == nil { self.setupEncoder(from: sampleBuffer) }
             guard let audioConverter = self.audioConverter else { return }
         
+            var pcmBufferSize: UInt32 = 0
             if let sampleBytes = bytes(from: sampleBuffer) {
-                self.pcmBuffer     = sampleBytes
-                self.pcmBufferSize = UInt32(sampleBytes.count)
+                self.pcmBuffer.append(sampleBytes)
+                pcmBufferSize = UInt32(sampleBytes.count)
             }
             
-            self.aacBuffer = [UInt8](repeating: 0, count: Int(self.pcmBufferSize))
+            self.aacBuffer = [UInt8](repeating: 0, count: Int(pcmBufferSize))
             
             let outBuffer:UnsafeMutableAudioBufferListPointer = AudioBufferList.allocate(maximumBuffers: 1)
             outBuffer[0].mNumberChannels = self.outASBD == nil ? 1 : self.outASBD!.mChannelsPerFrame
-            outBuffer[0].mDataByteSize = self.pcmBufferSize
+            outBuffer[0].mDataByteSize = pcmBufferSize
             
             self.aacBuffer.withUnsafeMutableBytes({ rawBufPtr in
                 let ptr = rawBufPtr.baseAddress
@@ -84,8 +83,8 @@ public class AACEncoder {
                                                          nil)
         
             if status == noErr {
-                //let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
-                onComplete(self.aacBuffer, noErr)
+                let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
+                onComplete(aacPayload, noErr)
             } else {
                 print("Error converting buffer:", status)
                 onComplete(nil, status)
@@ -100,13 +99,23 @@ public class AACEncoder {
         outDataPacketDescription: UnsafeMutablePointer<UnsafeMutablePointer<AudioStreamPacketDescription>?>?) -> OSStatus
     {
         let requestedPackets = ioNumberDataPackets.pointee
-        self.pcmBuffer.withUnsafeMutableBufferPointer { bufferPtr in
-            let ptr                              = UnsafeMutableRawPointer(bufferPtr.baseAddress)
-            ioData.pointee.mBuffers.mData        = ptr
-            ioData.pointee.mBuffers.mDataByteSize = self.pcmBufferSize
+        
+        var pcmBufferSize: UInt32 = 0
+        if var pcmBuffer = self.pcmBuffer.last {
+            
+            pcmBufferSize = UInt32(pcmBuffer.count)
+            pcmBuffer.withUnsafeMutableBufferPointer { bufferPtr in
+                let ptr                               = UnsafeMutableRawPointer(bufferPtr.baseAddress)
+                ioData.pointee.mBuffers.mData         = ptr
+                ioData.pointee.mBuffers.mDataByteSize = UInt32(pcmBuffer.count)
+            }
+            
+        } else {
+            ioNumberDataPackets.pointee = 0
+            return -1
         }
         
-        if self.pcmBufferSize < requestedPackets {
+        if pcmBufferSize < requestedPackets {
             ioNumberDataPackets.pointee = 0
             return -1
         }
