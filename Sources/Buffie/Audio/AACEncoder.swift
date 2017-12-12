@@ -11,7 +11,11 @@ public class AACEncoder {
     private var audioConverter: AudioConverterRef?
     fileprivate var aacBuffer: [UInt8] = []
     fileprivate var aacBufferSize: UInt32
-    private var pcmBuffer: [[UInt8]] = []
+    
+    private var pcmBuffer = ThreadSafeArray<UInt8>()
+    private var numberOfSamplesInBuffer: Int = 0
+    
+    private var inASBD: AudioStreamBasicDescription?
     private var outASBD: AudioStreamBasicDescription?
     
     fileprivate var fillComplexCallback: AudioConverterComplexInputDataProc = { (inAudioConverter, 
@@ -44,8 +48,7 @@ public class AACEncoder {
                 outASBD.mBitsPerChannel     = 0
                 outASBD.mReserved           = 0
                 self.outASBD                = outASBD
-                
-                print("inFormat:", inASBD, "outFormat:", outASBD)
+                self.inASBD                 = inASBD
                 
                 let status = AudioConverterNew(&inASBD, &outASBD, &audioConverter)
                 if status != noErr { print("Failed to setup converter:", status) }
@@ -61,27 +64,12 @@ public class AACEncoder {
             let numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer)
             var pcmBufferSize: UInt32 = 0
             if let sampleBytes = bytes(from: sampleBuffer) {
+                self.pcmBuffer.append(contentsOf: sampleBytes)
+                self.numberOfSamplesInBuffer += numberOfSamples
                 
-                print("Number of samples:", numberOfSamples, "Buffer size:", sampleBytes.count)
+                if self.numberOfSamplesInBuffer < 1024 { return }
                 
-                if numberOfSamples < 1024 {
-                    if var prevBuffer = self.pcmBuffer.last {
-                        prevBuffer.append(contentsOf: sampleBytes)
-                        self.pcmBuffer.removeLast()
-                        self.pcmBuffer.append(prevBuffer)
-                        
-                        if prevBuffer.count < 6144 {
-                            return
-                        }
-                    } else {
-                        self.pcmBuffer.append(sampleBytes)
-                        return
-                    }
-                } else {
-                    self.pcmBuffer.append(sampleBytes)
-                }
-                
-                pcmBufferSize = UInt32(sampleBytes.count)
+                pcmBufferSize = UInt32(self.pcmBuffer.count)
             }
             
             self.aacBuffer = [UInt8](repeating: 0, count: Int(pcmBufferSize))
@@ -126,16 +114,13 @@ public class AACEncoder {
         let requestedPackets = ioNumberDataPackets.pointee
         
         var pcmBufferSize: UInt32 = 0
-        if var pcmBuffer = self.pcmBuffer.first {
-            
+        if var pcmBuffer = self.pcmBuffer.prefix(4096) {
             pcmBufferSize = UInt32(pcmBuffer.count)
-            print("Buffer size:", pcmBufferSize)
             pcmBuffer.withUnsafeMutableBufferPointer { bufferPtr in
                 let ptr                               = UnsafeMutableRawPointer(bufferPtr.baseAddress)
                 ioData.pointee.mBuffers.mData         = ptr
                 ioData.pointee.mBuffers.mDataByteSize = pcmBufferSize
             }
-            
         } else {
             ioNumberDataPackets.pointee = 0
             return -1
@@ -145,8 +130,9 @@ public class AACEncoder {
             ioNumberDataPackets.pointee = 0
             return -1
         }
-        
-        self.pcmBuffer.removeFirst()
+
+        self.pcmBuffer.removeFirst(n: pcmBuffer.count)
+        self.numberOfSamplesInBuffer -= 1024
         ioNumberDataPackets.pointee = 1
         return noErr
     }

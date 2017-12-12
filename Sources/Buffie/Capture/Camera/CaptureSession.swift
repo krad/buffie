@@ -48,6 +48,15 @@ internal class CaptureSession: CaptureSessionProtocol {
         if let aInput = audioInput {
             self.audioInput  = aInput
             self.audioOutput = AVCaptureAudioDataOutput()
+            
+            #if os(macOS)
+            self.audioOutput?.audioSettings = [
+                AVFormatIDKey: kAudioFormatLinearPCM,
+                AVLinearPCMBitDepthKey: 16,
+                AVLinearPCMIsFloatKey: false,
+                AVLinearPCMIsNonInterleaved: false
+            ]
+            #endif
 
             // Add the audio i/o to the session
             self.session.addInput(self.audioInput!)

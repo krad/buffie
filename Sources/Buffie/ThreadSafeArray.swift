@@ -18,6 +18,10 @@ internal class ThreadSafeArray<T>: Collection {
         q.async(flags: .barrier) { self.array.append(newElement) }
     }
     
+    internal func append(contentsOf: [T]) {
+        q.async(flags: .barrier) { self.array.append(contentsOf: contentsOf) }
+    }
+    
     internal func remove(at index: Int) {
         q.async(flags: .barrier) { self.array.remove(at: index) }
     }
@@ -44,6 +48,12 @@ internal class ThreadSafeArray<T>: Collection {
         var element: T?
         q.sync { element = self.array.first }
         return element
+    }
+    
+    internal func prefix(_ maxLength: Int) -> [T]? {
+        var result: [T]?
+        q.sync { result = Array(self.array.prefix(maxLength)) }
+        return result
     }
     
     internal var last: T? {

@@ -13,8 +13,8 @@ class AACEncoderTests: XCTestCase {
             super.got(sample, type: type)
             if type == .audio {
                 self.encoder?.encode(sample) { data, status in
-//                    XCTAssertNotNil(data)
-//                    XCTAssertEqual(status, noErr)
+                    XCTAssertNotNil(data)
+                    XCTAssertEqual(status, noErr)
                     self.encodeExp?.fulfill()
                 }
             }
@@ -23,12 +23,12 @@ class AACEncoderTests: XCTestCase {
     
 
     func test_that_we_can_encode_pcm_samples_to_aac() {
-        let encoder = AACEncoder()
         
+        let encoder = AACEncoder()
         let reader  = AudioReader()
         reader.encoder = encoder
         
-        let camera       = try? Camera(.back, reader: reader, controlDelegate: nil)
+        let camera       = try? Camera(.front, reader: reader, controlDelegate: nil)
         reader.encodeExp = self.expectation(description: "Ensure we can encode pcm to aac")
         reader.encodeExp?.assertForOverFulfill = false
         
