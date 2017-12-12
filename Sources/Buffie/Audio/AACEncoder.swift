@@ -83,7 +83,11 @@ public class AACEncoder {
                        onComplete: @escaping ([UInt8]?, OSStatus, CMTime?) -> Void)
     {
         self.encoderQ.async {
-            if self.audioConverter == nil { self.setupEncoder(from: sampleBuffer) }
+            if self.audioConverter == nil {
+                DispatchQueue.main.async {
+                    self.setupEncoder(from: sampleBuffer)
+                }
+            }
             guard let audioConverter = self.audioConverter else { return }
         
             let numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer)
