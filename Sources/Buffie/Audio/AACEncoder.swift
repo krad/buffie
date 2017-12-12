@@ -180,6 +180,8 @@ public class AACEncoder {
             return nil
         }
         
+        print("getPropertyInfo", encoderSpecifier, encoderSpecSize)
+        
         var encoderDescriptions: [AudioClassDescription] = []
 
         status = AudioFormatGetProperty(kAudioFormatProperty_Encoders,
@@ -187,6 +189,8 @@ public class AACEncoder {
                                         &encoderSpecifier,
                                         &encoderSpecSize,
                                         &encoderDescriptions)
+        
+        print("getProperty", encoderSpecifier, encoderSpecSize, encoderDescriptions)
         
         if status != noErr {
             print("Error getting available encoder descriptions:", status)
