@@ -69,6 +69,10 @@ public class AACEncoder {
                         prevBuffer.append(contentsOf: sampleBytes)
                         self.pcmBuffer.removeLast()
                         self.pcmBuffer.append(prevBuffer)
+                        
+                        if prevBuffer.count < 9216 {
+                            return
+                        }
                     } else {
                         self.pcmBuffer.append(sampleBytes)
                         return
