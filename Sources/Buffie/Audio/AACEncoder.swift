@@ -38,7 +38,7 @@ public class AACEncoder {
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
                 outASBD.mFormatID           = kAudioFormatMPEG4AAC
-                outASBD.mFormatFlags        = UInt32(MPEG4ObjectID.aac_Main.rawValue)
+                outASBD.mFormatFlags        = 0
                 outASBD.mBytesPerPacket     = 0
                 outASBD.mFramesPerPacket    = 1024
                 outASBD.mBytesPerFrame      = 0
