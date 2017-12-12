@@ -39,6 +39,10 @@ public class AACEncoder {
         if let format = CMSampleBufferGetFormatDescription(sampleBuffer) {
             if var inASBD = CMAudioFormatDescriptionGetStreamBasicDescription(format)?.pointee {
                 
+                if inASBD.mChannelsPerFrame == 1 {
+                    inASBD.mChannelsPerFrame = 2
+                }
+                
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
                 outASBD.mFormatID           = kAudioFormatMPEG4AAC
@@ -53,7 +57,6 @@ public class AACEncoder {
                 self.inASBD                 = inASBD
                 
                 #if os(macOS)
-                print("Setting up converter")
                 let status = AudioConverterNew(&inASBD, &outASBD, &audioConverter)
                 if status != noErr { print("Failed to setup converter:", status) }
                 #else
