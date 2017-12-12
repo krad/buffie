@@ -59,13 +59,11 @@ public class AACEncoder {
                 if status != noErr { print("Failed to setup converter:", status) }
                 #else
                     if var description = getAudioClassDescription() {
-                        print("Attempting iOS insanity.")
                         let status = AudioConverterNewSpecific(&inASBD,
                                                                &outASBD,
                                                                1,
                                                                &description,
                                                                &audioConverter)
-                        print("Yep, iOS is insane.")
                         if status != noErr { print("Failed to setup converter:", status) }
                     } else {
                         print("Couldn't get audio converter description")
@@ -96,9 +94,7 @@ public class AACEncoder {
                 }
                 
                 duration = CMTimeAdd(self.previousDuration, CMSampleBufferGetDuration(sampleBuffer))
-                pcmBufferSize = UInt32(self.pcmBuffer.count)
-                
-                print(sampleBuffer)
+                pcmBufferSize = UInt32(self.pcmBuffer.count)                
             }
             
             self.aacBuffer = [UInt8](repeating: 0, count: Int(pcmBufferSize))
@@ -114,7 +110,6 @@ public class AACEncoder {
             
             var ioOutputDataPacketSize: UInt32 = 1
         
-            print("Attempting to convert")
             let status = AudioConverterFillComplexBuffer(audioConverter,
                                                          self.fillComplexCallback,
                                                          Unmanaged.passUnretained(self).toOpaque(),
