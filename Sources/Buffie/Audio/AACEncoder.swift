@@ -166,7 +166,6 @@ public class AACEncoder {
     
     #if os(iOS)
     private func getAudioClassDescription() -> AudioClassDescription? {
-        
         var encoderSpecifier        = kAudioFormatMPEG4AAC
         var encoderSpecSize: UInt32 = 0
         
@@ -180,8 +179,6 @@ public class AACEncoder {
             return nil
         }
         
-        print("getPropertyInfo", encoderSpecifier, encoderSpecSize)
-        
         let numEncoders = Int(encoderSpecSize) / MemoryLayout<AudioClassDescription>.size
         var encoderDescriptions = [AudioClassDescription?](repeating: nil, count: numEncoders)
 
@@ -191,24 +188,24 @@ public class AACEncoder {
                                         &encoderSpecSize,
                                         &encoderDescriptions)
         
-        print("getProperty", encoderSpecifier, encoderSpecSize, encoderDescriptions)
-        
         if status != noErr {
             print("Error getting available encoder descriptions:", status)
             return nil
         }
         
         print(encoderDescriptions)
-        for description in encoderDescriptions {
-            guard let description = description else { continue }
-            if description.mSubType == kAudioFormatMPEG4AAC {
-                if description.mManufacturer == kAppleSoftwareAudioCodecManufacturer {
-                    return description
-                }
-            }
-        }
+        let filtered = encoderDescriptions.flatMap { $0 }
+        return filtered.first
         
-        return nil
+//        for description in encoderDescriptions {
+//            guard let description = description else { continue }
+//            if description.mSubType == kAudioFormatMPEG4AAC {
+//                if description.mManufacturer == kAppleSoftwareAudioCodecManufacturer {
+//                    return description
+//                }
+//            }
+//        }
+//        return nil
     }
     #endif
 }
