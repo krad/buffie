@@ -64,8 +64,8 @@ public class AACEncoder {
             self.aacBuffer = [UInt8](repeating: 0, count: Int(pcmBufferSize))
             
             let outBuffer:UnsafeMutableAudioBufferListPointer = AudioBufferList.allocate(maximumBuffers: 1)
-            outBuffer[0].mNumberChannels = self.outASBD == nil ? 1 : self.outASBD!.mChannelsPerFrame
-            outBuffer[0].mDataByteSize = pcmBufferSize
+            outBuffer[0].mNumberChannels    = self.outASBD == nil ? 1 : self.outASBD!.mChannelsPerFrame
+            outBuffer[0].mDataByteSize      = pcmBufferSize
             
             self.aacBuffer.withUnsafeMutableBytes({ rawBufPtr in
                 let ptr = rawBufPtr.baseAddress
@@ -81,11 +81,13 @@ public class AACEncoder {
                                                          outBuffer.unsafeMutablePointer,
                                                          nil)
         
-            if status == noErr {
-                print("NO ERR")
+            switch status {
+            case noErr:
                 let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
                 onComplete(aacPayload, noErr)
-            } else {
+            case -1:
+                print("Needed more bytes")
+            default:
                 print("Error converting buffer:", status)
                 onComplete(nil, status)
             }
@@ -110,8 +112,6 @@ public class AACEncoder {
                 ioData.pointee.mBuffers.mDataByteSize = pcmBufferSize
             }
             
-            self.pcmBuffer.removeFirst()
-            
         } else {
             ioNumberDataPackets.pointee = 0
             return -1
@@ -122,6 +122,7 @@ public class AACEncoder {
             return -1
         }
         
+        self.pcmBuffer.removeFirst()
         ioNumberDataPackets.pointee = 1
         return noErr
     }
