@@ -70,7 +70,7 @@ public class AACEncoder {
                         self.pcmBuffer.removeLast()
                         self.pcmBuffer.append(prevBuffer)
                         
-                        if prevBuffer.count < 9216 {
+                        if prevBuffer.count < 6144 {
                             return
                         }
                     } else {
