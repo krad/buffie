@@ -194,9 +194,11 @@ public class AACEncoder {
         }
         
         print(encoderDescriptions)
-        let filtered: [AudioClassDescription] = encoderDescriptions.flatMap { $0 }
-        print(filtered)
-        return filtered.first
+        for description in encoderDescriptions {
+            if let desc = description {
+                return desc
+            }
+        }
 //        for description in encoderDescriptions {
 //            guard let description = description else { continue }
 //            if description.mSubType == kAudioFormatMPEG4AAC {
@@ -205,7 +207,7 @@ public class AACEncoder {
 //                }
 //            }
 //        }
-//        return nil
+        return nil
     }
     #endif
 }
