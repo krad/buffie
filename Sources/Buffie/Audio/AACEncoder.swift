@@ -118,6 +118,7 @@ public class AACEncoder {
         if var pcmBuffer = self.pcmBuffer.first {
             
             pcmBufferSize = UInt32(pcmBuffer.count)
+            print("Buffer size:", pcmBufferSize)
             pcmBuffer.withUnsafeMutableBufferPointer { bufferPtr in
                 let ptr                               = UnsafeMutableRawPointer(bufferPtr.baseAddress)
                 ioData.pointee.mBuffers.mData         = ptr
