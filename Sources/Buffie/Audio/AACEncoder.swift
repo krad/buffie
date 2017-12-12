@@ -33,7 +33,7 @@ public class AACEncoder {
         if let format = CMSampleBufferGetFormatDescription(sampleBuffer) {
             if var inASBD = CMAudioFormatDescriptionGetStreamBasicDescription(format)?.pointee {
                 
-                print(inASBD.mSampleRate)
+                print(inASBD)
                 
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
