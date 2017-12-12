@@ -55,9 +55,13 @@ public class AACEncoder {
             if self.audioConverter == nil { self.setupEncoder(from: sampleBuffer) }
             guard let audioConverter = self.audioConverter else { return }
         
+            let numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer)
             var pcmBufferSize: UInt32 = 0
             if let sampleBytes = bytes(from: sampleBuffer) {
-                if CMSampleBufferGetNumSamples(sampleBuffer) < 1024 {
+                
+                print("Number of samples:", numberOfSamples, "Buffer size:", sampleBytes.count)
+                
+                if numberOfSamples < 1024 {
                     if var prevBuffer = self.pcmBuffer.last {
                         prevBuffer.append(contentsOf: sampleBytes)
                         self.pcmBuffer.removeLast()
