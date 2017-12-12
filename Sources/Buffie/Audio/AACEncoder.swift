@@ -84,8 +84,8 @@ public class AACEncoder {
                                                          nil)
         
             if status == noErr {
-                let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
-                onComplete(aacPayload, noErr)
+                //let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
+                onComplete(self.aacBuffer, noErr)
             } else {
                 print("Error converting buffer:", status)
                 onComplete(nil, status)
