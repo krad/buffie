@@ -13,6 +13,7 @@ public class AACEncoder {
     fileprivate var aacBufferSize: UInt32
     private var pcmBuffer: [UInt8]     = []
     private var pcmBufferSize: UInt32
+    private var outASBD: AudioStreamBasicDescription?
     
     fileprivate var fillComplexCallback: AudioConverterComplexInputDataProc = { (inAudioConverter, 
         ioDataPacketCount, ioData, outDataPacketDescriptionPtrPtr, inUserData) in
@@ -41,9 +42,11 @@ public class AACEncoder {
                 outASBD.mBytesPerPacket     = 0
                 outASBD.mFramesPerPacket    = 1024
                 outASBD.mBytesPerFrame      = 0
-                outASBD.mChannelsPerFrame   = 1
+                outASBD.mChannelsPerFrame   = inASBD.mChannelsPerFrame
                 outASBD.mBitsPerChannel     = 0
                 outASBD.mReserved           = 0
+                self.outASBD                = outASBD
+                print(self.outASBD)
                 
                 let status = AudioConverterNew(&inASBD, &outASBD, &audioConverter)
                 if status != noErr { print("Failed to setup converter:", status) }
@@ -64,7 +67,7 @@ public class AACEncoder {
             self.aacBuffer = [UInt8](repeating: 0, count: Int(self.pcmBufferSize))
             
             let outBuffer:UnsafeMutableAudioBufferListPointer = AudioBufferList.allocate(maximumBuffers: 1)
-            outBuffer[0].mNumberChannels = 1
+            outBuffer[0].mNumberChannels = self.outASBD == nil ? 1 : self.outASBD!.mChannelsPerFrame
             outBuffer[0].mDataByteSize = self.pcmBufferSize
             
             self.aacBuffer.withUnsafeMutableBytes({ rawBufPtr in
