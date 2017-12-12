@@ -24,6 +24,7 @@ class AACEncoderTests: XCTestCase {
     }
     
 
+    #if os(macOS)
     func test_that_we_can_encode_pcm_samples_to_aac() {
         
         let encoder = AACEncoder()
@@ -37,5 +38,12 @@ class AACEncoderTests: XCTestCase {
         camera?.start()
         self.wait(for: [reader.encodeExp!], timeout: 2)
     }
-    
+    #endif
+
+    #if os(iOS)
+    func test_that_we_can_get_an_audio_description() {
+        let result = getAudioClassDescription()
+        XCTAssertNotNil(result)
+    }
+    #endif
 }

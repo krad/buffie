@@ -164,8 +164,10 @@ public class AACEncoder {
         return noErr
     }
     
-    #if os(iOS)
-    private func getAudioClassDescription() -> AudioClassDescription? {
+}
+
+#if os(iOS)
+    internal func getAudioClassDescription() -> AudioClassDescription? {
         var encoderSpecifier        = kAudioFormatMPEG4AAC
         var encoderSpecSize: UInt32 = 0
         
@@ -180,34 +182,31 @@ public class AACEncoder {
         }
         
         let numEncoders = Int(encoderSpecSize) / MemoryLayout<AudioClassDescription>.size
-        var encoderDescriptions = [AudioClassDescription?](repeating: nil, count: numEncoders)
-
+        let ptr = UnsafeMutableRawPointer.allocate(bytes: numEncoders, alignedTo: 0)
+        
         status = AudioFormatGetProperty(kAudioFormatProperty_Encoders,
                                         UInt32(MemoryLayout.size(ofValue: encoderSpecifier)),
                                         &encoderSpecifier,
                                         &encoderSpecSize,
-                                        &encoderDescriptions)
+                                        ptr)
         
         if status != noErr {
             print("Error getting available encoder descriptions:", status)
             return nil
         }
         
-        print(encoderDescriptions)
+        let buffPtr = UnsafeBufferPointer(start: ptr.assumingMemoryBound(to: AudioClassDescription.self),
+                                            count: numEncoders)
+
+        let encoderDescriptions = Array(buffPtr)
         for description in encoderDescriptions {
-            if let desc = description {
-                return desc
+            if description.mSubType == kAudioFormatMPEG4AAC {
+                if description.mManufacturer == kAppleSoftwareAudioCodecManufacturer {
+                    return description
+                }
             }
         }
-//        for description in encoderDescriptions {
-//            guard let description = description else { continue }
-//            if description.mSubType == kAudioFormatMPEG4AAC {
-//                if description.mManufacturer == kAppleSoftwareAudioCodecManufacturer {
-//                    return description
-//                }
-//            }
-//        }
         return nil
     }
-    #endif
-}
+#endif
+
