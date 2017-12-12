@@ -39,8 +39,6 @@ public class AACEncoder {
         if let format = CMSampleBufferGetFormatDescription(sampleBuffer) {
             if var inASBD = CMAudioFormatDescriptionGetStreamBasicDescription(format)?.pointee {
                 
-                inASBD.mFormatFlags = 4
-                inASBD.mChannelsPerFrame = 2
                 print(inASBD)
                 
                 var outASBD                 = AudioStreamBasicDescription()
