@@ -41,8 +41,9 @@ public class AACEncoder {
                 
 //                if inASBD.mChannelsPerFrame == 1 {
 //                    inASBD.mChannelsPerFrame = 2
-//                }
                 
+//                }
+                inASBD.mFormatFlags = 4
                 print(inASBD)
                 
                 var outASBD                 = AudioStreamBasicDescription()
@@ -50,7 +51,7 @@ public class AACEncoder {
                 outASBD.mFormatID           = kAudioFormatMPEG4AAC
                 outASBD.mFormatFlags        = UInt32(MPEG4ObjectID.AAC_LC.rawValue)
                 outASBD.mBytesPerPacket     = 0
-                outASBD.mFramesPerPacket    = inASBD.mChannelsPerFrame == 1 ? 2048 : 1024
+                outASBD.mFramesPerPacket    = 1024
                 outASBD.mBytesPerFrame      = 0
                 outASBD.mChannelsPerFrame   = inASBD.mChannelsPerFrame
                 outASBD.mBitsPerChannel     = 0
@@ -83,11 +84,7 @@ public class AACEncoder {
                        onComplete: @escaping ([UInt8]?, OSStatus, CMTime?) -> Void)
     {
         self.encoderQ.async {
-            if self.audioConverter == nil {
-                DispatchQueue.main.async {
-                    self.setupEncoder(from: sampleBuffer)
-                }
-            }
+            if self.audioConverter == nil { self.setupEncoder(from: sampleBuffer) }
             guard let audioConverter = self.audioConverter else { return }
         
             let numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer)
