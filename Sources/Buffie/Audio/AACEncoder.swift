@@ -34,7 +34,6 @@ public class AACEncoder {
             if var inASBD = CMAudioFormatDescriptionGetStreamBasicDescription(format)?.pointee {
                 
                 print(inASBD)
-                
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
                 outASBD.mFormatID           = kAudioFormatMPEG4AAC
