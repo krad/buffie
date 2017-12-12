@@ -52,10 +52,22 @@ public class AACEncoder {
                 self.outASBD                = outASBD
                 self.inASBD                 = inASBD
                 
+                #if os(macOS)
                 print("Setting up converter")
                 let status = AudioConverterNew(&inASBD, &outASBD, &audioConverter)
                 if status != noErr { print("Failed to setup converter:", status) }
-                print("Converter setup.")
+                #else
+                    if var description = getAudioClassDescription() {
+                        let status = AudioConverterNewSpecific(&inASBD,
+                                                               &outASBD,
+                                                               1,
+                                                               &description,
+                                                               &audioConverter)
+                        if status != noErr { print("Failed to setup converter:", status) }
+                    } else {
+                        print("Couldn't get audio converter description")
+                    }
+                #endif
             }
         }
     }
@@ -151,4 +163,46 @@ public class AACEncoder {
         ioNumberDataPackets.pointee = 1
         return noErr
     }
+    
+    #if os(iOS)
+    private func getAudioClassDescription() -> AudioClassDescription? {
+        
+        var encoderSpecifier        = kAudioFormatMPEG4AAC
+        var encoderSpecSize: UInt32 = 0
+        
+        var status = AudioFormatGetPropertyInfo(kAudioFormatProperty_Encoders,
+                                                UInt32(MemoryLayout.size(ofValue: encoderSpecifier)),
+                                                &encoderSpecifier,
+                                                &encoderSpecSize)
+        
+        if status != noErr {
+            print("Error getting available encoders:", status)
+            return nil
+        }
+        
+        var encoderDescriptions: [AudioClassDescription] = []
+
+        status = AudioFormatGetProperty(kAudioFormatProperty_Encoders,
+                                        UInt32(MemoryLayout.size(ofValue: encoderSpecifier)),
+                                        &encoderSpecifier,
+                                        &encoderSpecSize,
+                                        &encoderDescriptions)
+        
+        if status != noErr {
+            print("Error getting available encoder descriptions:", status)
+            return nil
+        }
+        
+        print(encoderDescriptions)
+        for description in encoderDescriptions {
+            if description.mSubType == kAudioFormatMPEG4AAC {
+                if description.mManufacturer == kAppleSoftwareAudioCodecManufacturer {
+                    return description
+                }
+            }
+        }
+        
+        return nil
+    }
+    #endif
 }
