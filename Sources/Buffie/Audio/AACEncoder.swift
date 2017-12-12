@@ -57,7 +57,20 @@ public class AACEncoder {
         
             var pcmBufferSize: UInt32 = 0
             if let sampleBytes = bytes(from: sampleBuffer) {
-                self.pcmBuffer.append(sampleBytes)
+                
+                if sampleBytes.count < 1024 {
+                    if var prevBuffer = self.pcmBuffer.last {
+                        prevBuffer.append(contentsOf: sampleBytes)
+                        self.pcmBuffer.removeLast()
+                        self.pcmBuffer.append(prevBuffer)
+                    } else {
+                        self.pcmBuffer.append(sampleBytes)
+                        return
+                    }
+                } else {
+                    self.pcmBuffer.append(sampleBytes)
+                }
+                
                 pcmBufferSize = UInt32(sampleBytes.count)
             }
             
