@@ -43,6 +43,8 @@ public class AACEncoder {
 //                    inASBD.mChannelsPerFrame = 2
 //                }
                 
+                print(inASBD)
+                
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
                 outASBD.mFormatID           = kAudioFormatMPEG4AAC
@@ -61,11 +63,13 @@ public class AACEncoder {
                 if status != noErr { print("Failed to setup converter:", status) }
                 #else
                     if var description = getAudioClassDescription() {
+                        print("Attempting iOS insanity.")
                         let status = AudioConverterNewSpecific(&inASBD,
                                                                &outASBD,
                                                                1,
                                                                &description,
                                                                &audioConverter)
+                        print("Yep, iOS is insane.")
                         if status != noErr { print("Failed to setup converter:", status) }
                     } else {
                         print("Couldn't get audio converter description")
