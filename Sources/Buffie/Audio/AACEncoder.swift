@@ -55,6 +55,7 @@ public class AACEncoder {
                 print("Setting up converter")
                 let status = AudioConverterNew(&inASBD, &outASBD, &audioConverter)
                 if status != noErr { print("Failed to setup converter:", status) }
+                print("Converter setup.")
             }
         }
     }
