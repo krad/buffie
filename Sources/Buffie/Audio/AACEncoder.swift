@@ -18,6 +18,8 @@ public class AACEncoder {
     private var inASBD: AudioStreamBasicDescription?
     private var outASBD: AudioStreamBasicDescription?
     
+    private var previousDuration = kCMTimeZero
+    
     fileprivate var fillComplexCallback: AudioConverterComplexInputDataProc = { (inAudioConverter, 
         ioDataPacketCount, ioData, outDataPacketDescriptionPtrPtr, inUserData) in
         return Unmanaged<AACEncoder>.fromOpaque(inUserData!).takeUnretainedValue().audioConverterCallback(
@@ -56,19 +58,27 @@ public class AACEncoder {
         }
     }
     
-    public func encode(_ sampleBuffer: CMSampleBuffer, onComplete: @escaping ([UInt8]?, OSStatus) -> Void) {
+    public func encode(_ sampleBuffer: CMSampleBuffer,
+                       onComplete: @escaping ([UInt8]?, OSStatus, CMTime?) -> Void)
+    {
         self.encoderQ.async {
             if self.audioConverter == nil { self.setupEncoder(from: sampleBuffer) }
             guard let audioConverter = self.audioConverter else { return }
         
             let numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer)
             var pcmBufferSize: UInt32 = 0
+            
+            var duration = kCMTimeZero
             if let sampleBytes = bytes(from: sampleBuffer) {
                 self.pcmBuffer.append(contentsOf: sampleBytes)
                 self.numberOfSamplesInBuffer += numberOfSamples
                 
-                if self.numberOfSamplesInBuffer < 1024 { return }
+                if self.numberOfSamplesInBuffer < 1024 {
+                    self.previousDuration = CMSampleBufferGetDuration(sampleBuffer)
+                    return
+                }
                 
+                duration = CMTimeAdd(self.previousDuration, CMSampleBufferGetDuration(sampleBuffer))
                 pcmBufferSize = UInt32(self.pcmBuffer.count)
             }
             
@@ -95,12 +105,12 @@ public class AACEncoder {
             switch status {
             case noErr:
                 let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
-                onComplete(aacPayload, noErr)
+                onComplete(aacPayload, noErr, duration)
             case -1:
                 print("Needed more bytes")
             default:
                 print("Error converting buffer:", status)
-                onComplete(nil, status)
+                onComplete(nil, status, nil)
             }
         }
     }

@@ -12,9 +12,11 @@ class AACEncoderTests: XCTestCase {
         override func got(_ sample: CMSampleBuffer, type: SampleType) {
             super.got(sample, type: type)
             if type == .audio {
-                self.encoder?.encode(sample) { data, status in
+                self.encoder?.encode(sample) { data, status, duration in
                     XCTAssertNotNil(data)
                     XCTAssertEqual(status, noErr)
+                    XCTAssertNotNil(duration)
+                    XCTAssertEqual(1024, duration?.value)
                     self.encodeExp?.fulfill()
                 }
             }
