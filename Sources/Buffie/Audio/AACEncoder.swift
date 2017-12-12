@@ -80,6 +80,8 @@ public class AACEncoder {
                 
                 duration = CMTimeAdd(self.previousDuration, CMSampleBufferGetDuration(sampleBuffer))
                 pcmBufferSize = UInt32(self.pcmBuffer.count)
+                
+                print(sampleBuffer)
             }
             
             self.aacBuffer = [UInt8](repeating: 0, count: Int(pcmBufferSize))
