@@ -52,6 +52,7 @@ public class AACEncoder {
                 self.outASBD                = outASBD
                 self.inASBD                 = inASBD
                 
+                print("Setting up converter")
                 let status = AudioConverterNew(&inASBD, &outASBD, &audioConverter)
                 if status != noErr { print("Failed to setup converter:", status) }
             }
@@ -97,6 +98,7 @@ public class AACEncoder {
             
             var ioOutputDataPacketSize: UInt32 = 1
         
+            print("Attempting to convert")
             let status = AudioConverterFillComplexBuffer(audioConverter,
                                                          self.fillComplexCallback,
                                                          Unmanaged.passUnretained(self).toOpaque(),
