@@ -36,7 +36,7 @@ public class AACEncoder {
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
                 outASBD.mFormatID           = kAudioFormatMPEG4AAC
-                outASBD.mFormatFlags        = UInt32(MPEG4ObjectID.aac_Main.rawValue)
+                outASBD.mFormatFlags        = UInt32(MPEG4ObjectID.AAC_LC.rawValue)
                 outASBD.mBytesPerPacket     = 0
                 outASBD.mFramesPerPacket    = 1024
                 outASBD.mBytesPerFrame      = 0
@@ -84,7 +84,7 @@ public class AACEncoder {
         
             if status == noErr {
                 let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
-                print(aacPayload, outBuffer.unsafePointer.pointee)
+                print(self.aacBuffer)
                 onComplete(aacPayload, noErr)
             } else {
                 print("Error converting buffer:", status)
