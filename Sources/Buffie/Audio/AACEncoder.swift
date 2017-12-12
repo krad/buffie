@@ -38,7 +38,7 @@ public class AACEncoder {
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
                 outASBD.mFormatID           = kAudioFormatMPEG4AAC
-                outASBD.mFormatFlags        = UInt32(MPEG4ObjectID.AAC_LC.rawValue)
+                outASBD.mFormatFlags        = UInt32(MPEG4ObjectID.aac_Main.rawValue)
                 outASBD.mBytesPerPacket     = 0
                 outASBD.mFramesPerPacket    = 1024
                 outASBD.mBytesPerFrame      = 0
@@ -46,7 +46,6 @@ public class AACEncoder {
                 outASBD.mBitsPerChannel     = 0
                 outASBD.mReserved           = 0
                 self.outASBD                = outASBD
-                print(self.outASBD)
                 
                 let status = AudioConverterNew(&inASBD, &outASBD, &audioConverter)
                 if status != noErr { print("Failed to setup converter:", status) }
