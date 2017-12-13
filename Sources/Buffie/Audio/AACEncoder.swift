@@ -120,7 +120,7 @@ public class AACEncoder {
                     var leftChannel: [UInt8] = []
                     var rightChannel: [UInt8] = []
                     
-                    for (idx, sample) in self.pcmBuffer.enumerated() {
+                    for (idx, sample) in sampleBytes.enumerated() {
                         if idx % 2 == 0 { rightChannel.append(sample) }
                         else { leftChannel.append(sample) }
                     }
