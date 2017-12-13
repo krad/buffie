@@ -59,7 +59,6 @@ public class AACEncoder {
                 print("kAudioFormatFlagIsNonMixable", inASBD.mFormatFlags & kAudioFormatFlagIsNonMixable != 0)
                 print("kAudioFormatFlagIsAlignedHigh", inASBD.mFormatFlags & kAudioFormatFlagIsAlignedHigh != 0)
                 print("kAudioFormatFlagIsSignedInteger", inASBD.mFormatFlags & kAudioFormatFlagIsSignedInteger != 0)
-
                 print("kLinearPCMFormatFlagIsFloat", inASBD.mFormatFlags & kLinearPCMFormatFlagIsFloat != 0)
                 print("kLinearPCMFormatFlagIsPacked", inASBD.mFormatFlags & kLinearPCMFormatFlagIsPacked != 0)
                 print("kLinearPCMFormatFlagIsBigEndian", inASBD.mFormatFlags & kLinearPCMFormatFlagIsBigEndian != 0)
@@ -117,9 +116,7 @@ public class AACEncoder {
             if let sampleBytes = bytes(from: sampleBuffer) {
                 
                 if self.makeBytesStereo {
-                    
-                    let results = sampleBytes.map { $0 >> 24 }
-                    let merged  = results + results
+                    let merged  = sampleBytes + sampleBytes
                     self.pcmBuffer.append(contentsOf: merged)
                     duration = CMTimeAdd(self.previousDuration, duration)
                 } else {
@@ -133,9 +130,8 @@ public class AACEncoder {
                     return
                 }
                 
-                print("Duration:", duration)
                 pcmBufferSize = UInt32(self.pcmBuffer.count)
-                print("Buffer Size:", pcmBufferSize)
+                print("Added:", pcmBufferSize)
             }
             
             self.aacBuffer = [UInt8](repeating: 0, count: Int(pcmBufferSize))
@@ -200,6 +196,7 @@ public class AACEncoder {
             return -1
         }
 
+        print("Removing", pcmBufferSize)
         self.pcmBuffer.removeFirst(n: Int(pcmBufferSize))
         self.numberOfSamplesInBuffer -= 1024
         ioNumberDataPackets.pointee = 1
