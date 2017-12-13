@@ -9,9 +9,8 @@ public class AACEncoder {
     private var callbackQ = DispatchQueue(label: "aac.encoder.callback.q")
     
     private var audioConverter: AudioConverterRef?
-    fileprivate var aacBuffer: [UInt8] = []
-    fileprivate var aacBufferSize: UInt32
     
+    fileprivate var aacBuffer: [UInt8] = []
     private var pcmBuffer = ThreadSafeArray<UInt8>()
     private var numberOfSamplesInBuffer: Int = 0
     
@@ -32,7 +31,6 @@ public class AACEncoder {
     
     public init() {
         self.audioConverter = nil
-        self.aacBufferSize  = 1024
     }
     
     func setupEncoder(from sampleBuffer: CMSampleBuffer) {
@@ -47,8 +45,8 @@ public class AACEncoder {
                 /// The solution is to make the mono stream stereo by copying the pcm bytes before passing them to the AAC encoder
                 /// This is extremely naive, but it works and opens up some interesting possibilities I may explore.
                 if inASBD.mChannelsPerFrame == 1 {
-                    inASBD.mBytesPerPacket   = 4
-                    inASBD.mBytesPerFrame    = 4
+                    inASBD.mBytesPerPacket   = inASBD.mBytesPerPacket * 2
+                    inASBD.mBytesPerFrame    = inASBD.mBytesPerFrame  * 2
                     inASBD.mChannelsPerFrame = 2
                     self.makeBytesStereo     = true
                 }
@@ -119,7 +117,9 @@ public class AACEncoder {
             if let sampleBytes = bytes(from: sampleBuffer) {
                 
                 if self.makeBytesStereo {
-                    let merged = sampleBytes + sampleBytes
+                    
+                    let results = sampleBytes.map { $0 >> 24 }
+                    let merged  = results + results
                     self.pcmBuffer.append(contentsOf: merged)
                     duration = CMTimeAdd(self.previousDuration, duration)
                 } else {
@@ -162,7 +162,7 @@ public class AACEncoder {
             case noErr:
                 print(duration)
                 let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
-                onComplete(aacPayload, noErr, CMTimeMake(512, Int32(self.outASBD!.mSampleRate)))
+                onComplete(aacPayload, noErr, duration)
             case -1:
                 print("Needed more bytes")
             default:
