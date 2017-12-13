@@ -39,6 +39,7 @@ public class AACEncoder {
         if let format = CMSampleBufferGetFormatDescription(sampleBuffer) {
             if var inASBD = CMAudioFormatDescriptionGetStreamBasicDescription(format)?.pointee {
                 
+                print(inASBD)
                 print("kAudioFormatFlagIsNonInterleaved", inASBD.mFormatFlags & kAudioFormatFlagIsNonInterleaved != 0)
                 print("kAudioFormatFlagIsFloat", inASBD.mFormatFlags & kAudioFormatFlagIsFloat != 0)
                 print("kAudioFormatFlagIsPacked", inASBD.mFormatFlags & kAudioFormatFlagIsPacked != 0)
