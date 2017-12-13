@@ -116,7 +116,7 @@ public class AACEncoder {
             if let sampleBytes = bytes(from: sampleBuffer) {
                 
                 if self.makeBytesStereo {
-                    let merged  = zip(sampleBytes, sampleBytes).flatMap { [$0, $1] }
+                    let merged  = sampleBytes + sampleBytes + sampleBytes + sampleBytes
                     self.pcmBuffer.append(contentsOf: merged)
                     duration = CMTimeAdd(self.previousDuration, duration)
                 } else {
@@ -156,7 +156,7 @@ public class AACEncoder {
         
             switch status {
             case noErr:
-                print(outBuffer)
+                print(outBuffer.unsafePointer.pointee)
                 let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
                 onComplete(aacPayload, noErr, duration)
             case -1:
