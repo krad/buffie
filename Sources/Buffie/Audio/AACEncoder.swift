@@ -104,11 +104,11 @@ public class AACEncoder {
             let numberOfSamples = self.makeBytesStereo ? CMSampleBufferGetNumSamples(sampleBuffer)/2 : CMSampleBufferGetNumSamples(sampleBuffer)
             var pcmBufferSize: UInt32 = 0
             
-            var duration = kCMTimeZero
             if let sampleBytes = bytes(from: sampleBuffer) {
                 
                 if self.makeBytesStereo {
                     let merged = sampleBytes + sampleBytes
+                    print("Merged count:", merged.count)
                     self.pcmBuffer.append(contentsOf: merged)
                 } else {
                     self.pcmBuffer.append(contentsOf: sampleBytes)
@@ -116,12 +116,10 @@ public class AACEncoder {
                 
                 self.numberOfSamplesInBuffer += numberOfSamples
                 
-                if self.numberOfSamplesInBuffer < 1024 {
-                    self.previousDuration = CMSampleBufferGetDuration(sampleBuffer)
+                if self.numberOfSamplesInBuffer < 2048 {
                     return
                 }
                 
-                duration = CMTimeAdd(self.previousDuration, CMSampleBufferGetDuration(sampleBuffer))
                 pcmBufferSize = UInt32(self.pcmBuffer.count)
             }
             
@@ -187,7 +185,7 @@ public class AACEncoder {
         }
 
         self.pcmBuffer.removeFirst(n: pcmBuffer.count)
-        self.numberOfSamplesInBuffer -= 1024
+        self.numberOfSamplesInBuffer -= 2048
         ioNumberDataPackets.pointee = 1
         return noErr
     }
