@@ -108,10 +108,10 @@ public class AACEncoder {
                 
                 if self.makeBytesStereo {
                     let merged = sampleBytes + sampleBytes
-                    print("Merged count:", merged.count)
+//                    print("Merged count:", merged.count)
                     self.pcmBuffer.append(contentsOf: merged)
                 } else {
-                    print("Unmerged count:", sampleBytes.count)
+//                    print("Unmerged count:", sampleBytes.count)
                     self.pcmBuffer.append(contentsOf: sampleBytes)
                 }
                 
