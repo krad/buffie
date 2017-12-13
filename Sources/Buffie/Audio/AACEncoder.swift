@@ -165,7 +165,7 @@ public class AACEncoder {
         let requestedPackets = ioNumberDataPackets.pointee
         
         var pcmBufferSize: UInt32 = 0
-        let numberOfBytes = self.makeBytesStereo ? 8192 : 4096
+        let numberOfBytes = self.makeBytesStereo ? 4096 : 4096
         
         if var pcmBuffer = self.pcmBuffer.prefix(numberOfBytes) {
             pcmBufferSize = UInt32(pcmBuffer.count)
