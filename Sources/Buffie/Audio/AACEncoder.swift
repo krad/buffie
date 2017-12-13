@@ -101,7 +101,8 @@ public class AACEncoder {
             if let sampleBytes = bytes(from: sampleBuffer) {
                 
                 if self.makeBytesStereo {
-                    self.pcmBuffer.append(contentsOf: sampleBytes + sampleBytes)
+                    let merged = zip(sampleBytes, sampleBytes).flatMap { [$0, $1] }
+                    self.pcmBuffer.append(contentsOf: merged)
                 } else {
                     self.pcmBuffer.append(contentsOf: sampleBytes)
                 }
