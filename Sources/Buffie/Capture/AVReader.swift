@@ -54,9 +54,7 @@ internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBuffer
                                 from connection: AVCaptureConnection)
     {
         let duration = CMSampleBufferGetDuration(sampleBuffer)
-        
-        //print(duration)
-        
+                
         /// iOS sets all the duration timestamps to 0.
         /// This means we have to calculate them.
         if duration.value <= 0 {
@@ -73,9 +71,6 @@ internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBuffer
             let prevPTS  = CMSampleBufferGetPresentationTimeStamp(prevSampleBuffer)
             let currPTS  = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
             let duration =  CMTimeSubtract(currPTS, prevPTS)
-            
-//            let duration = CMTimeMake(Int64((difference.timescale / Int32(difference.value)) * 100), 30000)
-//            print(prevPTS, currPTS, duration)
             
             if let newSample = self.createNewSample(from: prevSampleBuffer, with: duration, and: currPTS) {
                 self.delegate?.got(newSample, type: .video)
