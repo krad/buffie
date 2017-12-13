@@ -99,7 +99,13 @@ public class AACEncoder {
             
             var duration = kCMTimeZero
             if let sampleBytes = bytes(from: sampleBuffer) {
-                self.pcmBuffer.append(contentsOf: sampleBytes)
+                
+                if self.makeBytesStereo {
+                    self.pcmBuffer.append(contentsOf: sampleBytes + sampleBytes)
+                } else {
+                    self.pcmBuffer.append(contentsOf: sampleBytes)
+                }
+                
                 self.numberOfSamplesInBuffer += numberOfSamples
                 
                 if self.numberOfSamplesInBuffer < 1024 {
@@ -153,7 +159,9 @@ public class AACEncoder {
         let requestedPackets = ioNumberDataPackets.pointee
         
         var pcmBufferSize: UInt32 = 0
-        if var pcmBuffer = self.pcmBuffer.prefix(4096) {
+        let numberOfBytes = self.makeBytesStereo ? 8192 : 4096
+        
+        if var pcmBuffer = self.pcmBuffer.prefix(numberOfBytes) {
             pcmBufferSize = UInt32(pcmBuffer.count)
             pcmBuffer.withUnsafeMutableBufferPointer { bufferPtr in
                 let ptr                               = UnsafeMutableRawPointer(bufferPtr.baseAddress)
