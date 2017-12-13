@@ -39,6 +39,11 @@ public class AACEncoder {
         if let format = CMSampleBufferGetFormatDescription(sampleBuffer) {
             if var inASBD = CMAudioFormatDescriptionGetStreamBasicDescription(format)?.pointee {
                 
+                print(inASBD)
+                if inASBD.mChannelsPerFrame == 1 {
+                    inASBD.mChannelsPerFrame = 2
+                }
+                
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
                 outASBD.mFormatID           = kAudioFormatMPEG4AAC
@@ -46,7 +51,7 @@ public class AACEncoder {
                 outASBD.mBytesPerPacket     = 0
                 outASBD.mFramesPerPacket    = 1024
                 outASBD.mBytesPerFrame      = 0
-                outASBD.mChannelsPerFrame   = 2 // HLS requires stereo
+                outASBD.mChannelsPerFrame   = 2 // HLS requires stereo input
                 outASBD.mBitsPerChannel     = 0
                 outASBD.mReserved           = 0
                 self.outASBD                = outASBD
