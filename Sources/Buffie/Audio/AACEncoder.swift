@@ -48,6 +48,7 @@ public class AACEncoder {
                     inASBD.mBytesPerPacket   = inASBD.mBytesPerPacket * 2
                     inASBD.mBytesPerFrame    = inASBD.mBytesPerFrame  * 2
                     inASBD.mChannelsPerFrame = 2
+                    inASBD.mFormatFlags      = 0x4
                     self.makeBytesStereo     = true
                 }
                 
