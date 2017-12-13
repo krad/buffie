@@ -109,9 +109,9 @@ public class AACEncoder {
             if self.audioConverter == nil { self.setupEncoder(from: sampleBuffer) }
             guard let audioConverter = self.audioConverter else { return }
         
-            let numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer) / 2
-            var duration        = CMSampleBufferGetDuration(sampleBuffer)
-            var pcmBufferSize: UInt32 = 0
+            let numberOfSamples         = CMSampleBufferGetNumSamples(sampleBuffer)
+            var duration                = CMSampleBufferGetDuration(sampleBuffer)
+            var pcmBufferSize: UInt32   = 0
 
             if let sampleBytes = bytes(from: sampleBuffer) {
                 
