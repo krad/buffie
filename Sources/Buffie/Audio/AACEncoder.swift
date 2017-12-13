@@ -114,7 +114,7 @@ public class AACEncoder {
         
             var numberOfSamples = 0
             if self.makeBytesStereo {
-                numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer) / 4
+                numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer)
             } else {
                 numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer)
             }
@@ -136,8 +136,9 @@ public class AACEncoder {
                     return
                 }
                 
-                print(CMSampleBufferGetDuration(sampleBuffer))
+                print("Duration:", CMSampleBufferGetDuration(sampleBuffer))
                 pcmBufferSize = UInt32(self.pcmBuffer.count)
+                print("Buffer Size:", pcmBufferSize)
             }
             
             self.aacBuffer = [UInt8](repeating: 0, count: Int(pcmBufferSize))
@@ -162,6 +163,7 @@ public class AACEncoder {
         
             switch status {
             case noErr:
+                print("out size:", outBuffer[0].mDataByteSize)
                 let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
                 onComplete(aacPayload, noErr, CMTimeMake(1024, Int32(self.outASBD!.mSampleRate)))
             case -1:
