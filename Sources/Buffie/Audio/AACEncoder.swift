@@ -111,12 +111,13 @@ public class AACEncoder {
                     print("Merged count:", merged.count)
                     self.pcmBuffer.append(contentsOf: merged)
                 } else {
+                    print("Unmerged count:", sampleBytes.count)
                     self.pcmBuffer.append(contentsOf: sampleBytes)
                 }
                 
                 self.numberOfSamplesInBuffer += numberOfSamples
                 
-                if self.numberOfSamplesInBuffer < 2048 {
+                if self.numberOfSamplesInBuffer < 1024 {
                     return
                 }
                 
