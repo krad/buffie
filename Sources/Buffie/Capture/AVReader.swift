@@ -55,7 +55,7 @@ internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBuffer
     {
         let duration = CMSampleBufferGetDuration(sampleBuffer)
         
-        print(duration)
+        //print(duration)
         
         /// iOS sets all the duration timestamps to 0.
         /// This means we have to calculate them.
@@ -70,9 +70,11 @@ internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBuffer
     private func recalculateDuration(for sampleBuffer: CMSampleBuffer) {
         if let prevSampleBuffer = self.samples.last {
             
-            let prevPTS  = CMSampleBufferGetPresentationTimeStamp(prevSampleBuffer)
-            let currPTS  = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-            let duration =  CMTimeSubtract(currPTS, prevPTS)
+            let prevPTS    = CMSampleBufferGetPresentationTimeStamp(prevSampleBuffer)
+            let currPTS    = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+            let difference =  CMTimeSubtract(currPTS, prevPTS)
+            
+            let duration = CMTimeMake(Int64((difference.timescale / Int32(difference.value)) * 100), 30000)
             
             print(prevPTS, currPTS, duration)
             
