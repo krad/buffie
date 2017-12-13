@@ -53,7 +53,7 @@ internal class CaptureSession: CaptureSessionProtocol {
                 AVFormatIDKey: kAudioFormatLinearPCM,
                 AVLinearPCMBitDepthKey: 16,
                 AVLinearPCMIsFloatKey: false,
-                AVLinearPCMIsNonInterleaved: false
+                AVLinearPCMIsNonInterleaved: false,
             ]
             #endif
 

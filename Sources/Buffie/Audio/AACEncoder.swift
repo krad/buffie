@@ -76,7 +76,7 @@ public class AACEncoder {
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
                 outASBD.mFormatID           = kAudioFormatMPEG4AAC
-                outASBD.mFormatFlags        = UInt32(MPEG4ObjectID.AAC_LC.rawValue)|kAudioFormatFlagIsPacked
+                outASBD.mFormatFlags        = UInt32(MPEG4ObjectID.AAC_LC.rawValue)
                 outASBD.mBytesPerPacket     = 0
                 outASBD.mFramesPerPacket    = 1024
                 outASBD.mBytesPerFrame      = 0
@@ -114,7 +114,7 @@ public class AACEncoder {
         
             var numberOfSamples = 0
             if self.makeBytesStereo {
-                numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer) / 2
+                numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer) / 4
             } else {
                 numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer)
             }
