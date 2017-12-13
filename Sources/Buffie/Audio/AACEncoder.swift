@@ -39,6 +39,14 @@ public class AACEncoder {
         if let format = CMSampleBufferGetFormatDescription(sampleBuffer) {
             if var inASBD = CMAudioFormatDescriptionGetStreamBasicDescription(format)?.pointee {
                 
+                print("kAudioFormatFlagIsNonInterleaved", inASBD.mFormatFlags & kAudioFormatFlagIsNonInterleaved != 0)
+                print("kAudioFormatFlagIsFloat", inASBD.mFormatFlags & kAudioFormatFlagIsFloat != 0)
+                print("kAudioFormatFlagIsPacked", inASBD.mFormatFlags & kAudioFormatFlagIsPacked != 0)
+                print("kAudioFormatFlagIsBigEndian", inASBD.mFormatFlags & kAudioFormatFlagIsBigEndian != 0)
+                print("kAudioFormatFlagIsNonMixable", inASBD.mFormatFlags & kAudioFormatFlagIsNonMixable != 0)
+                print("kAudioFormatFlagIsAlignedHigh", inASBD.mFormatFlags & kAudioFormatFlagIsAlignedHigh != 0)
+                print("kAudioFormatFlagIsSignedInteger", inASBD.mFormatFlags & kAudioFormatFlagIsSignedInteger != 0)
+                
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
                 outASBD.mFormatID           = kAudioFormatMPEG4AAC
