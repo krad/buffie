@@ -43,11 +43,10 @@ public class AACEncoder {
                 /// The iPhone only records in mono.
                 /// This will choke HLS streams.
                 /// The AVFoundation class of HLS tools ignores header config information in the mp4a atom
-                /// This means that while you can reliably encode mono hls streams, you can't get them to reliably play.
+                /// This means that while you can reliably encode mono HLS streams, you can't get them to reliably play.
                 /// The solution is to make the mono stream stereo by copying the pcm bytes before passing them to the AAC encoder
                 /// This is extremely naive, but it works and opens up some interesting possibilities I may explore.
                 if inASBD.mChannelsPerFrame == 1 {
-                    inASBD.mFormatFlags      = kAudioFormatFlagIsNonInterleaved
                     inASBD.mBytesPerPacket   = 4
                     inASBD.mBytesPerFrame    = 4
                     inASBD.mChannelsPerFrame = 2
@@ -109,7 +108,7 @@ public class AACEncoder {
             if let sampleBytes = bytes(from: sampleBuffer) {
                 
                 if self.makeBytesStereo {
-                    let merged = zip(sampleBytes, sampleBytes).flatMap { [$0, $1] }
+                    let merged = sampleBytes + sampleBytes
                     self.pcmBuffer.append(contentsOf: merged)
                 } else {
                     self.pcmBuffer.append(contentsOf: sampleBytes)
