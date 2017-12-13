@@ -46,7 +46,7 @@ public class AACEncoder {
                 outASBD.mBytesPerPacket     = 0
                 outASBD.mFramesPerPacket    = 1024
                 outASBD.mBytesPerFrame      = 0
-                outASBD.mChannelsPerFrame   = inASBD.mChannelsPerFrame
+                outASBD.mChannelsPerFrame   = 2 // HLS requires stereo
                 outASBD.mBitsPerChannel     = 0
                 outASBD.mReserved           = 0
                 self.outASBD                = outASBD
@@ -98,7 +98,7 @@ public class AACEncoder {
             self.aacBuffer = [UInt8](repeating: 0, count: Int(pcmBufferSize))
             
             let outBuffer:UnsafeMutableAudioBufferListPointer = AudioBufferList.allocate(maximumBuffers: 1)
-            outBuffer[0].mNumberChannels    = self.outASBD == nil ? 1 : self.outASBD!.mChannelsPerFrame
+            outBuffer[0].mNumberChannels    = self.outASBD!.mChannelsPerFrame
             outBuffer[0].mDataByteSize      = pcmBufferSize
             
             self.aacBuffer.withUnsafeMutableBytes({ rawBufPtr in
