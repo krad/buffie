@@ -48,6 +48,7 @@ public class AACEncoder {
                     inASBD.mBytesPerPacket   = inASBD.mBytesPerPacket * 2
                     inASBD.mBytesPerFrame    = inASBD.mBytesPerFrame  * 2
                     inASBD.mChannelsPerFrame = 2
+                    inASBD.mFormatFlags      = 0x4
                     self.makeBytesStereo     = true
                 }
                 
@@ -121,11 +122,8 @@ public class AACEncoder {
                     var rightChannel: [UInt8] = []
                     
                     for (idx, sample) in self.pcmBuffer.enumerated() {
-                        if idx % 2 == 0 {
-                            rightChannel.append(sample)
-                        } else {
-                            leftChannel.append(sample)
-                        }
+                        if idx % 2 == 0 { rightChannel.append(sample) }
+                        else { leftChannel.append(sample) }
                     }
                     
                     let merged  = leftChannel + rightChannel
