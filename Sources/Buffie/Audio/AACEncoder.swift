@@ -147,7 +147,7 @@ public class AACEncoder {
             switch status {
             case noErr:
                 let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
-                onComplete(aacPayload, noErr, CMTimeMake(1024, 44100))
+                onComplete(aacPayload, noErr, CMTimeMake(1024, outASBD!.mSampleRate))
             case -1:
                 print("Needed more bytes")
             default:
