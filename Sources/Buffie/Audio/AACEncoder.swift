@@ -101,7 +101,7 @@ public class AACEncoder {
             if self.audioConverter == nil { self.setupEncoder(from: sampleBuffer) }
             guard let audioConverter = self.audioConverter else { return }
         
-            let numberOfSamples = self.makeBytesStereo ? CMSampleBufferGetNumSamples(sampleBuffer)/2 : CMSampleBufferGetNumSamples(sampleBuffer)
+            let numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer)
             var pcmBufferSize: UInt32 = 0
             
             if let sampleBytes = bytes(from: sampleBuffer) {
@@ -166,15 +166,15 @@ public class AACEncoder {
         let requestedPackets = ioNumberDataPackets.pointee
         
         var pcmBufferSize: UInt32 = 0
-        let numberOfBytes = self.makeBytesStereo ? 4096 : 2048
-        
-        if var pcmBuffer = self.pcmBuffer.prefix(numberOfBytes) {
+        if var pcmBuffer = self.pcmBuffer.prefix(self.pcmBuffer.count) {
+            
             pcmBufferSize = UInt32(pcmBuffer.count)
             pcmBuffer.withUnsafeMutableBufferPointer { bufferPtr in
                 let ptr                               = UnsafeMutableRawPointer(bufferPtr.baseAddress)
                 ioData.pointee.mBuffers.mData         = ptr
                 ioData.pointee.mBuffers.mDataByteSize = pcmBufferSize
             }
+            
         } else {
             ioNumberDataPackets.pointee = 0
             return -1
