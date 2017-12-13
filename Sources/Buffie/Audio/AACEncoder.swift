@@ -19,7 +19,6 @@ public class AACEncoder {
     private var outASBD: AudioStreamBasicDescription?
     
     private var previousDuration = kCMTimeZero
-    private var makeBytesStereo  = false
     
     fileprivate var fillComplexCallback: AudioConverterComplexInputDataProc = { (inAudioConverter, 
         ioDataPacketCount, ioData, outDataPacketDescriptionPtrPtr, inUserData) in
@@ -39,11 +38,6 @@ public class AACEncoder {
         
         if let format = CMSampleBufferGetFormatDescription(sampleBuffer) {
             if var inASBD = CMAudioFormatDescriptionGetStreamBasicDescription(format)?.pointee {
-                
-                if inASBD.mChannelsPerFrame == 1 {
-                    inASBD.mChannelsPerFrame = 2
-                    self.makeBytesStereo     = true
-                }
                 
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
