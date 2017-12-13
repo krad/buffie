@@ -61,6 +61,17 @@ public class AACEncoder {
                 print("kAudioFormatFlagIsNonMixable", inASBD.mFormatFlags & kAudioFormatFlagIsNonMixable != 0)
                 print("kAudioFormatFlagIsAlignedHigh", inASBD.mFormatFlags & kAudioFormatFlagIsAlignedHigh != 0)
                 print("kAudioFormatFlagIsSignedInteger", inASBD.mFormatFlags & kAudioFormatFlagIsSignedInteger != 0)
+
+                print("kLinearPCMFormatFlagIsFloat", inASBD.mFormatFlags & kLinearPCMFormatFlagIsFloat != 0)
+                print("kLinearPCMFormatFlagIsPacked", inASBD.mFormatFlags & kLinearPCMFormatFlagIsPacked != 0)
+                print("kLinearPCMFormatFlagIsBigEndian", inASBD.mFormatFlags & kLinearPCMFormatFlagIsBigEndian != 0)
+                print("kLinearPCMFormatFlagIsNonMixable", inASBD.mFormatFlags & kLinearPCMFormatFlagIsNonMixable != 0)
+                print("kLinearPCMFormatFlagIsAlignedHigh", inASBD.mFormatFlags & kLinearPCMFormatFlagIsAlignedHigh != 0)
+                print("kLinearPCMFormatFlagIsSignedInteger", inASBD.mFormatFlags & kLinearPCMFormatFlagIsSignedInteger != 0)
+                print("kLinearPCMFormatFlagIsNonInterleaved", inASBD.mFormatFlags & kLinearPCMFormatFlagIsNonInterleaved != 0)
+                print("kLinearPCMFormatFlagsSampleFractionShift", inASBD.mFormatFlags & kLinearPCMFormatFlagsSampleFractionShift != 0)
+                print("kLinearPCMFormatFlagsAreAllClear", inASBD.mFormatFlags & kLinearPCMFormatFlagsAreAllClear != 0)
+                print("kLinearPCMFormatFlagsAreAllClear", inASBD.mFormatFlags & kLinearPCMFormatFlagsSampleFractionMask != 0)
                 
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
