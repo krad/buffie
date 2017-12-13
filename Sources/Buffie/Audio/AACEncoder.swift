@@ -71,12 +71,12 @@ public class AACEncoder {
                 print("kLinearPCMFormatFlagIsNonInterleaved", inASBD.mFormatFlags & kLinearPCMFormatFlagIsNonInterleaved != 0)
                 print("kLinearPCMFormatFlagsSampleFractionShift", inASBD.mFormatFlags & kLinearPCMFormatFlagsSampleFractionShift != 0)
                 print("kLinearPCMFormatFlagsAreAllClear", inASBD.mFormatFlags & kLinearPCMFormatFlagsAreAllClear != 0)
-                print("kLinearPCMFormatFlagsAreAllClear", inASBD.mFormatFlags & kLinearPCMFormatFlagsSampleFractionMask != 0)
+                print("kLinearPCMFormatFlagsSampleFractionMask", inASBD.mFormatFlags & kLinearPCMFormatFlagsSampleFractionMask)
                 
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
                 outASBD.mFormatID           = kAudioFormatMPEG4AAC
-                outASBD.mFormatFlags        = UInt32(MPEG4ObjectID.AAC_LC.rawValue)
+                outASBD.mFormatFlags        = UInt32(MPEG4ObjectID.AAC_LC.rawValue)|kAudioFormatFlagIsPacked
                 outASBD.mBytesPerPacket     = 0
                 outASBD.mFramesPerPacket    = 1024
                 outASBD.mBytesPerFrame      = 0
