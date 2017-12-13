@@ -162,7 +162,7 @@ public class AACEncoder {
             case noErr:
                 print(duration)
                 let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
-                onComplete(aacPayload, noErr, duration)
+                onComplete(aacPayload, noErr, CMTimeMake(512, Int32(self.outASBD!.mSampleRate)))
             case -1:
                 print("Needed more bytes")
             default:
