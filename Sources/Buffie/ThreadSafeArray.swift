@@ -68,6 +68,9 @@ internal class ThreadSafeArray<T>: Collection {
         return index
     }
     
+    func enumerated() -> EnumeratedSequence<[T]> {
+        return self.array.enumerated()
+    }
     
     internal subscript(index: Int) -> T {
         set {
