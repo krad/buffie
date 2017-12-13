@@ -116,7 +116,19 @@ public class AACEncoder {
             if let sampleBytes = bytes(from: sampleBuffer) {
                 
                 if self.makeBytesStereo {
-                    let merged  = sampleBytes// + sampleBytes
+                    
+                    var leftChannel: [UInt8] = []
+                    var rightChannel: [UInt8] = []
+                    
+                    for (idx, sample) in self.pcmBuffer.enumerated() {
+                        if idx % 2 == 0 {
+                            rightChannel.append(sample)
+                        } else {
+                            leftChannel.append(sample)
+                        }
+                    }
+                    
+                    let merged  = leftChannel + rightChannel
                     self.pcmBuffer.append(contentsOf: merged)
                     duration = CMTimeAdd(self.previousDuration, duration)
                 } else {
