@@ -133,7 +133,7 @@ public class AACEncoder {
                     return
                 }
                 
-                print("Duration:", CMSampleBufferGetDuration(sampleBuffer))
+                print("Duration:", duration)
                 pcmBufferSize = UInt32(self.pcmBuffer.count)
                 print("Buffer Size:", pcmBufferSize)
             }
