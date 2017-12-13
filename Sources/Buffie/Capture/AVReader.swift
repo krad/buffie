@@ -55,6 +55,8 @@ internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBuffer
     {
         let duration = CMSampleBufferGetDuration(sampleBuffer)
         
+        print(duration)
+        
         /// iOS sets all the duration timestamps to 0.
         /// This means we have to calculate them.
         if duration.value <= 0 {
