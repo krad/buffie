@@ -33,7 +33,6 @@ internal class CaptureSession: CaptureSessionProtocol {
     {
         self.controlDelegate       = controlDelegate
         self.session               = AVCaptureSession()
-        self.session.sessionPreset = .medium
         
         if let vInput = videoInput {
             self.videoInput     = vInput

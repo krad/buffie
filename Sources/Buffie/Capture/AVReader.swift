@@ -71,6 +71,10 @@ internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBuffer
             let prevPTS  = CMSampleBufferGetPresentationTimeStamp(prevSampleBuffer)
             let currPTS  = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
             let duration =  CMTimeSubtract(currPTS, prevPTS)
+            
+            print("==== duraation", duration)
+            print("---- pts", currPTS)
+            
             if let newSample = self.createNewSample(from: prevSampleBuffer, with: duration, and: currPTS) {
                 self.delegate?.got(newSample, type: .video)
                 self.samples.removeLast()
