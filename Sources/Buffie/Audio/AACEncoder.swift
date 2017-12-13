@@ -112,20 +112,16 @@ public class AACEncoder {
             if self.audioConverter == nil { self.setupEncoder(from: sampleBuffer) }
             guard let audioConverter = self.audioConverter else { return }
         
-            var numberOfSamples = 0
-            if self.makeBytesStereo {
-                numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer)
-            } else {
-                numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer)
-            }
-            
+            let numberOfSamples = CMSampleBufferGetNumSamples(sampleBuffer)
+            var duration        = CMSampleBufferGetDuration(sampleBuffer)
             var pcmBufferSize: UInt32 = 0
-            
+
             if let sampleBytes = bytes(from: sampleBuffer) {
                 
                 if self.makeBytesStereo {
                     let merged = sampleBytes + sampleBytes
                     self.pcmBuffer.append(contentsOf: merged)
+                    duration = CMTimeAdd(self.previousDuration, duration)
                 } else {
                     self.pcmBuffer.append(contentsOf: sampleBytes)
                 }
@@ -133,6 +129,7 @@ public class AACEncoder {
                 self.numberOfSamplesInBuffer += numberOfSamples
                 
                 if self.numberOfSamplesInBuffer < 1024 {
+                    self.previousDuration = duration
                     return
                 }
                 
@@ -163,9 +160,9 @@ public class AACEncoder {
         
             switch status {
             case noErr:
-                print("out size:", outBuffer[0].mDataByteSize)
+                print(duration)
                 let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
-                onComplete(aacPayload, noErr, CMTimeMake(1024, Int32(self.outASBD!.mSampleRate)))
+                onComplete(aacPayload, noErr, duration)
             case -1:
                 print("Needed more bytes")
             default:
