@@ -116,7 +116,7 @@ public class AACEncoder {
             if let sampleBytes = bytes(from: sampleBuffer) {
                 
                 if self.makeBytesStereo {
-                    let merged  = sampleBytes + sampleBytes
+                    let merged  = zip(sampleBytes, sampleBytes).flatMap { [$0, $1] }
                     self.pcmBuffer.append(contentsOf: merged)
                     duration = CMTimeAdd(self.previousDuration, duration)
                 } else {
@@ -136,36 +136,14 @@ public class AACEncoder {
             
             self.aacBuffer = [UInt8](repeating: 0, count: Int(pcmBufferSize))
             
+            let outBuffer                   = AudioBufferList.allocate(maximumBuffers: 1)
+            outBuffer[0].mNumberChannels    = self.outASBD!.mChannelsPerFrame
+            outBuffer[0].mDataByteSize      = pcmBufferSize
             
-            var outBuffer: UnsafeMutableAudioBufferListPointer?
-            
-            if self.makeBytesStereo {
-                outBuffer                       = AudioBufferList.allocate(maximumBuffers: 2)
-                outBuffer![0].mNumberChannels    = 1
-                outBuffer![0].mDataByteSize      = pcmBufferSize / 2
-                outBuffer![1].mNumberChannels    = 1
-                outBuffer![1].mDataByteSize      = pcmBufferSize / 2
-                
-                self.aacBuffer.withUnsafeMutableBytes({ rawBufPtr in
-                    let ptr = rawBufPtr.baseAddress
-                    outBuffer![0].mData = ptr
-                })
-                
-                self.aacBuffer.withUnsafeMutableBytes({ rawBufPtr in
-                    let ptr = rawBufPtr.baseAddress?.advanced(by: Int(pcmBufferSize/2))
-                    outBuffer![1].mData = ptr
-                })
-
-            } else {
-                outBuffer                       = AudioBufferList.allocate(maximumBuffers: 1)
-                outBuffer![0].mNumberChannels    = self.outASBD!.mChannelsPerFrame
-                outBuffer![0].mDataByteSize      = pcmBufferSize
-                
-                self.aacBuffer.withUnsafeMutableBytes({ rawBufPtr in
-                    let ptr = rawBufPtr.baseAddress
-                    outBuffer![0].mData = ptr
-                })
-            }
+            self.aacBuffer.withUnsafeMutableBytes({ rawBufPtr in
+                let ptr = rawBufPtr.baseAddress
+                outBuffer[0].mData = ptr
+            })
             
             var ioOutputDataPacketSize: UInt32 = 1
         
@@ -173,23 +151,14 @@ public class AACEncoder {
                                                          self.fillComplexCallback,
                                                          Unmanaged.passUnretained(self).toOpaque(),
                                                          &ioOutputDataPacketSize,
-                                                         outBuffer!.unsafeMutablePointer,
+                                                         outBuffer.unsafeMutablePointer,
                                                          nil)
         
             switch status {
             case noErr:
-                if self.makeBytesStereo {
-                    let leftChannel = Array(self.aacBuffer[0..<Int(outBuffer![0].mDataByteSize)])
-                    let rightChannel = Array(self.aacBuffer[Int(outBuffer![0].mDataByteSize)..<self.aacBuffer.count])
-                    
-                    let aacPayload = leftChannel + rightChannel
-                    onComplete(aacPayload, noErr, duration)
-
-                } else {
-                    let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer![0].mDataByteSize)])
-                    onComplete(aacPayload, noErr, duration)
-                }
-                
+                print(outBuffer)
+                let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
+                onComplete(aacPayload, noErr, duration)
             case -1:
                 print("Needed more bytes")
             default:
