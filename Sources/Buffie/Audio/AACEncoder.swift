@@ -121,6 +121,7 @@ public class AACEncoder {
                     return
                 }
                 
+                print(CMSampleBufferGetDuration(sampleBuffer))
                 pcmBufferSize = UInt32(self.pcmBuffer.count)
             }
             
@@ -147,7 +148,7 @@ public class AACEncoder {
             switch status {
             case noErr:
                 let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
-                onComplete(aacPayload, noErr, CMTimeMake(1024, Int32(self.outASBD!.mSampleRate)))
+                onComplete(aacPayload, noErr, CMTimeMake(2048, Int32(self.outASBD!.mSampleRate)))
             case -1:
                 print("Needed more bytes")
             default:
@@ -185,7 +186,7 @@ public class AACEncoder {
             return -1
         }
 
-        self.pcmBuffer.removeFirst(n: pcmBuffer.count)
+        self.pcmBuffer.removeFirst(n: Int(pcmBufferSize))
         self.numberOfSamplesInBuffer -= 1024
         ioNumberDataPackets.pointee = 1
         return noErr
