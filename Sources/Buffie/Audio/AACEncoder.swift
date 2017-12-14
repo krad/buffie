@@ -117,20 +117,20 @@ public class AACEncoder {
                 
                 if self.makeBytesStereo {
                     
-                    // Convert 8 bit intergers to signed 16bit integers
-                    let resizedCount = sampleBytes.count / MemoryLayout<UInt16>.size
-                    var actualSamples = [UInt16](repeating: 0, count: resizedCount)
+                    var actualSamples: [Int16] = []
                     
-                    let data = NSData(bytes: sampleBytes, length: sampleBytes.count)
-                    data.getBytes(&actualSamples, length: resizedCount * MemoryLayout<UInt16>.size)
+                    /// Build an array of 16 bit samples
+                    stride(from: 0, to: sampleBytes.count, by: 2).forEach({ idx in
+                        if let result = Int16(bytes: [sampleBytes[idx], sampleBytes[idx+1]]) {
+                            actualSamples.append(result)
+                        }
+                    })
                     
-                    // Interleave the samples with itself.  Turning mono to stereo
                     let stereoized = zip(actualSamples, actualSamples).flatMap { [$0, $1] }
-                    
-                    // Convert the results back to unsigned 8 bit integers
                     let results: [UInt8] = stereoized.flatMap { byteArray(from: $0) }
-                    self.pcmBuffer.append(contentsOf: results)
                     
+                    self.pcmBuffer.append(contentsOf: results)
+
                 } else {
                     self.pcmBuffer.append(contentsOf: sampleBytes)
                 }

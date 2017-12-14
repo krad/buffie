@@ -2,9 +2,7 @@ import Foundation
 
 public extension UInt32 {
     init?(bytes: [UInt8]) {
-        if bytes.count != 4 {
-            return nil
-        }
+        if bytes.count != 4 { return nil }
         
         var value: UInt32 = 0
         for byte in bytes {
@@ -16,11 +14,8 @@ public extension UInt32 {
 }
 
 public extension Int64 {
-    
     init?(bytes: [UInt8]) {
-        if bytes.count != 8 {
-            return nil
-        }
+        if bytes.count != 8 { return nil }
         
         var value: Int64 = 0
         for byte in bytes {
@@ -29,7 +24,19 @@ public extension Int64 {
         }
         self = value
     }
-    
+}
+
+public extension Int16 {
+    init?(bytes: [UInt8]) {
+        if bytes.count != 2 { return nil }
+        
+        var value: Int16 = 0
+        for byte in bytes {
+            value = value << 8
+            value = value | Int16(byte)
+        }
+        self = value
+    }
 }
 
 public func byteArray(from uint16: UInt16) -> [UInt8] {
