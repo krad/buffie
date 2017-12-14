@@ -42,10 +42,7 @@ internal class CaptureSession: CaptureSessionProtocol {
             self.session.addInput(self.videoInput!)
             self.session.addOutput(self.videoOutput!)
             self.videoOutput!.setSampleBufferDelegate(cameraReader.videoReader, queue: videoQueue)
-
-            print(self.videoOutput?.connections.first)
-            print(self.videoOutput?.connections.first?.videoMinFrameDuration)
-            print(self.videoOutput?.connections.first?.videoMaxFrameDuration)
+            
         }
         
         if let aInput = audioInput {
@@ -101,7 +98,10 @@ internal class CaptureSession: CaptureSessionProtocol {
     {
         let videoDevice = try AVCaptureDevice.firstDevice(for: .video, in: position)
         let audioDevice = try AVCaptureDevice.firstDevice(for: .audio, in: position)
-                
+        
+        print(videoDevice.activeVideoMinFrameDuration)
+        print(videoDevice.activeVideoMaxFrameDuration)
+
         try self.init(videoDeviceID: videoDevice.uniqueID,
                       audioDeviceID: audioDevice.uniqueID,
                       controlDelegate: controlDelegate,
