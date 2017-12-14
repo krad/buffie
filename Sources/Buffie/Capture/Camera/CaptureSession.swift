@@ -37,11 +37,15 @@ internal class CaptureSession: CaptureSessionProtocol {
         if let vInput = videoInput {
             self.videoInput     = vInput
             self.videoOutput    = AVCaptureVideoDataOutput()
-
+            
             // Add the video i/o to the session
             self.session.addInput(self.videoInput!)
             self.session.addOutput(self.videoOutput!)
             self.videoOutput!.setSampleBufferDelegate(cameraReader.videoReader, queue: videoQueue)
+
+            print(self.videoOutput?.connections.first)
+            print(self.videoOutput?.connections.first?.videoMinFrameDuration)
+            print(self.videoOutput?.connections.first?.videoMaxFrameDuration)
         }
         
         if let aInput = audioInput {
