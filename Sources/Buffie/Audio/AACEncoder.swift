@@ -124,13 +124,11 @@ public class AACEncoder {
                         actualSamples.append(result)
                     })
                     
-                    let stereoized = actualSamples + actualSamples
+                    let stereoized = zip(actualSamples, actualSamples).flatMap { [$0, $1] }
                     var lol: [UInt8] = []
                     for sixteen in stereoized {
                         lol.append(contentsOf: byteArray(from: sixteen))
-                    }
-                    
-                    print(lol)
+                    }                    
                     self.pcmBuffer.append(contentsOf: lol)
                     
                     //duration = CMTimeAdd(self.previousDuration, duration)
