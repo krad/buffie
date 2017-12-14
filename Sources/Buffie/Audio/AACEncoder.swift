@@ -109,7 +109,7 @@ public class AACEncoder {
             if self.audioConverter == nil { self.setupEncoder(from: sampleBuffer) }
             guard let audioConverter = self.audioConverter else { return }
         
-            let numberOfSamples         = CMSampleBufferGetNumSamples(sampleBuffer)
+            let numberOfSamples         = self.makeBytesStereo ? CMSampleBufferGetNumSamples(sampleBuffer)/2 : CMSampleBufferGetNumSamples(sampleBuffer)
             let duration                = CMSampleBufferGetDuration(sampleBuffer)
             var pcmBufferSize: UInt32   = 0
 
@@ -119,6 +119,7 @@ public class AACEncoder {
                     
                     var actualSamples: [UInt16] = []
 
+                    /// Build an array of 16 bit samples
                     stride(from: 0, to: sampleBytes.count, by: 2).forEach({ idx in
                         let result = (UInt16(sampleBytes[idx]) << 8) + UInt16(sampleBytes[idx+1])
                         actualSamples.append(result)
@@ -128,7 +129,7 @@ public class AACEncoder {
                     var lol: [UInt8] = []
                     for sixteen in stereoized {
                         lol.append(contentsOf: byteArray(from: sixteen))
-                    }                    
+                    }
                     self.pcmBuffer.append(contentsOf: lol)
                     
                     //duration = CMTimeAdd(self.previousDuration, duration)
@@ -144,7 +145,6 @@ public class AACEncoder {
                 }
                 
                 pcmBufferSize = UInt32(self.pcmBuffer.count)
-                print("Added:", pcmBufferSize)
             }
             
             self.aacBuffer = [UInt8](repeating: 0, count: Int(pcmBufferSize))
@@ -208,7 +208,6 @@ public class AACEncoder {
             return -1
         }
 
-        print("Removing", pcmBufferSize)
         self.pcmBuffer.removeFirst(n: Int(pcmBufferSize))
         self.numberOfSamplesInBuffer -= 1024
         ioNumberDataPackets.pointee = 1
