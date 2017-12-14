@@ -46,8 +46,9 @@ open class AVReader: AVReaderProtocol, SampleReader {
 internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     internal var delegate: SampleReader?
-    
     internal var samples = ThreadSafeArray<CMSampleBuffer>()
+    
+    var previousTimeStamp: CFAbsoluteTime?
     
     internal func captureOutput(_ output: AVCaptureOutput,
                                 didOutput sampleBuffer: CMSampleBuffer,
@@ -72,6 +73,13 @@ internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBuffer
             let currPTS  = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
             let duration =  CMTimeSubtract(currPTS, prevPTS)
             
+            if let prevTimeStamp = self.previousTimeStamp {
+                let thisFrameWallClock  = CFAbsoluteTimeGetCurrent()
+                let elapsedTime         = thisFrameWallClock - prevTimeStamp
+                let timestamp = CMTimeMake(Int64(elapsedTime * (30*1000)), 30*1000)
+                print(timestamp)
+            }
+            
             if let newSample = self.createNewSample(from: prevSampleBuffer, with: duration, and: currPTS) {
                 self.delegate?.got(newSample, type: .video)
                 self.samples.removeLast()
@@ -79,6 +87,7 @@ internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBuffer
             }
             
         } else {
+            self.previousTimeStamp = CFAbsoluteTimeGetCurrent()
             self.samples.append(sampleBuffer)
         }
     }
