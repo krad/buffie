@@ -109,7 +109,7 @@ public class AACEncoder {
             if self.audioConverter == nil { self.setupEncoder(from: sampleBuffer) }
             guard let audioConverter = self.audioConverter else { return }
         
-            let numberOfSamples         = self.makeBytesStereo ? CMSampleBufferGetNumSamples(sampleBuffer)/2 : CMSampleBufferGetNumSamples(sampleBuffer)
+            let numberOfSamples         = CMSampleBufferGetNumSamples(sampleBuffer)
             let duration                = CMSampleBufferGetDuration(sampleBuffer)
             var pcmBufferSize: UInt32   = 0
 
@@ -117,22 +117,17 @@ public class AACEncoder {
                 
                 if self.makeBytesStereo {
                     
-                    var actualSamples: [UInt16] = []
-
-                    /// Build an array of 16 bit samples
-                    stride(from: 0, to: sampleBytes.count, by: 2).forEach({ idx in
-                        let result = (UInt16(sampleBytes[idx]) << 8) + UInt16(sampleBytes[idx+1])
-                        actualSamples.append(result)
-                    })
+                    // Convert 8 bit intergers to signed 16bit integers
+                    let data = NSData(bytes: sampleBytes, length: sampleBytes.count)
+                    var actualSamples: [Int16] = []
+                    data.getBytes(&actualSamples, length: sampleBytes.count/2)
                     
+                    // Interleave the samples with itself.  Turning mono to stereo
                     let stereoized = zip(actualSamples, actualSamples).flatMap { [$0, $1] }
-                    var lol: [UInt8] = []
-                    for sixteen in stereoized {
-                        lol.append(contentsOf: byteArray(from: sixteen))
-                    }
-                    self.pcmBuffer.append(contentsOf: lol)
                     
-                    //duration = CMTimeAdd(self.previousDuration, duration)
+                    // Convert the results back to unsigned 8 bit integers
+                    let results: [UInt8] = stereoized.flatMap { byteArray(from: $0) }
+                    self.pcmBuffer.append(contentsOf: results)
                 } else {
                     self.pcmBuffer.append(contentsOf: sampleBytes)
                 }
