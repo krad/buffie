@@ -51,24 +51,24 @@ public class AACEncoder {
                     self.makeBytesStereo     = true
                 }
                 
-                print(inASBD)
-                print("kAudioFormatFlagIsNonInterleaved", inASBD.mFormatFlags & kAudioFormatFlagIsNonInterleaved != 0)
-                print("kAudioFormatFlagIsFloat", inASBD.mFormatFlags & kAudioFormatFlagIsFloat != 0)
-                print("kAudioFormatFlagIsPacked", inASBD.mFormatFlags & kAudioFormatFlagIsPacked != 0)
-                print("kAudioFormatFlagIsBigEndian", inASBD.mFormatFlags & kAudioFormatFlagIsBigEndian != 0)
-                print("kAudioFormatFlagIsNonMixable", inASBD.mFormatFlags & kAudioFormatFlagIsNonMixable != 0)
-                print("kAudioFormatFlagIsAlignedHigh", inASBD.mFormatFlags & kAudioFormatFlagIsAlignedHigh != 0)
-                print("kAudioFormatFlagIsSignedInteger", inASBD.mFormatFlags & kAudioFormatFlagIsSignedInteger != 0)
-                print("kLinearPCMFormatFlagIsFloat", inASBD.mFormatFlags & kLinearPCMFormatFlagIsFloat != 0)
-                print("kLinearPCMFormatFlagIsPacked", inASBD.mFormatFlags & kLinearPCMFormatFlagIsPacked != 0)
-                print("kLinearPCMFormatFlagIsBigEndian", inASBD.mFormatFlags & kLinearPCMFormatFlagIsBigEndian != 0)
-                print("kLinearPCMFormatFlagIsNonMixable", inASBD.mFormatFlags & kLinearPCMFormatFlagIsNonMixable != 0)
-                print("kLinearPCMFormatFlagIsAlignedHigh", inASBD.mFormatFlags & kLinearPCMFormatFlagIsAlignedHigh != 0)
-                print("kLinearPCMFormatFlagIsSignedInteger", inASBD.mFormatFlags & kLinearPCMFormatFlagIsSignedInteger != 0)
-                print("kLinearPCMFormatFlagIsNonInterleaved", inASBD.mFormatFlags & kLinearPCMFormatFlagIsNonInterleaved != 0)
-                print("kLinearPCMFormatFlagsSampleFractionShift", inASBD.mFormatFlags & kLinearPCMFormatFlagsSampleFractionShift != 0)
-                print("kLinearPCMFormatFlagsAreAllClear", inASBD.mFormatFlags & kLinearPCMFormatFlagsAreAllClear != 0)
-                print("kLinearPCMFormatFlagsSampleFractionMask", inASBD.mFormatFlags & kLinearPCMFormatFlagsSampleFractionMask)
+//                print(inASBD)
+//                print("kAudioFormatFlagIsNonInterleaved", inASBD.mFormatFlags & kAudioFormatFlagIsNonInterleaved != 0)
+//                print("kAudioFormatFlagIsFloat", inASBD.mFormatFlags & kAudioFormatFlagIsFloat != 0)
+//                print("kAudioFormatFlagIsPacked", inASBD.mFormatFlags & kAudioFormatFlagIsPacked != 0)
+//                print("kAudioFormatFlagIsBigEndian", inASBD.mFormatFlags & kAudioFormatFlagIsBigEndian != 0)
+//                print("kAudioFormatFlagIsNonMixable", inASBD.mFormatFlags & kAudioFormatFlagIsNonMixable != 0)
+//                print("kAudioFormatFlagIsAlignedHigh", inASBD.mFormatFlags & kAudioFormatFlagIsAlignedHigh != 0)
+//                print("kAudioFormatFlagIsSignedInteger", inASBD.mFormatFlags & kAudioFormatFlagIsSignedInteger != 0)
+//                print("kLinearPCMFormatFlagIsFloat", inASBD.mFormatFlags & kLinearPCMFormatFlagIsFloat != 0)
+//                print("kLinearPCMFormatFlagIsPacked", inASBD.mFormatFlags & kLinearPCMFormatFlagIsPacked != 0)
+//                print("kLinearPCMFormatFlagIsBigEndian", inASBD.mFormatFlags & kLinearPCMFormatFlagIsBigEndian != 0)
+//                print("kLinearPCMFormatFlagIsNonMixable", inASBD.mFormatFlags & kLinearPCMFormatFlagIsNonMixable != 0)
+//                print("kLinearPCMFormatFlagIsAlignedHigh", inASBD.mFormatFlags & kLinearPCMFormatFlagIsAlignedHigh != 0)
+//                print("kLinearPCMFormatFlagIsSignedInteger", inASBD.mFormatFlags & kLinearPCMFormatFlagIsSignedInteger != 0)
+//                print("kLinearPCMFormatFlagIsNonInterleaved", inASBD.mFormatFlags & kLinearPCMFormatFlagIsNonInterleaved != 0)
+//                print("kLinearPCMFormatFlagsSampleFractionShift", inASBD.mFormatFlags & kLinearPCMFormatFlagsSampleFractionShift != 0)
+//                print("kLinearPCMFormatFlagsAreAllClear", inASBD.mFormatFlags & kLinearPCMFormatFlagsAreAllClear != 0)
+//                print("kLinearPCMFormatFlagsSampleFractionMask", inASBD.mFormatFlags & kLinearPCMFormatFlagsSampleFractionMask)
                 
                 var outASBD                 = AudioStreamBasicDescription()
                 outASBD.mSampleRate         = inASBD.mSampleRate
@@ -109,7 +109,7 @@ public class AACEncoder {
             if self.audioConverter == nil { self.setupEncoder(from: sampleBuffer) }
             guard let audioConverter = self.audioConverter else { return }
         
-            let numberOfSamples         = CMSampleBufferGetNumSamples(sampleBuffer)
+            let numberOfSamples         = CMSampleBufferGetNumSamples(sampleBuffer) / 2
             let duration                = CMSampleBufferGetDuration(sampleBuffer)
             var pcmBufferSize: UInt32   = 0
 
