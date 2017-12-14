@@ -23,21 +23,6 @@ class AACEncoderTests: XCTestCase {
         }
     }
     
-    func test_thread_safe_array_enumeration() {
-        
-        let arr = ThreadSafeArray<Int>()
-        for i in 0..<10 { arr.append(i) }
-        XCTAssertEqual(10, arr.count)
-        
-        var cnt = 0
-        for (i, _) in arr.enumerated() {
-            cnt = i
-        }
-        XCTAssertEqual(cnt, 9)
-        
-    }
-    
-
     #if os(macOS)
     func test_that_we_can_encode_pcm_samples_to_aac() {
         

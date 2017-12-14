@@ -48,7 +48,6 @@ public class AACEncoder {
                     inASBD.mBytesPerPacket   = inASBD.mBytesPerPacket * 2
                     inASBD.mBytesPerFrame    = inASBD.mBytesPerFrame  * 2
                     inASBD.mChannelsPerFrame = 2
-                    inASBD.mFormatFlags      = 0x4
                     self.makeBytesStereo     = true
                 }
                 
@@ -111,24 +110,30 @@ public class AACEncoder {
             guard let audioConverter = self.audioConverter else { return }
         
             let numberOfSamples         = CMSampleBufferGetNumSamples(sampleBuffer)
-            var duration                = CMSampleBufferGetDuration(sampleBuffer)
+            let duration                = CMSampleBufferGetDuration(sampleBuffer)
             var pcmBufferSize: UInt32   = 0
 
             if let sampleBytes = bytes(from: sampleBuffer) {
                 
                 if self.makeBytesStereo {
                     
-                    var leftChannel: [UInt8] = []
-                    var rightChannel: [UInt8] = []
+                    var actualSamples: [UInt16] = []
+
+                    stride(from: 0, to: sampleBytes.count, by: 2).forEach({ idx in
+                        let result = (UInt16(sampleBytes[idx]) << 8) + UInt16(sampleBytes[idx+1])
+                        actualSamples.append(result)
+                    })
                     
-                    for (idx, sample) in sampleBytes.enumerated() {
-                        if idx % 2 == 0 { rightChannel.append(sample) }
-                        else { leftChannel.append(sample) }
+                    let stereoized = actualSamples + actualSamples
+                    var lol: [UInt8] = []
+                    for sixteen in stereoized {
+                        lol.append(contentsOf: byteArray(from: sixteen))
                     }
                     
-                    let merged  = leftChannel + rightChannel
-                    self.pcmBuffer.append(contentsOf: merged)
-                    duration = CMTimeAdd(self.previousDuration, duration)
+                    print(lol)
+                    self.pcmBuffer.append(contentsOf: lol)
+                    
+                    //duration = CMTimeAdd(self.previousDuration, duration)
                 } else {
                     self.pcmBuffer.append(contentsOf: sampleBytes)
                 }
@@ -166,7 +171,6 @@ public class AACEncoder {
         
             switch status {
             case noErr:
-                print(outBuffer.unsafePointer.pointee)
                 let aacPayload = Array(self.aacBuffer[0..<Int(outBuffer[0].mDataByteSize)])
                 onComplete(aacPayload, noErr, duration)
             case -1:

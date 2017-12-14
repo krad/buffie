@@ -67,11 +67,7 @@ internal class ThreadSafeArray<T>: Collection {
         q.sync { index = self.array.index(after: i) }
         return index
     }
-    
-    func enumerated() -> EnumeratedSequence<[T]> {
-        return self.array.enumerated()
-    }
-    
+        
     internal subscript(index: Int) -> T {
         set {
             q.async(flags: .barrier) { self.array[index] = newValue }
