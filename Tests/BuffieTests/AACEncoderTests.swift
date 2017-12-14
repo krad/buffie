@@ -1,5 +1,6 @@
 import XCTest
 import CoreMedia
+import Foundation
 @testable import Buffie
 
 class AACEncoderTests: XCTestCase {
@@ -21,6 +22,36 @@ class AACEncoderTests: XCTestCase {
                 }
             }
         }
+    }
+    
+    func test_that_we_can_convert_8_bit_integers_to_signed_16_bit_integers() {
+        
+        let sampleBytes: [UInt8] = [44, 44,
+                                    44, 44,
+                                    44, 44,
+                                    44, 44,
+                                    44, 44,
+                                    44, 44,
+                                    44, 44,
+                                    44, 44,
+                                    44, 44,
+                                    44, 44]
+
+        // Convert 8 bit intergers to signed 16bit integers
+        let data = NSData(bytes: sampleBytes, length: sampleBytes.count)
+        XCTAssertNotEqual(0, data.length)
+        XCTAssertEqual(20, data.length)
+        
+        let count = sampleBytes.count / MemoryLayout<Int16>.size
+
+        var actualSamples = [Int16](repeating: 0, count: count)
+        data.getBytes(&actualSamples, length: count)
+        
+        XCTAssertNotEqual(0, actualSamples.count)
+        XCTAssertEqual(10, actualSamples.count)
+
+        print(actualSamples)
+        XCTAssertEqual(11308, actualSamples.first)
     }
     
     #if os(macOS)
