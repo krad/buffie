@@ -35,7 +35,7 @@ class AACEncoderTests: XCTestCase {
                                     44, 44,
                                     44, 44,
                                     44, 44,
-                                    44, 44]
+                                    00, 00]
 
         // Convert 8 bit intergers to signed 16bit integers
         let data = NSData(bytes: sampleBytes, length: sampleBytes.count)
@@ -43,15 +43,15 @@ class AACEncoderTests: XCTestCase {
         XCTAssertEqual(20, data.length)
         
         let count = sampleBytes.count / MemoryLayout<Int16>.size
-
         var actualSamples = [Int16](repeating: 0, count: count)
-        data.getBytes(&actualSamples, length: count)
+        data.getBytes(&actualSamples, length: count * MemoryLayout<Int16>.size)
         
         XCTAssertNotEqual(0, actualSamples.count)
         XCTAssertEqual(10, actualSamples.count)
 
         print(actualSamples)
         XCTAssertEqual(11308, actualSamples.first)
+        XCTAssertEqual(0, actualSamples.last)
     }
     
     #if os(macOS)
