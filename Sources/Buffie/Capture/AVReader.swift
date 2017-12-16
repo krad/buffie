@@ -69,15 +69,16 @@ internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBuffer
     private func recalculateDuration(for sampleBuffer: CMSampleBuffer) {
         if let prevSampleBuffer = self.samples.last {
             
-            let prevPTS  = CMSampleBufferGetPresentationTimeStamp(prevSampleBuffer)
-            let currPTS  = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-            let duration =  CMTimeSubtract(currPTS, prevPTS)
+//            let prevPTS  = CMSampleBufferGetPresentationTimeStamp(prevSampleBuffer)
+//            let currPTS  = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+//            let duration =  CMTimeSubtract(currPTS, prevPTS)
+            let duration = CMTimeMake(2049, 30000)
             
-            let thisFrameWallClock  = CFAbsoluteTimeGetCurrent()
-            print(thisFrameWallClock)
+//            let thisFrameWallClock  = CFAbsoluteTimeGetCurrent()
+//            print(thisFrameWallClock)
 //            let elapsedTime         = thisFrameWallClock - prevTimeStamp
 //            let duration            = CMTimeMake(Int64(elapsedTime * (30*1000)), 30*1000)
-            print(duration)
+//            print(duration)
             
             if let newSample = self.createNewSample(from: prevSampleBuffer, with: duration, and: currPTS) {
                 self.delegate?.got(newSample, type: .video)
