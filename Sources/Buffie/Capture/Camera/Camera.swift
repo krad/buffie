@@ -102,6 +102,19 @@ public class Camera {
         self.cameraSession?.stop()
     }
     
+    public func flip() {
+        guard let session = cameraSession else { return }
+        if self.position == .front {
+            if session.changeToCamera(position: .back) {
+                self.position = .back
+            }
+        } else {
+            if session.changeToCamera(position: .front) {
+                self.position = .front
+            }
+        }
+    }
+    
 }
 
 extension Camera: CaptureDevice { }

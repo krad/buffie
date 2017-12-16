@@ -9,6 +9,8 @@ internal protocol CaptureSessionProtocol {
     func start(onComplete: ((AVCaptureSession) -> Void)?)
     
     func stop()
+    
+    func changeToCamera(position: AVCaptureDevice.Position) -> Bool
 }
 
 internal class CaptureSession: CaptureSessionProtocol {
@@ -99,9 +101,6 @@ internal class CaptureSession: CaptureSessionProtocol {
         let videoDevice = try AVCaptureDevice.firstDevice(for: .video, in: position)
         let audioDevice = try AVCaptureDevice.firstDevice(for: .audio, in: position)
         
-//        print(videoDevice.activeVideoMinFrameDuration)
-//        print(videoDevice.activeVideoMaxFrameDuration)
-
         try self.init(videoDeviceID: videoDevice.uniqueID,
                       audioDeviceID: audioDevice.uniqueID,
                       controlDelegate: controlDelegate,
@@ -120,6 +119,25 @@ internal class CaptureSession: CaptureSessionProtocol {
     public func stop() {
         self.session.stopRunning()
     }
+
+    public func changeToCamera(position: AVCaptureDevice.Position) -> Bool {
+        do {
+            self.session.beginConfiguration()
+            let videoDevice = try AVCaptureDevice.firstDevice(for: .video, in: position)
+            if let currentInput = self.session.inputs.first {
+                self.session.removeInput(currentInput)
+                if let newVideoInput = try? AVCaptureDeviceInput(device: videoDevice) {
+                    self.session.addInput(newVideoInput)
+                }
+            }
+            
+            self.session.commitConfiguration()
+            return true
+            
+        } catch {
+            return false
+        }
+    }
     
     private func setupObservers() {
         self.sessionObserver = self.session.observe(\.isRunning) { session, _ in
@@ -131,8 +149,6 @@ internal class CaptureSession: CaptureSessionProtocol {
         }
     }
     
-    deinit {
-        self.sessionObserver?.invalidate()
-    }
+    deinit { self.sessionObserver?.invalidate() }
     
 }

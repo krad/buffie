@@ -71,7 +71,7 @@ internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBuffer
             
             let prevPTS  = CMSampleBufferGetPresentationTimeStamp(prevSampleBuffer)
             let currPTS  = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-            let duration =  CMTimeSubtract(currPTS, prevPTS)
+            let duration = CMTimeSubtract(currPTS, prevPTS)
             
 //            let thisFrameWallClock  = CFAbsoluteTimeGetCurrent()
 //            print(thisFrameWallClock)
