@@ -122,17 +122,24 @@ internal class CaptureSession: CaptureSessionProtocol {
 
     public func changeToCamera(position: AVCaptureDevice.Position) -> Bool {
         do {
-            self.session.beginConfiguration()
-            let videoDevice = try AVCaptureDevice.firstDevice(for: .video, in: position)
-            if let currentInput = self.session.inputs.first {
-                self.session.removeInput(currentInput)
-                if let newVideoInput = try? AVCaptureDeviceInput(device: videoDevice) {
-                    self.session.addInput(newVideoInput)
+            
+            for input in self.session.inputs {
+                for port in input.ports {
+                    if port.mediaType == .video {
+
+                        let videoDevice   = try AVCaptureDevice.firstDevice(for: .video, in: position)
+                        let newVideoInput = try AVCaptureDeviceInput(device: videoDevice)
+                        self.session.beginConfiguration()
+                        self.session.removeInput(input)
+                        self.session.addInput(newVideoInput)
+                        self.session.commitConfiguration()
+                        return true
+                        
+                    }
                 }
             }
             
-            self.session.commitConfiguration()
-            return true
+            return false
             
         } catch {
             return false
