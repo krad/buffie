@@ -70,7 +70,7 @@ internal class VideoSampleReader: NSObject, AVCaptureVideoDataOutputSampleBuffer
         if let prevSampleBuffer = self.samples.last {
             
 //            let prevPTS  = CMSampleBufferGetPresentationTimeStamp(prevSampleBuffer)
-//            let currPTS  = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+            let currPTS  = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
 //            let duration =  CMTimeSubtract(currPTS, prevPTS)
             let duration = CMTimeMake(2049, 30000)
             
