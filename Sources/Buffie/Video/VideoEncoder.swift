@@ -80,7 +80,7 @@ func configureProperties(for session: VTCompressionSession,
                              kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration,
                              maxKeyFrameIntervalDuration as CFTypeRef)
     }
-    
+
     VTSessionSetProperty(session,
                          kVTCompressionPropertyKey_RealTime,
                          settings.realTime as CFBoolean)

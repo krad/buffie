@@ -75,6 +75,7 @@ public class Camera {
                                                  cameraReader: self.cameraReader)
     }
     
+    
     public init(videoDeviceID: String?,
                 audioDeviceID: String?,
                 reader: AVReaderProtocol = AVReader(),
@@ -102,8 +103,10 @@ public class Camera {
         self.cameraSession?.stop()
     }
     
+    /// Attempt to flip the camera
     public func flip() {
         guard let session = cameraSession else { return }
+        
         if self.position == .front {
             if session.changeToCamera(position: .back) {
                 self.position = .back
