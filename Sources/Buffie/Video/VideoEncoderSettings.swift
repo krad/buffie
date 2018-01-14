@@ -27,7 +27,7 @@ public struct VideoEncoderSettings {
         self.realTime                 = true
         self.allowFrameReordering     = true
         self.allowTemporalCompression = true
-        self.profileLevel             = .h264Baseline_4_0
+        self.profileLevel             = .h264Baseline_3_0
         self.useHardwareEncoding      = true
     }
     
@@ -57,23 +57,26 @@ public enum VideoFormat {
     
 }
 
+// Only supporting profiles supported by HLS.
+//https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/StreamingMediaGuide/FrequentlyAskedQuestions/FrequentlyAskedQuestions.html
 public enum VideoProfileLevel {
-    case h264BaselineAutoLevel
-    case h264Baseline_4_0
+    
     case h264Baseline_3_0
-    case h264High_4_0
+    case h264Baseline_3_1
+    case h264Main_3_1
+    case h264High_4_1
     
     var raw: CFString {
         get {
             switch self {
-            case .h264BaselineAutoLevel:
-                return kVTProfileLevel_H264_Baseline_AutoLevel
-            case .h264Baseline_4_0:
-                return kVTProfileLevel_H264_Baseline_4_0
             case .h264Baseline_3_0:
                 return kVTProfileLevel_H264_Baseline_3_0
-            case .h264High_4_0:
-                return kVTProfileLevel_H264_High_4_0
+            case .h264Baseline_3_1:
+                return kVTProfileLevel_H264_Baseline_3_1
+            case .h264Main_3_1:
+                return kVTProfileLevel_H264_Main_3_1
+            case .h264High_4_1:
+                return kVTProfileLevel_H264_High_4_1
             }
         }
     }

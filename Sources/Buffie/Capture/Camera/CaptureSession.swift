@@ -39,7 +39,7 @@ internal class CaptureSession: CaptureSessionProtocol {
         if let vInput = videoInput {
             self.videoInput     = vInput
             self.videoOutput    = AVCaptureVideoDataOutput()
-            self.videoOutput?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange]
+            self.videoOutput?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8PlanarFullRange]
             
             // Add the video i/o to the session
             self.session.addInput(self.videoInput!)
