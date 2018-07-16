@@ -1,3 +1,12 @@
+** DEPRECATED **
+Functionality was broken out into other projects.
+
+For mp4 authoring, check out [morsel](https://github.com/krad/morsel)
+
+For building media pipelines, checkout [kubrik](https://github.com/krad/kubrick)
+
+
+
 # Buffie
 
 This is a package for doing things with media.
